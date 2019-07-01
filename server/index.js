@@ -1,11 +1,12 @@
 const express = require('express');
 const app = express();
-const db = require('./db.js');
+const User = require('./models/User.js');
 
 const PORT = process.env.MONGODB_URI || 3000;
 app.listen(PORT, () => {
   console.log(`listening on ${PORT}..`);
-  db.createUser({
+  const user = new User();
+  user.create({
     name: 'Chris',
     email: 'chris08@example.com',
     password: 'helloworld123',

@@ -1,22 +1,12 @@
-const mongoose = require('mongoose');
-const bluebird = require('bluebird');
+const mongoose = require('../db.js');
 const bcrypt = require('bcrypt-nodejs');
 
 const SALT_WORK_FACTOR = 10;
-mongoose.Promise = bluebird;
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/collectivebrain';
-
-mongoose.connect(mongoURI, {useNewUrlParser: true, 'useFindAndModify': false}).then(() => {
-  console.log('connected to mongo!');
-}).catch((e) => {
-  console.error('could not connect to database', e);
-})
-
 const USER_ROLES = {
   USER: 0,
   MODERATOR: 1,
   ADMIN: 2
-}
+};
 
 // user schema
 const userSchema = mongoose.Schema({
@@ -69,24 +59,25 @@ userSchema.pre('save', function (next) {
   next();
 })
 
+/**
+ * @param {{}} user object representing a user
+ * @returns {Promise} promise that resolves with create document or error  
+ */
+userSchema.methods.create = (user) => {
+  return new Promise((resolve, reject) => {
+    const userModel = new User(
+     user //lets just create the new model
+    );
+    userModel.save((err, doc) => { // callback
+      if (err) {
+        reject('Error when trying to update user: ' + err);
+      } else {
+        resolve(doc);
+      }
+    });
+  })
+};
+
 const User = mongoose.model('User', userSchema);
 
-module.exports = {
-  /**
-   * @param {{}} user object representing a user
-   */
-  createUser: (user) => {
-    return new Promise((resolve, reject) => {
-      const userModel = new User(
-       user //lets just create the new model
-      );
-      userModel.save((err, doc) => { // callback
-        if (err) {
-          reject('Error when trying to update user: ' + err);
-        } else {
-          resolve(doc);
-        }
-      });
-    })
-  }
-};
+module.exports = User;
