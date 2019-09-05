@@ -1,8 +1,19 @@
-describe("User tests", () => {
+const User = require('../server/models/User.js');
+const mongoose = require('../server/db.js');
 
-  it('should pass this basic ass test?', () => {
+afterAll(() => {
+  // clean up test database
+  if (process.env.NODE_ENV === 'test') {
+    mongoose.connection.dropDatabase();
+  }
+});
+
+
+describe("User tests", () => {
+  it('should pass this basic ass test?', (done) => {
     expect(true).toBe(true);
   });
+  
   // creation
   it('creates 3 invite tokens');
   it('adds a new user');
