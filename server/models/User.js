@@ -1,5 +1,6 @@
 const mongoose = require('../db.js');
 const bcrypt = require('bcrypt-nodejs');
+const Schema = mongoose.Schema;
 
 const SALT_WORK_FACTOR = 10;
 const USER_ROLES = {
@@ -8,11 +9,17 @@ const USER_ROLES = {
   ADMIN: 2
 };
 
-// user schema
+/**
+ * SCHEMA
+ */
 const userSchema = mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
   email: {
     type: String,
+    required: true,
     match: [/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, `Please fill valid email address`],
     validate: {
       validator: function() {
@@ -40,9 +47,14 @@ const userSchema = mongoose.Schema({
     type: Number,
     default: USER_ROLES.USER,
     required: [true, 'Role required'],
-  }
+  },
+  tokens: [{ type: Schema.Types.ObjectId, ref: 'Token' }],
+  posts: [{ type: Schema.Types.ObjectId, ref: 'Post'}]
 });
 
+/**
+ * PRE HANDLERS
+ */
 userSchema.pre('save', function (next) {
   const user = this;
   if (user.password) {
@@ -57,27 +69,19 @@ userSchema.pre('save', function (next) {
       });
   }
   next();
-})
+});
 
 /**
- * @param {{}} user object representing a user
- * @returns {Promise} promise that resolves with create document or error  
+ * STATICS
  */
-userSchema.methods.create = (user) => {
-  return new Promise((resolve, reject) => {
-    const userModel = new User(
-     user //lets just create the new model
-    );
-    userModel.save((err, doc) => { // callback
-      if (err) {
-        reject('Error when trying to update user: ' + err);
-      } else {
-        resolve(doc);
-      }
-    });
-  })
+userSchema.statics.USER_ROLES = {
+  USER: 0,
+  MODERATOR: 1,
+  ADMIN: 2
 };
 
+/**
+ * MODEL
+ */
 const User = mongoose.model('User', userSchema);
-
 module.exports = User;

@@ -28,7 +28,8 @@
     "graphql": "^14.4.2",
     "mongoose": "^5.6.2",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "short-uuid": "^3.1.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
