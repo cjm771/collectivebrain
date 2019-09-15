@@ -1,7 +1,7 @@
 const mongoose = require('../db.js');
 const bcrypt = require('bcrypt-nodejs');
+const Token = require('./Token.js');
 const Schema = mongoose.Schema;
-
 const SALT_WORK_FACTOR = 10;
 const USER_ROLES = {
   USER: 0,
@@ -16,6 +16,12 @@ const userSchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
+  },
+  token: {
+    type: Token.schema
+  },
+  editor: {
+    type: Schema.Types.ObjectId
   },
   email: {
     type: String,
@@ -55,8 +61,30 @@ const userSchema = mongoose.Schema({
 /**
  * PRE HANDLERS
  */
-userSchema.pre('save', function (next) {
+userSchema.pre('save', async function (next) {
   const user = this;
+  
+  if (user.isNew) { // new user
+    if (!user.token) {
+      return next(new Error('Invite Token is Required'));
+    } else if (!user.token || !user.token.isInvite() || !(await Token.findOne({token: user.token.token}))) {
+      return next(new Error('Invite Token is invalid'));
+    } else if (user.token.metaData && user.token.metaData.role) {
+        user.role = user.token.metaData.role;
+    }
+    await Token.deleteOne({token: user.token.token});
+  } else { // existing user
+    const permissionsError = new Error('You are not permitted to edit this user');
+    if ( user.editor !== user._id) {
+      if (user.isNormalUser() || !user.editor || user.editor.role <= user.role) {
+        return next(permissionsError);
+      }
+    } else if (user.isModified('role')) {
+      return next(new Error('You cannot change your own role'));
+    } else {
+      return next();
+    }
+  }
   if (user.password) {
       // this.password = hashPassword(this.password)
       bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
@@ -79,6 +107,22 @@ userSchema.statics.USER_ROLES = {
   MODERATOR: 1,
   ADMIN: 2
 };
+
+/**
+ * METHODS
+ */
+userSchema.methods.isNormalUser = function() {
+  return this.role === this.schema.statics.USER_ROLES.USER;
+};
+
+userSchema.methods.isModerator = function() {
+  return this.role === this.schema.statics.USER_ROLES.MODERATOR;
+};
+
+userSchema.methods.isAdmin = function() {
+  return this.role === this.schema.statics.USER_ROLES.ADMIN;
+};
+
 
 /**
  * MODEL
