@@ -42,7 +42,16 @@ const tokenSchema = mongoose.Schema({
   metaData: metaDataSchema,
   type: {
     type: Number,
-    required: [true, 'type required']
+    required: [true, 'type required'],
+    validate: {
+      validator: function(val) {
+        if (val < 0 || val > Object.keys(this.schema.statics.TOKEN_TYPES).length - 1) {
+          return false;
+        } else {
+          return true;
+        }
+      }, message: 'Not valid token type'
+    }
   },
 
 });

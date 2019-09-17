@@ -198,11 +198,81 @@ describe("User tests", () => {
     await expect(normalUser.name).toEqual('I have a new name');
 
   });
-  it('does not allow a user to modify their own role', async() => {
+  it('does not allow a user to modify their own role', async () => {
     normalUser.role = User.USER_ROLES.ADMIN;
+    normalUser.editor = normalUser._id;
     await expect(normalUser.save()).rejects.toThrow('You cannot change your own role');
+    normalUser.role = User.USER_ROLES.USER;
   });
-  // it('should not allow a mod to modify an admin');
-  // it('should allow an admin to modify a user / mod');
-  // it('should allow an mod to modify a user');
+
+  it('should not allow a mod to modify an admin or other mods, only users', async () => {
+    const token = new Token({type: Token.TOKEN_TYPES.INVITE, metaData: { role: User.USER_ROLES.MODERATOR }});
+    await token.save();
+
+    const otherModerator = new User({
+      email: 'otherModerator@test123.com',
+      password: '123456',
+      name: 'test',
+      token: token
+    });
+    await otherModerator.save();
+    
+    admin.editor = moderator._id;
+    admin.name = 'I have a new name';
+    await expect(admin.save()).rejects.toThrow('You are not permitted to edit this user');
+
+    otherModerator.editor = moderator._id;
+    otherModerator.name = 'other moderator name im editing..';
+    await expect(otherModerator.save()).rejects.toThrow('You are not permitted to edit this user');
+
+    moderator.editor = moderator._id;
+    moderator.name = 'I am a moderator';
+    await moderator.save();
+    await expect(moderator.name).toEqual('I am a moderator');
+        
+    normalUser.editor = moderator._id;
+    normalUser.name = 'Normal user name change';
+    await normalUser.save();
+    await expect(normalUser.name).toEqual('Normal user name change');
+
+    normalUser.editor = moderator._id;
+    normalUser.role = User.USER_ROLES.ADMIN;
+    await expect(normalUser.save()).rejects.toThrow('You cannot promote beyond your role');
+
+  });
+
+  it('should not allow an admin to modify an admin, only users and mods', async () => {
+    const token = new Token({type: Token.TOKEN_TYPES.INVITE, metaData: { role: User.USER_ROLES.ADMIN }});
+    await token.save();
+
+    const otherAdmin = new User({
+      email: 'otherAdmin@test123.com',
+      password: '123456',
+      name: 'test',
+      token: token
+    });
+    await otherAdmin.save();
+
+    otherAdmin.editor = admin._id;
+    otherAdmin.name = 'other admin name im editing..';
+    await expect(otherAdmin.save()).rejects.toThrow('You are not permitted to edit this user');
+    
+    admin.editor = admin._id;
+    admin.name = 'I have a new amazing name';
+    await admin.save();
+    await expect(admin.name).toEqual('I have a new amazing name');
+
+    moderator.editor = admin._id;
+    moderator.name = 'I am still the moderator, but promoted to an admin';
+    moderator.role = User.USER_ROLES.ADMIN;
+    await moderator.save();
+    await expect(moderator.name).toEqual('I am still the moderator, but promoted to an admin');
+    await expect(moderator.role).toEqual(User.USER_ROLES.ADMIN);
+        
+    normalUser.editor = admin._id;
+    normalUser.name = 'my name is dumb';
+    await normalUser.save();
+    await expect(normalUser.name).toEqual('my name is dumb');
+
+  });
 });

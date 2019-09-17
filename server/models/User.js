@@ -3,11 +3,6 @@ const bcrypt = require('bcrypt-nodejs');
 const Token = require('./Token.js');
 const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
-const USER_ROLES = {
-  USER: 0,
-  MODERATOR: 1,
-  ADMIN: 2
-};
 
 /**
  * SCHEMA
@@ -51,7 +46,7 @@ const userSchema = mongoose.Schema({
   },
   role: {
     type: Number,
-    default: USER_ROLES.USER,
+    default: 0,
     required: [true, 'Role required'],
   },
   tokens: [{ type: Schema.Types.ObjectId, ref: 'Token' }],
@@ -76,13 +71,25 @@ userSchema.pre('save', async function (next) {
   } else { // existing user
     const permissionsError = new Error('You are not permitted to edit this user');
     if ( user.editor !== user._id) {
-      if (user.isNormalUser() || !user.editor || user.editor.role <= user.role) {
+      // no editor? instant error
+      if (!user.editor) {
+        return next(permissionsError);
+      }
+      const editor = await User.findOne({_id: user.editor});
+      if (!editor) {
+        return next(new Error('Editor required to edit user'));
+      }
+      if (editor.isNormalUser()) {
+        return next(permissionsError);
+      } 
+      if (user.isModified('role') && editor.role < user.role) {
+        return next(new Error('You cannot promote beyond your role'));
+      } else if (!user.isModified('role') && editor.role <= user.role) {
+        console.log(`editor ${editor.email} is less or equal to user ${user.email} role!`);
         return next(permissionsError);
       }
     } else if (user.isModified('role')) {
       return next(new Error('You cannot change your own role'));
-    } else {
-      return next();
     }
   }
   if (user.password) {
@@ -96,6 +103,7 @@ userSchema.pre('save', async function (next) {
         if (err) return next(err);
       });
   }
+  user.editor = null;
   next();
 });
 
