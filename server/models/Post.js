@@ -1,6 +1,7 @@
 const mongoose = require('../db.js');
 const bcrypt = require('bcrypt-nodejs');
 const Schema = mongoose.Schema;
+const User = require('../models/User.js');
 
 /**
  * SCHEMA
@@ -73,6 +74,28 @@ const postSchema = mongoose.Schema({
  */
 postSchema.pre('save', async function (next) {
   const post = this;
+
+  if (post.isNew) { // new user
+
+  } else { // existing user
+    const permissionsError = new Error('You are not permitted to edit this post');
+    if ( post.editor !== post.user._id) {
+      // no editor? instant error
+      if (!post.editor) {
+        return next(permissionsError);
+      }
+      const editor = await User.findOne({_id: post.editor});
+      if (!editor) {
+        return next(new Error('Editor required to edit user'));
+      }
+      if (editor.isNormalUser()) {
+        return next(permissionsError);
+      } else if (editor.role <= post.user.role) {
+        return next(permissionsError);
+      }
+    } 
+  }
+  post.editor = null;
   next();
 });
 
