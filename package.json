@@ -38,11 +38,13 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "css-loader": "^3.0.0",
+    "csvtojson": "^2.0.10",
     "jest": "^24.8.0",
     "nodemon": "^1.19.1",
     "postcss-loader": "^3.0.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
+    "textract": "^2.5.0",
     "webpack": "^4.35.0",
     "webpack-cli": "^3.3.5"
   }
