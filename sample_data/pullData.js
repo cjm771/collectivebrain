@@ -1,10 +1,20 @@
+/**
+ * Generates json data
+ */
+const Post = require(__dirname + '/../server/models/Post.js');
 const csvFilePath = __dirname + '/sampledata.csv';
 const csv = require('csvtojson');
 const fs = require('fs');
 const textract = require('textract');
 
 const getLocalImageLink = (dropboxUrl, folder) => {
-  return __dirname + '/' + folder + '/' +  decodeURIComponent(/\/([^\/]+?)\?/.exec(dropboxUrl)[1]);
+  let path = decodeURIComponent(/\/([^\/]+?)\?/.exec(dropboxUrl)[1]);
+  if (folder === 'images') {
+   path = '/' + folder + '/media/' + path;
+  } else {
+    path = __dirname + '/' + folder + '/' + path;
+  }
+  return path;
 };
 
 const formatEntries = (jsonArray) => {
@@ -18,30 +28,47 @@ const formatEntries = (jsonArray) => {
           if (['PROJECT DATE', 'PUBLISHED DATE'].indexOf(key) !== -1) {
             if (entry[key].indexOf('-') !== -1) {
               datePieces = entry[key].split('-');
-              entry['PROJECT START DATE'] = parseInt(datePieces[0]);
-              entry['PROJECT END DATE'] = parseInt(datePieces[1]);
+              entry['startDate'] = parseInt(datePieces[0]);
+              entry['endDate'] = parseInt(datePieces[1]);
             } else {
-              entry['PROJECT START DATE'] = parseInt(entry[key]);
+              entry['startDate'] = parseInt(entry[key]);
             }
           }
-          if (key === 'TAGS') {
+          
+          if (key === 'tags') {
             entry[key] = entry[key].split(',').filter((item) => {
               return item.trim() !== '';
             })
+          } 
+          if (key === 'category') {
+            const category = Post.CATEGORIES[entry[key].toUpperCase().replace(' ', '_')];
+            if (category === undefined) {
+              throw `${entry[key].toUpperCase().replace(' ', '_')} is not defined` 
+            }
+            entry[key] = category;
           }
         }
       });
+      ['PROJECT DATE', 'PUBLISHED DATE'].forEach((key) => {
+        delete entry[key];
+      });
       if (entry['IMAGE FILE LINK']) {
-        entry['IMAGE FILE LINK'] = getLocalImageLink(entry['IMAGE FILE LINK'], 'images');
+        entry['images'] = [{
+          src: getLocalImageLink(entry['IMAGE FILE LINK'], 'images'),
+          src_thumb: null,
+          caption: null
+        }];
       }
+      delete entry['IMAGE FILE LINK'];
       if (entry['TEXT FILE LINK']) {
         entry['TEXT FILE LINK'] = getLocalImageLink(entry['TEXT FILE LINK'], 'text');
         getTextFromDoc(entry['TEXT FILE LINK']).then((text) => {
           // entry['TEXT'] = text;
-          matches = /-{5,}(.+?)-{5,}(.+?)-{5,}(.+)/.exec(text);
-          entry['TITLE'] = matches[1].trim();
-          entry['DESCRIPTION'] = matches[2].trim();
-          entry['BIBLIO'] = matches[3].trim();
+          matches = /-{5,}([\s\S]+?)-{5,}([\s\S]+?)-{5,}([\s\S]+)/.exec(text);
+          entry['title'] = matches[1].trim();
+          entry['description'] = matches[2].trim();
+          entry['sources'] = matches[3].trim() !== '' ? matches[3].trim().split('\n') : null;
+          delete entry['TEXT FILE LINK'];
           resolve(entry);
         });
       } else {
@@ -54,7 +81,7 @@ const formatEntries = (jsonArray) => {
 
 const getTextFromDoc = (doc) => {
   return new Promise((resolve, reject) => {
-    textract.fromFileWithPath(doc, function( error, text ) {
+    textract.fromFileWithPath(doc, {preserveLineBreaks: true }, function( error, text ) {
       if (error) {
         console.log('error!', error);
         reject(error);

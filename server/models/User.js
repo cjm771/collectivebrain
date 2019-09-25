@@ -131,6 +131,20 @@ userSchema.methods.isAdmin = function() {
   return this.role === this.schema.statics.USER_ROLES.ADMIN;
 };
 
+userSchema.set('toObject', {
+  transform: (doc, ret, opt) => {
+   delete ret.password;
+   return ret;
+  }
+});
+
+userSchema.set('toJSON', {
+  transform: (doc, ret, opt) => {
+   delete ret.password;
+   return ret;
+  }
+});
+
 
 /**
  * MODEL
