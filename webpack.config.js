@@ -1,3 +1,4 @@
+require('dotenv').config();
 const path = require('path');
 const webpack = require('webpack');
 const ENV = process.env.NODE_ENV || 'development';
@@ -73,7 +74,8 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': { 
-        NODE_ENV:  JSON.stringify( ENV )
+        NODE_ENV:  JSON.stringify( ENV ),
+        DOMAIN: JSON.stringify( process.env.DOMAIN )
       },
     }),
     new MiniCssExtractPlugin({

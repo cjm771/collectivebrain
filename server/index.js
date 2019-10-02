@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const User = require('./models/User');
 const app = express();
-const PORT = process.env.MONGODB_URI || 3000;
+const PORT = process.env.PORT || 3000;
 const mongoose = require('./db.js');
 const MongoStore = require('connect-mongo')(session);
 
@@ -96,6 +96,9 @@ app.use('/', express.static(path.join(__dirname, '../client/dist/')));
 
 app.listen(PORT, () => {
   console.log(`listening on ${PORT}..`);
-  console.log(`graphql at http://localhost:${PORT}${server.graphqlPath}`);
+  console.log(JSON.stringify(process.env.NODE_ENV));
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    console.log(`graphql at http://localhost:${PORT}${server.graphqlPath}`);
+  }
 });
 
