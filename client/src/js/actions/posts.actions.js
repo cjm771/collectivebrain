@@ -4,6 +4,7 @@ import { gql } from 'apollo-boost';
 const GET_POSTS = gql`
 query {
   posts {
+    id,
     title,
     description,
     creator,
@@ -45,7 +46,6 @@ export const getPostsAction = (inputs) => {
     });
     ApolloClient.query({query: GET_POSTS })
       .then((result) => {
-        debugger;
         dispatch({
           type: 'GET_POSTS_SUCCESS',
           posts: result.data.posts
@@ -55,6 +55,7 @@ export const getPostsAction = (inputs) => {
         dispatch({
           type: 'GET_POSTS_FAILURE',
           error: message,
+          errorFields: fields
         })
       })
   }

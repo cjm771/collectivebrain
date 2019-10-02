@@ -7,6 +7,8 @@ const session = require('express-session');
 const User = require('./models/User');
 const app = express();
 const PORT = process.env.MONGODB_URI || 3000;
+const mongoose = require('./db.js');
+const MongoStore = require('connect-mongo')(session);
 
 // apollo
 const {ApolloServer, gql} = require('apollo-server-express');
@@ -19,7 +21,9 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
   cookie: {
+      expires: 600000,
       maxAge: 600000
   }
 }));

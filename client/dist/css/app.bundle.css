@@ -6,7 +6,9 @@
       -ms-flex-pack: justify;
           justify-content: space-between;
   padding: 1rem;
-  min-height: 8rem; }
+  min-height: 8rem;
+  position: relative;
+  z-index: 10; }
   .header__header___NvTFf .header__left___1e3sU {
     font-weight: bold; }
     .header__header___NvTFf .header__left___1e3sU a {
@@ -42,6 +44,7 @@
       padding-bottom: 0;
       margin-top: 1rem;
       margin-left: 3.0rem;
+      cursor: pointer;
       -webkit-user-select: none;
          -moz-user-select: none;
           -ms-user-select: none;
@@ -97,6 +100,13 @@
 
 .main__main___VAKTd {
   text-align: center; }
+  .main__main___VAKTd .main__forceGraph___108yZ {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100vw;
+    height: 100vh; }
 
 ._forms__form___AECEL {
   text-align: center; }
