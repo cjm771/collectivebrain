@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const ENV = process.env.NODE_ENV || 'development';
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   // mode: ENV,
@@ -29,15 +30,20 @@ module.exports = {
        
         use: [
           {
-            loader: 'style-loader',
+            loader: MiniCssExtractPlugin.loader,
             options: {
+              fallback: 'style-loader', 
               sourceMap: true
-            }
-          }, 
+            },
+          },
           {
             loader: 'css-loader',
             options: {
-              sourceMap: true
+              sourceMap: true,
+            modules: {
+                mode: 'local',
+                localIdentName: '[name]__[local]___[hash:base64:5]',
+              },
             }
           }, 
           {
@@ -69,7 +75,12 @@ module.exports = {
       'process.env': { 
         NODE_ENV:  JSON.stringify( ENV )
       },
-    })
+    }),
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // all options are optional
+      filename: '../css/[name].bundle.css',
+    }),
   ],
   output: {
     pathinfo: false,

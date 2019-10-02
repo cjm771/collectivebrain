@@ -1,0 +1,72 @@
+@import './_colors.scss';
+
+$input-bg-color:#eee;
+$input-border-radius: 0.5rem;
+$input-padding: 1rem;
+
+.form {
+  text-align: center;
+  input, button {
+    &[disabled] { 
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+  .errorBox {
+    color: #ff0000;
+    text-align: center;
+    margin: .5rem 0;
+  }
+
+  .successBox {
+    color: #00802b;
+    text-align: center;
+    margin: .5rem 0;
+  }
+}
+
+.input {
+  margin: .5rem 0;
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover {
+    box-shadow: 0 0 0px 1000px #eee inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+
+  &[type="text"],
+  &[type="password"] {
+    background: $input-bg-color;
+    border: 0;
+    padding: $input-padding;
+    border-radius: $input-border-radius;
+    width: 100%;
+
+    &.hasErrors {
+      background: #facfcf;
+      color: #ff0000;
+    }
+        
+    &:focus {
+      outline: none;
+      background: lighten($input-bg-color, 2);
+    }
+  }
+}
+
+.button {
+  margin: .5rem 0;
+  background: #000;
+  color: #fff;
+  padding: $input-padding;
+  border-radius: $input-border-radius;
+  border: none;
+  transition: background .25s ease-in-out;
+  &:not([disabled]):hover {
+    background: $blue;
+  }
+  &:focus {
+    outline: none;
+    background: lighten(#000, 2);
+  }
+}

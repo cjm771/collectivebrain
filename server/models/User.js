@@ -1,5 +1,5 @@
 const mongoose = require('../db.js');
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt');
 const Token = require('./Token.js');
 const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
@@ -119,6 +119,12 @@ userSchema.statics.USER_ROLES = {
 /**
  * METHODS
  */
+
+userSchema.methods.validatePassword = async function(pw) {
+  const valid = await bcrypt.compare(pw, this.password);
+  return valid;
+};
+
 userSchema.methods.isNormalUser = function() {
   return this.role === this.schema.statics.USER_ROLES.USER;
 };
