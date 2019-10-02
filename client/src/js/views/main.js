@@ -5,7 +5,7 @@ import {getPostsAction} from '../actions/posts.actions.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { ForceGraph3D } from 'react-force-graph';
-import { isDebuggerStatement } from '@babel/types';
+import * as THREE from 'three';
 
 export default () => {
     const dispatch = useDispatch();
@@ -15,28 +15,23 @@ export default () => {
 
     const posts = useSelector((state) => { return state.posts });
 
-  //   {
-  //     "nodes": [
-  //         {
-  //           "id": "id1",
-  //           "name": "name1",
-  //           "val": 1
-  //         },
-  //         {
-  //           "id": "id2",
-  //           "name": "name2",
-  //           "val": 10
-  //         },
-  //         (...)
-  //     ],
-  //     "links": [
-  //         {
-  //             "source": "id1",
-  //             "target": "id2"
-  //         },
-  //         (...)
-  //     ]
-  // }
+    const getColor = (category) => {
+      const colors = [
+        '#ff0000',
+        '#00ff00',
+        '#0000ff',
+        '#cc0088',
+        '#bbaa44',
+        '#33ffcc',
+        '#aa122a',
+        '#fea22b',
+        '#00ffff',
+      ];
+      return colors[CATEGORIES.indexOf(category)];
+    }
+
+    const CATEGORIES = [];
+
     const generateGraph = (posts) => {
       const result = {
         nodes: [],
@@ -51,6 +46,9 @@ export default () => {
           category: post.category,
           value: 1
         });
+        if (CATEGORIES.indexOf(post.category) === -1) {
+          CATEGORIES.push(post.category);
+        }
         // gather.. group ids by tag 
         if (post.tags) {
           post.tags.forEach(tag => {
@@ -100,6 +98,15 @@ export default () => {
                 nodeColor='rgb(0,0,0)'
                 linkCurvature={0.2}
                 nodeAutoColorBy="category"
+                nodeThreeObject={ ({id, category}) => new THREE.Mesh(
+                  new THREE.BoxGeometry(5, 10.5, .5),
+                  new THREE.MeshBasicMaterial({
+                    color: getColor(category),
+                    flatShading: true,
+                    opacity: 0.75,
+                    transparent: true
+                  })
+                )}
               />
             </div>
           ) : ''
