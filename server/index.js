@@ -30,7 +30,12 @@ const server = new ApolloServer({
   resolvers,
   context: ({ req }) => ({
     req: req
-  })
+  }),
+  playground: {
+    settings: {
+      "request.credentials": "include"
+    }
+  }
 });
 server.applyMiddleware({ app });
 app.use(bodyParser.urlencoded({ extended: true }));

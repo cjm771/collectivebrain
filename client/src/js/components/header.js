@@ -16,29 +16,27 @@ export default () => {
       </div>
       <div className = {headerStyle.right}>
         { (user && user.loggedIn)  ? (
-           <div> 
-              <Gravatar email={user.email} className={headerStyle.profileImage} /> {user.name}
-                <span className={classNames("dropdown", headerStyle.authDropdown)}>
-                  <span data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <FontAwesomeIcon icon={faChevronDown} />
-                  </span>
-                  <div className={classNames("dropdown-menu dropdown-menu-right", headerStyle.dropdownMenu)} aria-labelledby="dropdownMenuButton">
-                    <div className={headerStyle.dropdownMenuArrow}></div>
-                    <a className="dropdown-item" href="/">
-                      <FontAwesomeIcon icon={faHome} />
-                      <span>Home</span>
-                    </a>
-                    <a className="dropdown-item" href="/dashboard">
-                      <FontAwesomeIcon icon={faCog} />
-                      <span>Dashboard</span>
-                    </a>
-                    <a className="dropdown-item" href="/logout">
-                      <FontAwesomeIcon icon={faSignOutAlt} /> 
-                      <span>Logout</span>
-                    </a>
-                  </div>
-                </span>
-           </div>
+            <span className={classNames("dropdown", headerStyle.authDropdown)}>
+              <span data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <Gravatar email={user.email} className={headerStyle.profileImage} /> {user.name}
+                <FontAwesomeIcon icon={faChevronDown}  className={headerStyle.chevron} />
+              </span>
+              <div className={classNames("dropdown-menu dropdown-menu-right", headerStyle.dropdownMenu)} aria-labelledby="dropdownMenuButton">
+                  <div className={headerStyle.dropdownMenuArrow}></div>
+                  <a className="dropdown-item" href="/">
+                    <FontAwesomeIcon icon={faHome} />
+                    <span>Home</span>
+                  </a>
+                  <a className="dropdown-item" href="/dashboard">
+                    <FontAwesomeIcon icon={faCog} />
+                    <span>Dashboard</span>
+                  </a>
+                  <a className="dropdown-item" href="/logout">
+                    <FontAwesomeIcon icon={faSignOutAlt} /> 
+                    <span>Logout</span>
+                  </a>
+                </div>
+            </span>
           ) : (user ? (
             <ul className = {headerStyle.unauthItems}>
               <li><a href='/login'>login</a></li>

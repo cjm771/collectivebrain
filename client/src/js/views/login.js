@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { loginAction, clearErrorFieldAction } from '../actions/index.js';
+import { loginAction, clearErrorFieldAction } from '../actions/user.actions.js';
 
 // import loginStyle from '../../scss/login.scss';
 import formStyle from '../../scss/_forms.scss';

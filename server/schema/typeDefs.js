@@ -6,7 +6,6 @@ module.exports = `
   }
 
   type Query {
-    hello: String!,
     posts: [Post!]!,
     users: [User!]!
   }
@@ -15,7 +14,19 @@ module.exports = `
     id: ID!,
     title: String!,
     description: String,
+    published: Boolean!,
+    creator: String,
+    category: String,
+    startDate: String,
+    endDate: String,
+    tags: [String],
+    images: [Image]
     user: User!
+  }
+
+  type Image {
+    src: String,
+    caption: String,
   }
 
   type AuthPayload {
@@ -23,7 +34,6 @@ module.exports = `
     user: User
   }
   
-
   type User {
     name: String!,
     email: String!,

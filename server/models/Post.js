@@ -111,6 +111,18 @@ postSchema.statics.CATEGORIES = {
   REPRESENTATION: 6
 };
 
+
+postSchema.statics.getCategoryName = (val) => {
+  const keys = Object.keys(postSchema.statics.CATEGORIES);
+  if (typeof val !== 'number' ||val < 0 || val > keys.length - 1 ) {
+    throw new Error(`Invalid value to look up: ${val}`);
+  } else {
+    return keys.filter((key) => {
+      return val === postSchema.statics.CATEGORIES[key];
+    })[0];
+  }
+}
+
 /**
  * METHODS
  */

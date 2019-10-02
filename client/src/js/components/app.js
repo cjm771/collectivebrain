@@ -1,18 +1,17 @@
 import React, { useEffect } from 'react';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 import Header from '../components/header.js';
-import RootView from '../views/index.js';
+import RootView from '../views/main.js';
 import LoginView from '../views/login.js';
 import DashboardView from '../views/dashboard.js';
 import RegisterView from '../views/register.js';
-import {isLoggedInAction} from '../actions/index.js';
+import {isLoggedInAction} from '../actions/user.actions.js';
 import { useDispatch } from 'react-redux';
 
 import appStyle from '../../scss/app.scss';
 
 export default () => {
-  
-  // useEffect(() => {
+
   const dispatch = useDispatch();
   dispatch(isLoggedInAction());
 

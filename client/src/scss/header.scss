@@ -34,21 +34,30 @@
       }
     }
 
-    .profileImage {
-      border-radius: 50%;
-      filter: saturate(0);
-      width: 2rem;
-      height: auto;
-      margin-right: .3rem;
-    }
+
+
 
     .authDropdown {
       padding-left: .5rem;
+      user-select: none;
+
+      .profileImage {
+        border-radius: 50%;
+        filter: saturate(0);
+        width: 2rem;
+        height: auto;
+        margin-right: .3rem;
+      }
+  
+      .chevron {
+        padding-left: .5rem;
+        font-size: 1.2rem;
+      }
       
       .dropdownMenu {
         padding-bottom: 0;
         margin-top: 1rem;
-        margin-left: 1rem;
+        margin-left: 3.0rem;
         user-select: none;
 
         .dropdownMenuArrow {

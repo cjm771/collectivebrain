@@ -1,6 +1,6 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
-const {UserInputError} = require('apollo-server-express');
+const {UserInputError, AuthenticationError} = require('apollo-server-express');
 
 module.exports  = {
   Mutation : {
@@ -55,9 +55,23 @@ module.exports  = {
     }
   },
   Query : {
-    hello: () => 3,
-    posts: () => Post.find({}).populate('user'),
-    users: () => User.find({})
+    posts: (_, args, ctx) => {
+      if (ctx.req.session.user) {
+        return Post.find({}).populate('user')
+      } else {
+        throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?')
+      }
+    },
+    users: (_, args, ctx) => {
+      if (ctx.req.session.user) {
+        return User.find({})
+      } else {
+        throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?')
+      }
+    }
+  }, 
+  Post: {
+    category: ({category}) => Post.getCategoryName(category).toLowerCase()
   },
   User: {
     profileUrl: ({email}) => `http://gravatar.com/${email}`
