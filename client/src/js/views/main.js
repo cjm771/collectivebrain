@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback, useRef} from 'react';
 import mainStyle from '../../scss/main.scss';
 import {useDispatch, useSelector} from 'react-redux';
 import {getPostsAction} from '../actions/posts.actions.js';
@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { ForceGraph3D } from 'react-force-graph';
 import * as THREE from 'three';
+import PostCanvas from '../components/postCanvas.js';
 
 export default () => {
     const dispatch = useDispatch();
@@ -13,6 +14,9 @@ export default () => {
       dispatch(getPostsAction());
     }, []);
 
+    let stage;
+    const fgRef = useRef();
+    const stageRef = useRef();
     const posts = useSelector((state) => { return state.posts });
 
     const getColor = (category) => {
@@ -76,6 +80,18 @@ export default () => {
       });
       return result;
     }
+
+    const handleClick = useCallback(node => {
+      // Aim at node from outside it
+      const distance = 40;
+      const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+      fgRef.current.cameraPosition(
+        { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, // new position
+        node, // lookAt ({ x, y, z })
+        3000  // ms transition duration
+      );
+    }, [fgRef]);
+
     
     return (
       <div className={mainStyle.main}>
@@ -91,23 +107,50 @@ export default () => {
               <p>An error ocurred</p>
             </div>
           ) : posts.items && posts.items.length  ? (
-            <div className={mainStyle.forceGraph}>
-              <ForceGraph3D 
-                graphData={generateGraph(posts.items)}
-                backgroundColor='rgba(255,255,255,0)'
-                nodeColor='rgb(0,0,0)'
-                linkCurvature={0.2}
-                nodeAutoColorBy="category"
-                nodeThreeObject={ ({id, category}) => new THREE.Mesh(
-                  new THREE.BoxGeometry(5, 10.5, .5),
-                  new THREE.MeshBasicMaterial({
-                    color: getColor(category),
-                    flatShading: true,
-                    opacity: 0.75,
-                    transparent: true
-                  })
-                )}
-              />
+
+            <div>
+              {
+                posts.items.slice(0, 20).map((post) => {
+                  console.log(posts.items);
+                  return <PostCanvas stageRef={stageRef} post={post} key={post.id} />
+                })
+              }
+              {/* <div className={mainStyle.forceGraph}>
+                <ForceGraph3D 
+                  graphData={generateGraph(posts.items)}
+                  backgroundColor='rgba(255,255,255,0)'
+                  nodeColor='rgb(0,0,0)'
+                  linkCurvature={0.2}
+                  ref={fgRef}
+                  onNodeClick={handleClick}
+                  nodeAutoColorBy="category"
+                  nodeThreeObject={ ({id, category}) => {
+                    const canvas = stage.content.children[0];
+                    var texture = new THREE.CanvasTexture(canvas);
+                    var mainMaterial =  new THREE.MeshBasicMaterial({
+                      color: 'white',
+                      flatShading: true,
+                      opacity: 1,
+                      map: texture,
+                    });
+                    var basicMaterial = new THREE.MeshBasicMaterial({
+                      color: getColor(category),
+                      flatShading: true,
+                      opacity: 0.75,
+                      transparent: true
+                    });
+                    return new THREE.Mesh(
+                    new THREE.BoxGeometry(5, 10.5, .5), [
+                      basicMaterial,
+                      basicMaterial,
+                      basicMaterial,
+                      basicMaterial,
+                      mainMaterial,
+                      mainMaterial,
+                    ]);
+                }}
+                />
+              </div> */}
             </div>
           ) : ''
         }

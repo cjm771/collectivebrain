@@ -9,6 +9,7 @@ query {
     description,
     creator,
     category,
+    sources,
     startDate,
     endDate,
     tags,

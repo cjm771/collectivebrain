@@ -20,7 +20,8 @@ module.exports = `
     startDate: String,
     endDate: String,
     tags: [String],
-    images: [Image]
+    sources: [String],
+    images: [Image],
     user: User!
   }
 
