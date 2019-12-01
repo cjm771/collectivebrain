@@ -1,5 +1,11 @@
 @import './_dims';
 
+:global {
+  body {
+    background: #000;
+  }
+}
+
 .app {
   .container {
     min-height: calc(100vh - #{$header-height * 3});

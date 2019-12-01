@@ -12,12 +12,24 @@ export default (state = {
     case 'GET_POSTS_SUCCESS':
       return {
         ...state,
-        items: action.posts,
+        posts: undefined,
+        ...action.posts,
+        items: action.posts.posts,
+        processing: false
+      }
+    case 'GET_MORE_POSTS_SUCCESS':
+      return {
+        ...state,
+        posts: undefined,
+        ...action.posts,
+        items: [...items, ...action.posts.posts],
         processing: false
       }
     case 'GET_POSTS_FAILURE':
+      debugger
       return {
         ...state,
+        error: action.error,
         processing: false
       }
     default:

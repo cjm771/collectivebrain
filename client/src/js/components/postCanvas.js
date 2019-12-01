@@ -65,7 +65,7 @@ export default ({stageRef, post}) => {
   };  
 
   return (
-    <Stage width={width} height={height} ref={stageRef}>
+    <Stage width={width} height={height} ref={stageRef} id={post.id}>
       <Layer>
         <Rect
           x={0}
@@ -155,7 +155,7 @@ export default ({stageRef, post}) => {
           text={limitSourcesTo(post.sources.concat(post.sources, post.sources, post.sources), 2)} 
         /> : null
         }
-        <Text 
+        {post.tags ? <Text 
           x={padding}
           y={padding}
           fontSize={10}
@@ -164,7 +164,7 @@ export default ({stageRef, post}) => {
           fill='#008cff'
           verticalAlign='bottom'
           text={ellipsifyIfOver(post.tags.map(tag => `#${tag.trim()}`).join(' '), 100)} 
-        />
+        /> : null}
       </Layer>
     </Stage>
   )

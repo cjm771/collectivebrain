@@ -66,6 +66,8 @@ const postSchema = mongoose.Schema({
     type: String
   }],
   images: [imageSchema]
+}, {
+  timestamps: true
 });
 
 /**

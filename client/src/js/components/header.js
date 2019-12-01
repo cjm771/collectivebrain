@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import Gravatar from 'react-gravatar'
+import Gravatar from 'react-gravatar';
 
 import classNames from 'classnames';
 import headerStyle from '../../scss/header.scss';

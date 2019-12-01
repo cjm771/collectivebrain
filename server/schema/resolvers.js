@@ -14,6 +14,37 @@ module.exports  = {
         return null;
       }
     },
+    addPost: async(_, args, ctx) => {
+      if (ctx.req.session.user) {
+        console.log(ctx.req.session.user);
+        user = await User.findOne({ email: ctx.req.session.user.email })
+        if (!user) {
+          throw AuthenticationError('Could not resolve user. Are you logged in?');
+        }
+        try {
+          console.log('args:', args);
+          const newPost = new Post({
+            title: args.input.title,
+            description:  args.input.description,
+            startDate: args.input.startDate,
+            endDate: args.input.endDate,
+            tags: args.input.tags,
+            sources: args.input.sources,
+            published: args.input.published,
+            user: user
+          });
+          const post = await newPost.save();
+          console.log(post)
+          return post
+        } catch (e) {
+          throw new Error(`Error: ${e}`);
+        }
+
+
+      } else {
+        throw new AuthenticationError('You must be logged into post');
+      }
+    },
     login: async (_, args, ctx) => {
       // 1
       if (args.email.trim() === '' && args.password.trim() === '') {
@@ -55,9 +86,26 @@ module.exports  = {
     }
   },
   Query : {
-    posts: (_, args, ctx) => {
+    posts: async (_, args, ctx) => {
       if (ctx.req.session.user) {
-        return Post.find({}).populate('user')
+        args.limit = args.limit || 0;
+        args.offset = args.offset || 0;
+        const count = await Post.estimatedDocumentCount({});
+        const posts = await Post
+        .find({})
+        .sort([['_id', -1]])
+        .limit(args.limit)
+        .skip(args.offset)
+        .populate('user');
+        console.log(posts)
+        return {
+          total: count, 
+          start: args.offset,
+          end: args.offset + args.limit - 1,
+          limit: args.limit,
+          next: (args.offset + args.limit < count) ? args.offset + args.limit : null,
+          posts: posts
+        }
       } else {
         throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?')
       }
@@ -71,7 +119,8 @@ module.exports  = {
     }
   }, 
   Post: {
-    category: ({category}) => Post.getCategoryName(category).toLowerCase()
+    category: ({category}) => Post.getCategoryName(category).toLowerCase(),
+    keyImage: ({images}) => images[0]
   },
   User: {
     profileUrl: ({email}) => `http://gravatar.com/${email}`

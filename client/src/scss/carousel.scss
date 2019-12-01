@@ -1,0 +1,41 @@
+.carousel {
+  
+  :global {
+    .carousel-control-prev-icon {
+      filter: invert(100);
+    }
+    .carousel-control-next-icon {
+      filter: invert(100);
+    }
+
+    .carousel-indicators li {
+      width: .5rem;
+      height: .5rem;
+      border-radius: 50%;
+      margin: 0 .25rem;
+      background-color: #000;
+    }
+    .carousel-caption {
+      position: relative;
+      color: #ccc;
+      font-style: italic;
+      padding: 2rem 1rem;
+      left: auto;
+      right: auto;
+      text-align: center;
+    }
+  }
+
+  .loading {
+    min-height: 20rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .img {
+    width: 70%;
+    max-width: 24rem;
+    margin: auto;
+  }
+}
