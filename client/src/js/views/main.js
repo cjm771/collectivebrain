@@ -11,6 +11,7 @@ import CBModal from '../components/CBModal.js';
 import Post from '../components/Post.js';
 
 export default () => {
+
     /*********
      * VARS
      *********/

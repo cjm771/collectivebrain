@@ -1,0 +1,82 @@
+$base-color: #F4F4F4;
+
+// text is rendered as lines
+.skeleton,
+.skeletonCircles,
+.skeletonBlock,
+.skeletonInline,
+.skeletonInlineBlock {
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: #f6f7f8;
+  border: none !important;
+  box-shadow: none !important;
+  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%) !important;
+  background-size: 800px 104px !important;
+  opacity: 1 !important;
+  position: relative;
+  height: 16px;
+  color: transparent !important;
+  border-radius: 7px;
+  background-color: $base-color;
+  object-position: -100000px -100000px !important;
+  
+  * {
+    color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    object-position: -100000px -100000px !important;
+  }
+
+  &::before, &::after {
+    display: none; //not working currently
+  }
+
+  &::placeholder {
+    color: transparent !important;
+  }
+}
+
+.skeletonInlineBlock {
+  display: inline-block !important;
+}
+
+.skeletonBlock {
+  display: block !important;
+  margin: 0 1.5rem;
+}
+
+.skeletonInline {
+  display: inline-block;
+  box-decoration-break: clone;
+  overflow: hidden;
+  margin: 4px 0 4px 0;
+  -webkit-box-decoration-break: clone;
+}
+
+.skeletonCircles {
+  border-radius: 50%;
+}
+.skeletonNoBg {
+  background: none !important;
+  background-color: none !important;
+  border: none !important;
+}
+
+.skeletonHidden {
+  display: none !important;
+}
+
+:global {
+  @keyframes placeHolderShimmer {
+    0% {
+      background-position: -468px 0
+    }
+    100% {
+      background-position: 468px 0
+    }
+  }
+}

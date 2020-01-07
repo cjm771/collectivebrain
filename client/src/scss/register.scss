@@ -1,3 +1,6 @@
+@import './mixins';
+
 .register {
   text-align: center;
+  @include flexContainerCenter();
 }

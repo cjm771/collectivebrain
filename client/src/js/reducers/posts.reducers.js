@@ -9,28 +9,36 @@ export default (state = {
         ...state,
         processing: true
       }
+    case 'GET_MORE_POSTS_REQUEST':
+      return {
+        ...state,
+        moreProcessing: state.items.length ? true : false,
+        processing: state.items.length ? false : true,
+      }
     case 'GET_POSTS_SUCCESS':
       return {
         ...state,
-        posts: undefined,
         ...action.posts,
+        posts: undefined,
         items: action.posts.posts,
+        moreProcessing: false,
         processing: false
       }
     case 'GET_MORE_POSTS_SUCCESS':
       return {
         ...state,
-        posts: undefined,
         ...action.posts,
-        items: [...items, ...action.posts.posts],
+        posts: undefined,
+        items: [...state.items, ...action.posts.posts],
+        moreProcessing: false,
         processing: false
       }
     case 'GET_POSTS_FAILURE':
-      debugger
       return {
         ...state,
         error: action.error,
-        processing: false
+        processing: false,
+        moreProcessing: false
       }
     default:
       return state;

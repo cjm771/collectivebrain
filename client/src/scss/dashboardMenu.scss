@@ -1,0 +1,46 @@
+.dashboard {
+  ul.dashboardMenu {
+    list-style: none;
+    display: flex;
+    padding-left: 0;
+    margin-bottom: 1rem;
+
+    li {
+      width: 50%;
+      display: inline-block;
+      border-bottom: 1px solid #333;
+      
+      a {
+        color: inherit;
+        padding: 2rem;
+        display: block;
+        text-align: center;
+        text-decoration: none;
+        transition: background .5s ease-in-out;
+        &:hover {
+          background: #eee;
+
+        };
+      }
+
+      &.active {
+        font-weight: 500;
+        border-bottom: 3px solid #333;
+      }
+    }
+  }
+
+  ul.breadCrumbs {
+    list-style: none;
+    padding: 1rem 0;
+    text-align: left;
+    
+    li {
+      display: inline-block;
+
+      svg {
+        margin: 0 .5rem;
+      }
+    }
+  }
+}

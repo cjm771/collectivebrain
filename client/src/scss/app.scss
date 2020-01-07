@@ -1,19 +1,6 @@
-@import './_dims';
 
-:global {
-  body {
-    background: #000;
-  }
-}
 
 .app {
-  .container {
-    min-height: calc(100vh - #{$header-height * 3});
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
   .main {
     padding: 1rem;
     width: 100%;

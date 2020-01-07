@@ -120,7 +120,10 @@ module.exports  = {
   }, 
   Post: {
     category: ({category}) => Post.getCategoryName(category).toLowerCase(),
-    keyImage: ({images}) => images[0]
+    keyImage: ({images}) => images[0],
+    createdAt: ({_id, createdAt}) => {
+      return createdAt ? new Date(createdAt).toJSON() : _id.getTimestamp().toJSON()
+    }
   },
   User: {
     profileUrl: ({email}) => `http://gravatar.com/${email}`

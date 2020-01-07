@@ -56,7 +56,7 @@ const server = new ApolloServer({
 server.applyMiddleware({ app });
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const PROTECTED_ROUTES = ['/', '/dashboard'];
+const PROTECTED_ROUTES = ['/', /\/dashboard\/?(.*)/];
 const SKIP_IF_LOGGED_IN_ROUTES = ['/login', '/register'];
 // app.use((req, res, next) => {
 //   if (req.cookies.user_sid && !req.session.user) {
@@ -195,27 +195,9 @@ app.get('/post/static/:id', async (req, res) => {
     return truncSources.reverse();
   };
 
-  const CATEGORIES = [];
-  const getColor = (category) => {
-    const colors = [
-      '#ff0000',
-      '#00ff00',
-      '#0000ff',
-      '#cc0088',
-      '#bbaa44',
-      '#33ffcc',
-      '#aa122a',
-      '#fea22b',
-      '#00ffff',
-    ];
-    return colors[CATEGORIES.indexOf(category)];
-  }
   
   
     if (post) {
-      if (CATEGORIES.indexOf(post.category) === -1) {
-        CATEGORIES.push(post.category);
-      }
       const height = 1024;
       const width = 512;
       const padding = width * .05;
@@ -229,8 +211,8 @@ app.get('/post/static/:id', async (req, res) => {
       // post.images = [];
 
       ctx.save();
-      ctx.strokeStyle = getColor(post.category);
-      ctx.lineWidth = 10;
+      ctx.strokeStyle = Post.getCategoryColorByName(Post.getCategoryName(post.category));
+      ctx.lineWidth = 20;
       ctx.fillStyle = "rgba(255, 255, 255, 1)";
       ctx.beginPath();
       ctx.rect(0, 0, width, height);

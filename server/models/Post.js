@@ -113,6 +113,25 @@ postSchema.statics.CATEGORIES = {
   REPRESENTATION: 6
 };
 
+postSchema.statics.COLORS = [
+  '#cccccc',
+  '#ff5252',
+  '#7c4dff',
+  '#64ffda',
+  '#69f0ae',
+  '#ffd740',
+  '#ffab40',
+  '#ff6e40',
+  '#eeff41',
+];
+
+postSchema.statics.getCategoryIndexByName = function (name) {
+  return postSchema.statics.CATEGORIES[name.toUpperCase()];
+};
+
+postSchema.statics.getCategoryColorByName = function (name) {
+  return postSchema.statics.COLORS[postSchema.statics.getCategoryIndexByName(name)]
+};
 
 postSchema.statics.getCategoryName = (val) => {
   const keys = Object.keys(postSchema.statics.CATEGORIES);

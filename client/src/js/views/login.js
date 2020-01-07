@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { loginAction, clearErrorFieldAction } from '../actions/user.actions.js';
 
-// import loginStyle from '../../scss/login.scss';
+import loginStyle from '../../scss/login.scss';
 import formStyle from '../../scss/_forms.scss';
 import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -45,6 +45,7 @@ export default (props) => {
   }, [user.loggedIn]);
 
   return (
+    <div className={loginStyle.login}>
     <form 
       className={formStyle.form}
       onSubmit={handleSubmit}
@@ -83,5 +84,6 @@ export default (props) => {
         {user.loggingIn ? <span><FontAwesomeIcon icon={faSpinner} spin /> logging in..</span> : 'login'}
       </button>
     </form>
+    </div>
   );
 };

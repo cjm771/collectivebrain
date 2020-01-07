@@ -1,0 +1,112 @@
+@import './colors';
+.posts {
+  .actions {
+    text-align: center;
+    padding: 1rem 0;
+    a {
+      color: $blue;
+      svg {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  ul.postList {
+    padding-left: 0;
+
+    li.postItem {
+      a {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        width: 100%;
+        padding: 0.5rem 0;
+        display: flex;
+        justify-content: center;
+        transition: background-color 0.1s ease-in-out;
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgb(248, 248, 248);
+        }
+
+        .titleSection {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          text-align: left;
+
+          &.draft {
+            opacity: 0.4;
+          }
+
+          .text {
+            padding-left: 0.3rem;
+            width: calc(100% - 3rem);
+            display: flex;
+            align-items: center;
+
+            .title {
+              // pass
+            }
+
+            .badge {
+              margin-left: 0.5rem;
+            }
+
+            .dot {
+              border-radius: 50%;
+              width: 0.5rem;
+              background: #eee;
+              height: 0.5rem;
+              margin-top: -0.25rem;
+              display: inline-block;
+              margin-left: 0.5rem;
+              vertical-align: middle;
+            }
+          }
+
+          .keyImage {
+            width: 3rem;
+            height: 3rem;
+            background-color: #eee;
+            border-radius: 50%;
+            vertical-align: middle;
+
+            img {
+              height: 100%;
+              object-fit: fill;
+              width: 100%;
+              border-radius: 50%;
+            }
+          }
+        }
+
+        .by {
+          // display: flex;
+          // align-items: center;
+          text-align: right;
+          font-size: 0.9rem;
+          font-style: italic;
+
+          .author {
+            display: inline-block;
+
+            .authorProfileImage {
+              width: 1rem;
+              height: 1rem;
+              border-radius: 50%;
+              margin: 0 0.25rem;
+              vertical-align: middle;
+            }
+          }
+
+          .date {
+            display: block;
+            color: #ccc;
+          }
+        }
+      }
+    }
+  }
+}

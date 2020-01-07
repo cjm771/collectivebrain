@@ -1,15 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+
+// views
+import EditPostView from '../views/editpost.js';
+import PostsView from '../views/posts.js';
+import SettingsView from '../views/settings.js';
+import NotFoundView from '../views/notfound.js';
+
+// components
+import DashboardMenu from '../components/DashboardMenu.js';
+
+// styles
 import dashboardStyle from '../../scss/dashboard.scss';
-import {getPostsPreviewAction, getMorePostsPreviewAction} from '../actions/posts.actions.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import {useDispatch, useSelector} from 'react-redux';
-import Gravatar from 'react-gravatar';
-import { useBottomScrollListener } from 'react-bottom-scroll-listener';
- 
 
 
-export default () => {
+export default ({match}) => {
     /*********
      * VARS
      *********/
@@ -17,77 +22,27 @@ export default () => {
     /*********
      * HOOKS
      ********/
-    const dispatch = useDispatch();
-    const user = useSelector(state => state.user);
-    const [limit, setLimit] = useState(10);
-    const [offset, setOffset] = useState(0);
 
-
-    useEffect(() => {
-      dispatch(getPostsPreviewAction({
-        limit: limit,
-        offset: offset
-      }));
-      setOffset(offset + limit);
-    }, []);
-
-    useBottomScrollListener(() => {
-      debugger;
-      dispatch(getMorePostsPreviewAction({
-        limit: limit,
-        offset: offset
-      }));
-      setOffset(offset + limit);
-    });
-
-    const previewPosts = useSelector((state) => { 
-      return state.posts;
-    });
+    /*********
+     * HELPERS
+     ********/
 
     /***********
      * RENDER
      **********/
 
+
+    
     return (
       <div className={`container ${dashboardStyle.dashboard}`}>
-        {
-          previewPosts.processing ? (
-            <div>
-              <h1>Please wait</h1>
-              <p><FontAwesomeIcon icon={faSpinner} spin /> Loading..</p>
-            </div>
-          ) : previewPosts.error ? (
-            <div>
-              <h1>Error</h1>
-              <p>An error ocurred. Please try again and if problem persists, please contact admin.</p>
-            </div>
-          ) : previewPosts.items && previewPosts.items.length  ? (
-
-            <ul className={`${dashboardStyle.postList}`}>
-              {
-                previewPosts.items.map((post) => {
-                  return (
-                    <li key={post.id} className={`row ${dashboardStyle.postItem}`}>
-                      <div className={`col-sm-8 ${dashboardStyle.title}`}>
-                      <div className={dashboardStyle.keyImage}>
-                        {!post.keyImage ? '' : (
-                            <img src={post.keyImage.src} />
-                        )}
-                      </div>
-                      <div className={dashboardStyle.text} >
-                        {post.title}
-                      </div>
-                      </div>
-                      <div className={`col-sm-4 ${dashboardStyle.date}`}>
-                        by <Gravatar email={post.user.email} className={dashboardStyle.authorProfileImage} /> {post.user.name}, 3 days ago
-                      </div>
-                    </li>
-                  )
-                })
-              }
-            </ul>
-          ) : ''
-        }
+        <DashboardMenu page={match.params.page} id={match.params.id} />
+        <Switch>
+          <Route path="/dashboard" exact component={PostsView} />
+          <Route path="/dashboard/settings" component={SettingsView} />
+          <Route path="/dashboard/add"  render={props => <EditPostView {...props} page="add" />} />
+          <Route path="/dashboard/edit/:id" render={props => <EditPostView {...props} page="edit" />} />
+          <Route component={NotFoundView} />
+        </Switch>
       </div>
     );
 };

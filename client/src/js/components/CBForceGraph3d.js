@@ -1,14 +1,9 @@
 import React, {useEffect, useRef} from 'react';
 import { ForceGraph3D } from 'react-force-graph';
 import * as THREE from 'three';
+import PostsService from '../services/posts.services.js';
     
 const CBForceGraphComponent = (props) => {
-  /*********
-   * VARS
-  ********/
-
-  const CATEGORIES = [];
-
   /*********
    * HOOKS
    ********/
@@ -42,22 +37,6 @@ const CBForceGraphComponent = (props) => {
    * HELPERS
    ********/
 
-  const getColor = (category) => {
-    const colors = [
-      '#ff0000',
-      '#00ff00',
-      '#0000ff',
-      '#cc0088',
-      '#bbaa44',
-      '#33ffcc',
-      '#aa122a',
-      '#fea22b',
-      '#00ffff',
-    ];
-    return colors[CATEGORIES.indexOf(category)];
-  }
-
-
   const generateGraph = (posts) => {
     const result = {
       nodes: [],
@@ -73,9 +52,6 @@ const CBForceGraphComponent = (props) => {
         post: post,
         value: .1
       });
-      if (CATEGORIES.indexOf(post.category) === -1) {
-        CATEGORIES.push(post.category);
-      }
       // gather.. group ids by tag 
       if (post.tags) {
         post.tagGroups = {};
@@ -113,7 +89,7 @@ const CBForceGraphComponent = (props) => {
     var texture = new THREE.TextureLoader().load( `/post/static/${id}?format=jpg` )
     // texture.needsUpdate = true;
     var basicMaterial = new THREE.MeshBasicMaterial({
-      color: getColor(category),
+      color: PostsService.getCategoryColorByName(category),
       flatShading: true,
       opacity: 0.75,
       transparent: true
@@ -164,9 +140,9 @@ const CBForceGraphComponent = (props) => {
   backgroundColor='rgba(255,255,255,0)'
   nodeColor='rgb(0,0,0)'
   linkCurvature={0.2}
-  linkWidth={.15}
+  linkWidth={.035}
   linkOpacity={.7}
-  linkColor='rgb(255,255,255)'
+  linkColor='rgb(0,0,0)'
   ref={fgRef}
   controlType="orbit"
   d3VelocityDecay={.85}

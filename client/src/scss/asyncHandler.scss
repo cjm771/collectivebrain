@@ -1,0 +1,24 @@
+@import './colors';
+@import './dims';
+
+.error, .processing {
+  margin: 2rem 0;
+}
+
+.error {
+  .moreInfo {
+    display: inline-block;
+    color: $blue;
+    cursor: pointer;
+
+    svg {
+      margin-left: .5rem;
+    }
+    
+  }
+  pre {
+    background: #eee;
+    padding: 1rem;
+    border-radius: 1.5rem;
+  }
+}
