@@ -83,11 +83,15 @@
         }
 
         .by {
-          // display: flex;
-          // align-items: center;
           text-align: right;
           font-size: 0.9rem;
           font-style: italic;
+
+          &.skeleton {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
 
           .author {
             display: inline-block;

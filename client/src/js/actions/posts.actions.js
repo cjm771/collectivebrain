@@ -2,8 +2,32 @@ import ApolloClient from '../services/ApolloClient.js';
 import { gql } from 'apollo-boost';
 
 const QUERIES = {
+  GET_POST: gql`
+  query($id: String) {
+    post(id: $id) {
+      id,
+      createdAt,
+      published,
+      title,
+      description,
+      creator,
+      category,
+      sources,
+      startDate,
+      endDate,
+      tags,
+      user {
+        name,
+        email
+      },
+      images {
+        src,
+        caption
+      }
+    }
+  }
+  `,
   GET_POSTS: gql`
-  
   query {
     posts {
       posts {
@@ -105,6 +129,36 @@ export const getPostsPreviewAction = (inputs) => {
   return getPostsAction(inputs, QUERIES.GET_POSTS_PREVIEW);
 }
 
+
 export const getMorePostsPreviewAction = (inputs) => {
   return getPostsAction({morePosts: true, ...inputs}, QUERIES.GET_POSTS_PREVIEW);
+}
+
+
+export const getPostAction = (inputs) => {
+  inputs = inputs || {};
+  return (dispatch) => {
+    dispatch({
+      type: 'GET_POST_REQUEST',
+      payload: inputs
+    });
+    return ApolloClient.query({
+      query: QUERIES.GET_POST,
+      variables: {
+        id: inputs.id
+      }
+    }).then((result) => {
+      dispatch({
+        type: 'GET_POST_SUCCESS',
+        post: result.data.post
+      })
+    }).catch((error) => {
+      const {message, fields} = getErrorFromGraphQL(error);
+      dispatch({
+        type: 'GET_POST_FAILURE',
+        error: message,
+        errorFields: fields
+      });
+    });
+  }
 }

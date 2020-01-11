@@ -71,7 +71,6 @@ export default ({ match }) => {
       <AsyncHandler processing={previewPosts.processing} error={previewPosts.error}>
         {previewPosts.moreProcessing || previewPosts.items ? (
           <ul className={`${postsStyle.postList}`} ref={postListRef}>
-            <li>hiiiii</li>
             {/* preview items */}
             {previewPosts.items.map((post) => {
               return (
@@ -103,15 +102,17 @@ export default ({ match }) => {
               ? '12345'.split('').map((i) => {
                   return (
                     <li key={i} className={`row ${postsStyle.postItem}`}>
-                      <div className={`col-sm-8 ${postsStyle.titleSection}`}>
-                        <div className={`${skeletonStyle.skeletonCircles} ${postsStyle.keyImage}`}></div>
-                        <div className={postsStyle.text}>
-                          <div className={skeletonStyle.skeletonInlineBlock} style={{ width: '100%' }}></div>
+                      <a href='#'>
+                        <div className={`col-sm-10 ${postsStyle.titleSection}`}>
+                          <div className={`${skeletonStyle.skeletonCircles} ${postsStyle.keyImage}`}></div>
+                          <div className={postsStyle.text}>
+                            <div className={skeletonStyle.skeletonInlineBlock} style={{ width: '100%' }}></div>
+                          </div>
                         </div>
-                      </div>
-                      <div className={`col-sm-4 ${postsStyle.date}`}>
+                      <div className={`col-sm-2 ${postsStyle.by} ${postsStyle.skeleton}`}>
                         <div className={skeletonStyle.skeletonInlineBlock} style={{ width: '100%' }}></div>
                       </div>
+                      </a>
                     </li>
                   );
                 })

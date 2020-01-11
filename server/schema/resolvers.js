@@ -14,7 +14,7 @@ module.exports  = {
         return null;
       }
     },
-    addPost: async(_, args, ctx) => {
+    addPost: async (_, args, ctx) => {
       if (ctx.req.session.user) {
         console.log(ctx.req.session.user);
         user = await User.findOne({ email: ctx.req.session.user.email })
@@ -86,6 +86,20 @@ module.exports  = {
     }
   },
   Query : {
+    post: async (_, args, ctx) => {
+      if (ctx.req.session.user) {
+        try {
+          const post = await Post.findOne({_id: args.id}).populate('user');
+          return post;
+        } catch (e) {
+          throw new UserInputError('Post not found', {
+            invalidArgs: ['id'],
+           });
+        }
+      } else {
+        throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?');
+      }
+    },
     posts: async (_, args, ctx) => {
       if (ctx.req.session.user) {
         args.limit = args.limit || 0;
@@ -97,7 +111,6 @@ module.exports  = {
         .limit(args.limit)
         .skip(args.offset)
         .populate('user');
-        console.log(posts)
         return {
           total: count, 
           start: args.offset,

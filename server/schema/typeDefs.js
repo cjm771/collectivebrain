@@ -11,6 +11,7 @@ module.exports = `
 
   type Query {
     posts(limit: Int, offset: Int): PostsResult,
+    post(id: String): Post,
     users: [User!]!
   }
 

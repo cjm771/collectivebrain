@@ -6,7 +6,6 @@ import AsyncHandlerStyle from '../../scss/asyncHandler.scss';
 
 export default ({ processing, error, children }) => {
   
-  
   const [expanded, setExpanded] = useState(false);
 
   const handleClick = () => {

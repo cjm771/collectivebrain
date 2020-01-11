@@ -76,7 +76,7 @@ export default (action=null, _ref=null, _refChildSelector=null, data={}, _limit=
 
   const handleScroll = () => {  
     const lastLi = _refChildSelector ? _ref.current.querySelector(_refChildSelector) : _ref.current;
-    var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+    var lastLiOffset = (lastLi) ? lastLi.offsetTop + lastLi.clientHeight : 0;
     var pageOffset = window.pageYOffset + window.innerHeight;
     if (pageOffset > lastLiOffset) {
       setShouldFetch(true);
