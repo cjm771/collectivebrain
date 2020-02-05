@@ -1,29 +1,34 @@
 import ApolloClient from '../services/ApolloClient.js';
 import { gql } from 'apollo-boost';
 
+const postFull = `
+  id,
+  createdAt,
+  published,
+  title,
+  description,
+  creator,
+  category,
+  subCategory,
+  sources,
+  startDate,
+  endDate,
+  tags,
+  user {
+    name,
+    email
+  },
+  images {
+    src,
+    caption
+  }
+`;
+
 const QUERIES = {
   GET_POST: gql`
   query($id: String) {
     post(id: $id) {
-      id,
-      createdAt,
-      published,
-      title,
-      description,
-      creator,
-      category,
-      sources,
-      startDate,
-      endDate,
-      tags,
-      user {
-        name,
-        email
-      },
-      images {
-        src,
-        caption
-      }
+      ${postFull}
     }
   }
   `,
@@ -31,25 +36,7 @@ const QUERIES = {
   query {
     posts {
       posts {
-        id,
-        createdAt,
-        published,
-        title,
-        description,
-        creator,
-        category,
-        sources,
-        startDate,
-        endDate,
-        tags,
-        user {
-          name,
-          email
-        },
-        images {
-          src,
-          caption
-        }
+        ${postFull}
       }
     }
   }

@@ -1,5 +1,21 @@
 @import './dims';
 
+// Desktop small (Typical) 768+
+@mixin desktop {
+  @media screen and (min-width: 576px) {
+    @content;
+  }
+}
+
+// mobile only, @todo change to @mixin mobile-only
+@mixin mobile {
+  @media screen and (max-width: 576px) {
+    @content;
+  }
+}
+
+
+
 @mixin flexContainerCenter {
   display: flex;
   justify-content: center;

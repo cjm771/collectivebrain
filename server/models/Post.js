@@ -45,6 +45,19 @@ const postSchema = mongoose.Schema({
   endDate: {
     type: Date
   },
+  subCategory: {
+    type: Number,
+    default: 0,
+    validate: {
+      validator: function(val) {
+        if (val < 0 || val > Object.keys(this.schema.statics.SUB_CATEGORIES).length - 1) {
+          return false;
+        } else {
+          return true;
+        }
+      }, message: 'Not valid sub category type'
+    }
+  },
   category: {
     type: Number,
     required: [true, 'category required'],
@@ -101,19 +114,49 @@ postSchema.pre('save', async function (next) {
 });
 
 /**
+ * PROPERTY
+ */
+
+postSchema.virtual('categoryName').get(function () {
+  return postSchema.statics.getCategoryName(this.category);
+});
+
+/**
+ * METHODS
+ */
+
+
+/**
  * STATICS
  */
 postSchema.statics.CATEGORIES = {
   UNCATEGORIZED: 0,
+  WRITTEN: 1,
+  DRAWN: 2,
+  BUILT: 3, 
+  CAPTURED: 4, 
+};
+
+postSchema.statics.CATEGORY_COLORS = [
+  '#cccccc',
+  '#ff00fd',
+  '#ff0000',
+  '#ffff00',
+  '#00ff00'
+];
+
+
+postSchema.statics.SUB_CATEGORIES = {
+  UNCATEGORIZED: 0,
   PRECEDENT: 1,
   BOOK: 2,
-  PERIODICAL: 3,
-  ONLINE_CONTENT: 4,
-  ACADEMIC_SOURCE: 5,
+  PERIODICAL: 3, 
+  ONLINE_CONTENT: 4, 
+  ACADEMIC_SOURCE: 5, 
   REPRESENTATION: 6
 };
 
-postSchema.statics.COLORS = [
+postSchema.statics.SUB_CATEGORY_COLORS = [
   '#cccccc',
   '#ff5252',
   '#7c4dff',
@@ -125,13 +168,54 @@ postSchema.statics.COLORS = [
   '#eeff41',
 ];
 
+const SUB_CATEGORIES_TO_CATEGORIES_MAPPINGS =  {
+  UNCATEGORIZED: ['UNCATEGORIZED'],
+  WRITTEN: ['BOOK', 'PERIODICAL', 'ACADEMIC_SOURCE'],
+  DRAWN: ['REPRESENTATION'],
+  BUILT: ['PRECEDENT'],
+  CAPTURED: ['ONLINE_CONTENT']
+};
+
+postSchema.statics.getCategoryIndexfromBySubCategoryName = function (name) {
+  let tmpArr = [];
+  let result = null;
+  Object.keys(SUB_CATEGORIES_TO_CATEGORIES_MAPPINGS).forEach((key) => {
+    tmpArr = SUB_CATEGORIES_TO_CATEGORIES_MAPPINGS[key];
+    if (tmpArr.indexOf(name.toUpperCase()) !== -1) {
+      result = postSchema.statics.CATEGORIES[key];
+    }
+  });
+  return result;
+}
+
+postSchema.statics.getSubCategoryIndexByName = function (name) {
+  return postSchema.statics.SUB_CATEGORIES[name.toUpperCase()];
+};
+
 postSchema.statics.getCategoryIndexByName = function (name) {
   return postSchema.statics.CATEGORIES[name.toUpperCase()];
 };
 
-postSchema.statics.getCategoryColorByName = function (name) {
-  return postSchema.statics.COLORS[postSchema.statics.getCategoryIndexByName(name)]
+
+postSchema.statics.getSubCategoryColorByName = function (name) {
+  return postSchema.statics.SUB_CATEGORY_COLORS[postSchema.statics.getCategoryIndexByName(name)]
 };
+
+postSchema.statics.getCategoryColorByName = function (name) {
+  return postSchema.statics.CATEGORY_COLORS[postSchema.statics.getCategoryIndexByName(name)]
+};
+
+postSchema.statics.getSubCategoryName = (val) => {
+  const keys = Object.keys(postSchema.statics.SUB_CATEGORIES);
+  if (typeof val !== 'number' ||val < 0 || val > keys.length - 1 ) {
+    throw new Error(`Invalid value to look up: ${val}`);
+  } else {
+    return keys.filter((key) => {
+      return val === postSchema.statics.SUB_CATEGORIES[key];
+    })[0];
+  }
+}
+
 
 postSchema.statics.getCategoryName = (val) => {
   const keys = Object.keys(postSchema.statics.CATEGORIES);

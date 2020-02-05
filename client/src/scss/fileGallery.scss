@@ -1,0 +1,179 @@
+
+@import './sizes.scss';
+@import './colors.scss';
+@import './mixins.scss';
+
+
+:global {
+  .floating {
+    opacity: .8;
+    
+    *:not([data-handle]) {
+      display: none;
+    }
+
+    [data-handle] {
+      // width: 100%;
+      // height: 100%;
+      // object-fit: cover;
+      // border-radius: $input-border-radius;
+      padding-bottom: 100%;
+      background-size: cover;
+      border-radius: $input-border-radius;
+    }
+  }
+}
+
+.fileGallery {
+  padding:  0 $input-padding;
+
+  .imgWpr {
+    padding-right: $input-padding / 4;
+    padding-left: $input-padding / 4;
+    padding-bottom: $input-padding;
+    overflow: hidden;
+
+    &:nth-child(1),
+    &:nth-child(4n) {
+      padding-left: 0;
+      padding-right: $input-padding / 2;
+     
+    }
+
+    &:nth-child(4n) {
+      .addMore {
+        min-height: 12rem;
+      }
+    }
+
+    &:nth-child(3n) {
+      padding-left: $input-padding / 2;
+      padding-right: 0;
+    }
+
+    &.noFiles {
+      flex: 100%;
+      max-width: none;
+      width: 100%;
+      padding-right: 0;
+      min-height: auto;
+
+      .addMore {
+        background: #c0c0c0;
+        color: #fff;
+        padding: $input-padding;
+        &:hover {
+          color: #fff;
+          background: lighten(#c0c0c0, 2);
+        }
+      }
+    }
+
+    .editModeShow {
+      display: none;
+    }
+
+    .editModeHide {
+      display: block;
+    }
+    
+    &.editMode {
+      .actionsPanel {
+        opacity: 1;
+      }
+      .editModeShow {
+        display: block;
+      }
+      .editModeHide {
+        display: none;
+      }
+    }
+
+    .captionInput {
+      position: absolute;
+      padding: $input-padding;
+      bottom: 0;
+      left: 0;
+      input {
+        border: 0;
+        background: #000;
+        border-radius: $input-border-radius;
+        width: 100%;
+        color: #fff;
+        &:focus {
+          background: lighten(#000, 2);
+        }
+      }
+    }
+
+    .actionsPanel {
+      position: absolute;
+      top: $input-padding;
+      right: $input-padding;
+      opacity: 0;
+      z-index: 2;
+      background-color: #000;
+      border-radius: $input-border-radius;
+      transition: opacity .25s ease-in-out;
+      padding: $input-padding / 2;
+      color: #fff;
+
+
+      svg {
+        cursor: pointer;
+        transition: color .25s ease-in-out;
+
+        &:hover {
+          color: $blue;
+        }
+
+        &:first-child {
+          margin-left: 0;
+        }
+
+        margin-left: $input-padding / 2;
+      }
+    }
+
+    &:hover {
+      .actionsPanel {
+        opacity: 1;
+      }
+    }
+
+    .addMore {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: $input-bg-color;
+      transition: background, color .25s ease-in-out;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      border-radius: $input-border-radius;
+      &:hover {
+        background: lighten($input-bg-color, 2);
+        color: $blue;
+      }
+    }
+
+    .aspectControl {
+      padding-bottom: 100%;
+      background-size: cover;
+      position: relative;
+      border-radius: $input-border-radius;
+
+      // img {
+      //   position: absolute;
+      //   top: 0;
+      //   left: 0;
+      //   width: 100%;
+      //   height: 100%;
+      //   border-radius: $input-border-radius;
+      //   object-fit: cover;
+       
+      // }
+    }
+  }
+}

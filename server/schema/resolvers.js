@@ -133,6 +133,7 @@ module.exports  = {
   }, 
   Post: {
     category: ({category}) => Post.getCategoryName(category).toLowerCase(),
+    subCategory: ({subCategory}) => Post.getSubCategoryName(subCategory).toLowerCase(),
     keyImage: ({images}) => images[0],
     createdAt: ({_id, createdAt}) => {
       return createdAt ? new Date(createdAt).toJSON() : _id.getTimestamp().toJSON()

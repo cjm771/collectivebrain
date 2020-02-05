@@ -49,6 +49,7 @@ module.exports = `
     published: Boolean!,
     creator: String,
     category: String,
+    subCategory: String,
     startDate: String,
     endDate: String,
     tags: [String],
