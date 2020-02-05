@@ -51,20 +51,27 @@
       padding-right: 0;
     }
 
-    &.noFiles {
-      flex: 100%;
-      max-width: none;
-      width: 100%;
-      padding-right: 0;
-      min-height: auto;
+    &.fileDropZone {
 
-      .addMore {
-        background: #c0c0c0;
-        color: #fff;
-        padding: $input-padding;
-        &:hover {
+      &, *, &:focus, *:focus {
+        outline: none;
+      }
+
+      &.noFiles {
+        flex: 100%;
+        max-width: none;
+        width: 100%;
+        padding-right: 0;
+        min-height: auto;
+  
+        .addMore {
+          background: #c0c0c0;
           color: #fff;
-          background: lighten(#c0c0c0, 2);
+          padding: $input-padding;
+          &:hover {
+            color: #fff;
+            background: lighten(#c0c0c0, 2);
+          }
         }
       }
     }

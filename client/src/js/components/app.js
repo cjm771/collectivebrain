@@ -1,18 +1,27 @@
 import React, { useEffect } from 'react';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
-import Header from '../components/header.js';
-import RootView from '../views/main.js';
-import LoginView from '../views/login.js';
-import DashboardView from '../views/dashboard.js';
-// import EditPostView from '../views/editpost.js';
-// import SettingsView from '../views/settings.js';
-import RegisterView from '../views/register.js';
 import {isLoggedInAction} from '../actions/user.actions.js';
 import { useDispatch } from 'react-redux';
 
+
+// components
+import Header from '../components/header.js';
+import { toast } from 'react-toastify';
+
+// views
+import RootView from '../views/main.js';
+import LoginView from '../views/login.js';
+import DashboardView from '../views/dashboard.js';
+import RegisterView from '../views/register.js';
+
+// styles
 import appStyle from '../../scss/app.scss';
+import '!style-loader!css-loader!react-toastify/dist/ReactToastify.css';
+
 
 export default () => {
+
+  toast.configure();
 
   const dispatch = useDispatch();
   dispatch(isLoggedInAction());

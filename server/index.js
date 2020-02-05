@@ -1,21 +1,31 @@
 require('dotenv').config();
+
 const path = require('path');
+const fs = require('fs');
+
+// express
 const express = require('express');
+const session = require('express-session');
+const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { createCanvas, loadImage } =require('canvas');
-const session = require('express-session');
-const User = require('./models/User');
-const Post = require('./models/Post');
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+// resources
+const { createCanvas, loadImage } =require('canvas');
+
+// models
 const mongoose = require('./db.js');
 const MongoStore = require('connect-mongo')(session);
+const User = require('./models/User');
+const Post = require('./models/Post');
 
 // apollo
 const {ApolloServer, gql} = require('apollo-server-express');
 const typeDefs = require('./schema/typeDefs.js');
 const resolvers = require('./schema/resolvers.js');
+
+const PORT = process.env.PORT || 3000;
 
 app.use(cookieParser());
 app.use(session({
@@ -25,10 +35,13 @@ app.use(session({
   saveUninitialized: false,
   store: new MongoStore({ mongooseConnection: mongoose.connection }),
   cookie: {
-      expires: 30 * 24 * 60 * 60 * 1000 ,
-      maxAge: 30 * 24 * 60 * 60 * 1000 
+    expires: 30 * 24 * 60 * 60 * 1000 ,
+    maxAge: 30 * 24 * 60 * 60 * 1000 
   }
 }));
+
+app.use(fileUpload());
+
 app.use((req, res, next) => {
   console.log(`Incoming Request: ${req.method} ${req.url} `);
   res.sendJSON = (data) => {
@@ -102,6 +115,26 @@ app.get('/logout', (req, res) => {
       res.redirect('/login');
   }
 });
+
+app.post('/fileUpload', (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send('No files were uploaded.');
+  }
+
+  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+  let file = req.files.file;
+
+  const targetDir = './uploads/';
+  fs.mkdirSync(path.join(__dirname, targetDir), { recursive: true });
+
+  // Use the mv() method to place the file somewhere on your server
+  file.mv(path.join(__dirname, `${targetDir}${file.name}`), function(err) {
+    if (err)
+      return res.status(500).send(err);
+
+    res.send('File uploaded!');
+  });
+})
 
 app.get('/post/static/:id', async (req, res) => {
 
@@ -322,7 +355,7 @@ app.get('/post/static/:id', async (req, res) => {
 });
 
 app.use('/', express.static(path.join(__dirname, '../client/dist/')));
-
+app.use('/uploads', express.static(path.join(__dirname, './uploads')));
 
 app.listen(PORT, () => {
   console.log(`listening on ${PORT}..`);

@@ -1,30 +1,62 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 // resources
 import arrayMove from 'array-move';
+import axios from 'axios';
 
 // components
-import Tooltipify from './Tooltipify.js';
-import {SortableContainer, SortableElement} from 'react-sortable-hoc';
+import {SortableContainer} from 'react-sortable-hoc';
+import SortableFileItem from './SortableFileItem.js';
+import FileDropZone from './FileDropZone.js';
+import { toast } from 'react-toastify';
 
 // styles
 import fileGalleryStyle from '../../scss/fileGallery.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faWrench, faTrash, faComment, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
 
+const SortableList = SortableContainer(({files, onApproveCaption, onDeleteItem, onFileDropOnDropZone, onFileUploadError}) => {
+
+
+  return (
+    <div className={`row ${fileGalleryStyle.fileGallery}`}>
+      {files.map((file, index) => (
+        <SortableFileItem 
+          onApproveCaption={onApproveCaption}
+          onDelete={onDeleteItem}
+          key={`item-${file.key}`} 
+          index={index} 
+          file={file} 
+        />
+      ))}
+      <FileDropZone 
+        inputFiles={files} 
+        onError={onFileUploadError}
+        onDrop={onFileDropOnDropZone}
+      />
+    </div>
+  );
+});
 
 
 export default ({files}) => {
 
+
   /*********
-   * HOOKS
-  ********/
+   *  VARS *
+  **********/
+
+  // limits
+ const ALLOWED_FILETYPES = [/^image\/.+$/];
+ const MAX_FILE_SIZE_MB = 5;
+
+ const toastSettings = {
+  position: toast.POSITION.BOTTOM_RIGHT
+};
+
+  /*********
+   * HOOKS *
+  **********/
 
   const [inputFiles, setInputFiles] = useState([]);
-  const [editMode, setEditMode] = useState(null);
-  // const [tmpCaption, setTmpCaption] = useState('');
-  let tmpCaption = '';
-  let dirty = false;
 
   useEffect(() => {
     setInputFiles([
@@ -38,61 +70,96 @@ export default ({files}) => {
     }));
   }, [files]);
 
-  /*********
-   * HELPERS
-   ********/
+  /***********
+   * HELPERS *
+   ***********/
 
-   const toggleEditMode = (item) => {
-    // setTmpCaption(item.caption);
-    setEditMode(item.key);
-   };
+  const notifyInfo = (msg) => {
+    toast(msg, toastSettings);
+  };
 
-   const updateCaption = (e) => {
-    //  console.log(e.target.value);
-    dirty = true;
-    tmpCaption = e.target.value;
-    //  console.log('hiiiiiiii',inputFiles);
-    //  const newInputFiles = [...inputFiles].map((currItem) => {
-    //   console.log(currItem.key, targetItem.key);
-    //   if (currItem.key === targetItem.key) {
-    //       currItem.caption = value;
-    //   } 
-    //   return currItem;
-    //  });
-    // console.log(newInputFiles);
-    //  setInputFiles(newInputFiles);
-   };
+  const notifyError = (error) => {
+    toast.error(error, toastSettings)
+  };
 
-   const approveCaption = (targetItem) => {
-     if (dirty) {
+  const filteredTooLargeFiles = (files) => {
+    return files.filter((file) => {
+      return file.size < MAX_FILE_SIZE_MB * 1000000;
+    });
+  };
+
+  const filterInvalidFileTypes = (files) => {
+    return files.filter((file) => {
+      let valid = false;
+      ALLOWED_FILETYPES.forEach((typePattern) => {
+        if (typePattern.test(file.type)) {
+          valid = true;
+        }
+      });
+      return valid;
+    });
+  };
+
+  const uploadFile = (file) => {
+    let formData = new FormData();
+    formData.append('file', file);
+    axios.post( '/fileUpload',
+      formData,
+      {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: function( progressEvent ) {
+         const uploadPercentage = parseInt( Math.round( ( progressEvent.loaded / progressEvent.total ) * 100 ));
+         console.log(uploadPercentage);
+        }.bind(this)
+      }
+    ).then(function(){
+      console.log('SUCCESS!!');
+    })
+    .catch(function(){
+      console.log('FAILURE!!');
+    });
+    
+  }
+
+  const handleDrop = useCallback(acceptedFiles => {
+
+    // remove not valid
+    let filteredFiles = filterInvalidFileTypes(acceptedFiles);
+    let filesRemovedCount = acceptedFiles.length - filteredFiles.length;
+    if (filesRemovedCount) {
+      notifyInfo(`${filesRemovedCount} files were invalid file types and filtered out.`);
+    }
+    let filesLeft = filteredFiles.length;
+    // remove too large
+    filteredFiles = filteredTooLargeFiles(filteredFiles);
+    filesRemovedCount = filesLeft - filteredFiles.length;
+    if (filesRemovedCount) {
+      notifyError(`${filesRemovedCount} files were too large (exceeded ${MAX_FILE_SIZE_MB}MB) and filtered out.`);
+    }
+    console.log(filteredFiles);
+    filteredFiles.forEach(uploadFile)
+  }, []);
+
+   const handleApproveCaption = (file, newCaption) => {
       const newInputFiles = [...inputFiles].map((currItem) => {
-      console.log(currItem.key, targetItem.key);
-      if (currItem.key === targetItem.key) {
-          console.log('setting to..', tmpCaption);
-          currItem.caption = tmpCaption;
+      if (currItem.key === file.key) {
+          console.log('setting to..', newCaption);
+          currItem.caption = newCaption;
       } 
       return currItem;
       });
       setInputFiles(newInputFiles);
-    }
-    closeEditMode();
-     
-   };
-
-   const closeEditMode = () => {
-    tmpCaption = null;
-    dirty = false;
-    setEditMode(null);
    };
    
-   const deleteItem = (targetItem) => {
+   const handleDeleteItem = (targetItem) => {
     setInputFiles(inputFiles.filter((item) => {
       return targetItem !== item;
     }));
-    console.log(`deleting item ${item}`);
    };
 
-   const onSortEnd = ({oldIndex, newIndex}) => {
+   const handleSortEnd = ({oldIndex, newIndex}) => {
     setInputFiles(arrayMove(inputFiles, oldIndex, newIndex));
    };
 
@@ -102,71 +169,21 @@ export default ({files}) => {
       }
    };
 
-  /*********
-   * RENDER
-   *********/
 
-  const SortableItem = SortableElement(({file}) => {
-    return (
-      <div className={`col-4 ${fileGalleryStyle.imgWpr} ${file.key ===  editMode ? fileGalleryStyle.editMode : ''}`}>
-        <div className={fileGalleryStyle.aspectControl} data-handle="true" style={{
-          background: `url(${file.src})`
-        }}>
-          <div className={`${fileGalleryStyle.actionsPanel}`}>
-            <div className={fileGalleryStyle.editModeHide}>
-              <Tooltipify  tooltipId='edit' tooltipText='edit'>
-                <FontAwesomeIcon icon={faWrench} onClick={(e) => { toggleEditMode(file) }} />
-              </Tooltipify>
-              <Tooltipify  tooltipId='delete' tooltipText='delete'>
-                <FontAwesomeIcon icon={faTrash} onClick={(e) => { deleteItem(file) }} />
-              </Tooltipify>
-              { !file.caption ? '' : (
-                  <Tooltipify  tooltipId='caption' tooltipText={file.caption}>
-                    <FontAwesomeIcon icon={faComment} />
-                  </Tooltipify>
-                )
-              }
-            </div>
-            <div className={fileGalleryStyle.editModeShow}>
-              <Tooltipify  tooltipId='confirm' tooltipText='confirm'>
-                  <FontAwesomeIcon icon={faCheck} onClick={(e) => { approveCaption(file) }} />
-                </Tooltipify>
-                <Tooltipify  tooltipId='deny' tooltipText='deny'>
-                  <FontAwesomeIcon icon={faTimes} onClick={(e) => { closeEditMode() }} />
-                </Tooltipify>
-            </div>
-          </div>
-          <div className={`${fileGalleryStyle.editModeShow} ${fileGalleryStyle.captionInput}`}>
-            <input type='text' defaultValue={file.caption} onChange={updateCaption} />
-          </div>
-        </div>
-      </div>
-    )
-  });
-  
-
-  const SortableList = SortableContainer(({files}) => {
-    return (
-      <div className={`row ${fileGalleryStyle.fileGallery}`}>
-        {files.map((file, index) => (
-          <SortableItem key={`item-${file.key}`} index={index} file={file} />
-        ))}
-         <div className={`col-4 ${fileGalleryStyle.imgWpr} ${inputFiles.length === 0 ? fileGalleryStyle.noFiles : ''}`}>
-          <div className={fileGalleryStyle.addMore}>
-            <div><FontAwesomeIcon icon={faPlus}/> Add {inputFiles.length ? 'More' : 'Files'}</div>
-          </div>
-        </div>
-      </div>
-    );
-  });
+  /**********
+   * RENDER *
+   **********/
 
   return (
     <SortableList 
       files={inputFiles} 
       shouldCancelStart={shouldCancelStart}
       helperClass={'floating'}
-      onSortEnd={onSortEnd} 
+      onSortEnd={handleSortEnd} 
       axis={'xy'}
-    />
+      onApproveCaption={handleApproveCaption}
+      onDeleteItem={handleDeleteItem}
+      onFileDropOnDropZone={handleDrop}
+    />  
   )
 };

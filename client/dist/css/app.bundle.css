@@ -418,7 +418,9 @@ textarea._forms__input___1ICNw {
     .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD:nth-child(3n) {
       padding-left: 0.5rem;
       padding-right: 0; }
-    .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD.fileGallery__noFiles___AoTEb {
+    .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD.fileGallery__fileDropZone___NZIu1, .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD.fileGallery__fileDropZone___NZIu1 *, .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD.fileGallery__fileDropZone___NZIu1:focus, .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD.fileGallery__fileDropZone___NZIu1 *:focus {
+      outline: none; }
+    .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD.fileGallery__fileDropZone___NZIu1.fileGallery__noFiles___AoTEb {
       -webkit-box-flex: 100%;
           -ms-flex: 100%;
               flex: 100%;
@@ -426,11 +428,11 @@ textarea._forms__input___1ICNw {
       width: 100%;
       padding-right: 0;
       min-height: auto; }
-      .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD.fileGallery__noFiles___AoTEb .fileGallery__addMore___TZdo2 {
+      .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD.fileGallery__fileDropZone___NZIu1.fileGallery__noFiles___AoTEb .fileGallery__addMore___TZdo2 {
         background: #c0c0c0;
         color: #fff;
         padding: 1rem; }
-        .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD.fileGallery__noFiles___AoTEb .fileGallery__addMore___TZdo2:hover {
+        .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD.fileGallery__fileDropZone___NZIu1.fileGallery__noFiles___AoTEb .fileGallery__addMore___TZdo2:hover {
           color: #fff;
           background: #c5c5c5; }
     .fileGallery__fileGallery___2IcIC .fileGallery__imgWpr___1EfyD .fileGallery__editModeShow___17tXM {
