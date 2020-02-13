@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 // resources
 import arrayMove from 'array-move';
 import axios from 'axios';
+import uuidv4 from 'uuid/v4';
 
 // components
 import {SortableContainer} from 'react-sortable-hoc';
@@ -36,8 +37,7 @@ const SortableList = SortableContainer(({files, onApproveCaption, onDeleteItem, 
   );
 });
 
-
-export default ({files}) => {
+export default ({files, onFileUploaded}) => {
 
 
   /*********
@@ -60,15 +60,24 @@ export default ({files}) => {
 
   useEffect(() => {
     setInputFiles([
-      {...files[0], key: 1, src: 'https://picsum.photos/seed/1/200/300', caption: '#1'}, 
-      {...files[0], key: 2, src: 'https://picsum.photos/seed/2/200/600', caption: '#2'}, 
-      {...files[0], key: 3, src: 'https://picsum.photos/seed/3/200/200', }, 
-      {...files[0], key: 4, src: 'https://picsum.photos/seed/4/200/400',caption: '#4'}, 
-      {...files[0], key: 5, src: 'https://picsum.photos/seed/5/200/150',caption: '#5'}
+      {...files[0], key: uuidv4(), src: 'https://picsum.photos/seed/1/200/300', caption: '#1'}, 
+      {...files[0], key: uuidv4(), src: 'https://picsum.photos/seed/2/200/600', caption: '#2'}, 
+      {...files[0], key: uuidv4(), src: 'https://picsum.photos/seed/3/200/200', }, 
+      {...files[0], key: uuidv4(), src: 'https://picsum.photos/seed/4/200/400',caption: '#4'}, 
+      {...files[0], key: uuidv4(), src: 'https://picsum.photos/seed/5/200/150',caption: '#5'}
     ].map((file) => {
       return {...file};
     }));
   }, [files]);
+
+  // useEffect(() => {
+  //   inputFiles.forEach((file) => {
+  //     console.log('we are doing itttt broooooooooo')
+  //     if (file.progress === -1) {
+  //       uploadFile(file);
+  //     } 
+  //   });
+  // }, [inputFiles])
 
   /***********
    * HELPERS *
@@ -100,31 +109,68 @@ export default ({files}) => {
     });
   };
 
-  const uploadFile = (file) => {
-    let formData = new FormData();
-    formData.append('file', file);
-    axios.post( '/fileUpload',
-      formData,
-      {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        },
-        onUploadProgress: function( progressEvent ) {
-         const uploadPercentage = parseInt( Math.round( ( progressEvent.loaded / progressEvent.total ) * 100 ));
-         console.log(uploadPercentage);
-        }.bind(this)
+  const getPreviewDataUrl = (file) => {
+    return new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", function () {
+        // convert image file to base64 string
+        res(reader.result);
+      }, false);
+      if (file) {
+        reader.readAsDataURL(file);
       }
-    ).then(function(){
-      console.log('SUCCESS!!');
     })
-    .catch(function(){
-      console.log('FAILURE!!');
+  };
+
+  const updateFileParams = (file, params, allFiles=inputFiles) => {
+    const newInputFiles = [...allFiles].map((currItem) => {
+      if (currItem.key === file.key) {
+        console.log('before: ', currItem);
+          for (let [key, val] of Object.entries(params)) {
+            if (val === undefined) {
+              delete  currItem[key];
+            } else {
+              currItem[key] = val;
+            }
+          }
+          console.log('after: ', currItem);
+      } 
+      return currItem;
     });
-    
-  }
+    setInputFiles(newInputFiles);
+  };
 
-  const handleDrop = useCallback(acceptedFiles => {
+  
+  const uploadFile = (file, allFiles) => {
+      let formData = new FormData();
+      formData.append('file', file.fileData);
+      axios.post( '/fileUpload',
+        formData,
+        {
+          headers: {
+              'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: function( progressEvent ) {
+           const uploadPercentage = parseInt( Math.round( ( progressEvent.loaded / progressEvent.total ) * 100 ));
+           console.log(uploadPercentage);
+           updateFileParams(file, {progress: uploadPercentage}, allFiles);
+          }.bind(this)
+        }
+      ).then(function(resp){
+        updateFileParams(file, {
+          progress: undefined,
+          previewUrl: undefined,
+          new: true,
+          src: resp.data.data.src
+        }, allFiles);
+        onFileUploaded(resp.data.data.src);
+      })
+      .catch(function(err){
+        console.log('FAILURE!!', err);
+      });
+  };
 
+  const handleDrop = (acceptedFiles) => {
     // remove not valid
     let filteredFiles = filterInvalidFileTypes(acceptedFiles);
     let filesRemovedCount = acceptedFiles.length - filteredFiles.length;
@@ -138,19 +184,25 @@ export default ({files}) => {
     if (filesRemovedCount) {
       notifyError(`${filesRemovedCount} files were too large (exceeded ${MAX_FILE_SIZE_MB}MB) and filtered out.`);
     }
-    console.log(filteredFiles);
-    filteredFiles.forEach(uploadFile)
-  }, []);
+   Promise.all(filteredFiles.map((file) => {
+      return getPreviewDataUrl(file).then((dataUrl) => {
+        return {fileData: file, key: uuidv4(), previewUrl: dataUrl, progress: -1};
+      }).catch((err) => {
+        return {error: err};
+      });
+    })).then((newFiles) => {
+      const allFiles = [...inputFiles, ...newFiles];
+      newFiles.forEach((file) => {
+        uploadFile(file, allFiles);
+      })
+      setInputFiles(allFiles);
+    });
+
+  
+  };
 
    const handleApproveCaption = (file, newCaption) => {
-      const newInputFiles = [...inputFiles].map((currItem) => {
-      if (currItem.key === file.key) {
-          console.log('setting to..', newCaption);
-          currItem.caption = newCaption;
-      } 
-      return currItem;
-      });
-      setInputFiles(newInputFiles);
+    updateFileParams(file, {caption: newCaption});
    };
    
    const handleDeleteItem = (targetItem) => {

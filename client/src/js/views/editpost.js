@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+// resources
+import { useBeforeunload } from 'react-beforeunload';
+
 // actions
 import { getPostAction } from '../actions/posts.actions.js';
 
@@ -26,6 +29,7 @@ export default ({ match, page }) => {
 
   const [errorFields, setErrorFields] = useState([]);
   const [inputs, setInputs] = useState({title: ''});
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [subCatOptions, setSubCatOptions] = useState(postService.getSubCategoriesFromCategoryName('UNCATEGORIZED'));
 
   const user = useSelector((state) => { return state.user });
@@ -46,11 +50,21 @@ export default ({ match, page }) => {
       updateSubCategoriesByCatname(postData.activeItem.category);
     }
   }, [postData.activeItem])
+
+  useBeforeunload((e) => {
+    if (unsavedChanges) {
+      return 'You have unsaved changes';
+    }
+  });
   
   
   /*********
    * HELPERS
    ********/
+
+   const markUnsavedChanges = (file) => {
+    setUnsavedChanges(true);
+   }
 
    const updateSubCategoriesByCatname = (categoryName) => {
     setSubCatOptions(postService.getSubCategoriesFromCategoryName(categoryName));
@@ -149,7 +163,7 @@ export default ({ match, page }) => {
                 </div>
               </div>
               <div>
-                <FileGallery files={postData.activeItem.images} />
+                <FileGallery files={postData.activeItem.images} onFileUploaded={markUnsavedChanges} />
               </div>
               <Input 
                 type="text"

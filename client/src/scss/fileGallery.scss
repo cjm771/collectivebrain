@@ -12,7 +12,7 @@
       display: none;
     }
 
-    [data-handle] {
+    div[data-handle] {
       // width: 100%;
       // height: 100%;
       // object-fit: cover;
@@ -20,6 +20,18 @@
       padding-bottom: 100%;
       background-size: cover;
       border-radius: $input-border-radius;
+      overflow: hidden;
+      position: relative;
+x
+      img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: $input-border-radius;
+        object-fit: cover;
+      }
     }
   }
 }
@@ -34,13 +46,13 @@
     overflow: hidden;
 
     &:nth-child(1),
-    &:nth-child(4n) {
+    &:nth-child(3n + 4) {
       padding-left: 0;
       padding-right: $input-padding / 2;
      
     }
 
-    &:nth-child(4n) {
+    &:nth-child(3n + 4) {
       .addMore {
         min-height: 12rem;
       }
@@ -73,6 +85,21 @@
             background: lighten(#c0c0c0, 2);
           }
         }
+      }
+    }
+
+    .progress {
+      height: .5rem;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #000;
+      border-radius: 0 0 $input-border-radius $input-border-radius;
+      .progressBar {
+        height: 100%;
+        background: #fff;
+        transition: width .25s ease-in-out;
       }
     }
 
@@ -171,16 +198,18 @@
       position: relative;
       border-radius: $input-border-radius;
 
-      // img {
-      //   position: absolute;
-      //   top: 0;
-      //   left: 0;
-      //   width: 100%;
-      //   height: 100%;
-      //   border-radius: $input-border-radius;
-      //   object-fit: cover;
-       
-      // }
+      &.preview {
+        opacity: 0.75;
+      }
+      img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: $input-border-radius;
+        object-fit: cover;
+      }
     }
   }
 }

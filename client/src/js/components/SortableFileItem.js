@@ -21,7 +21,7 @@ export default SortableElement(({file, onApproveCaption, onDelete}) => {
  const [editMode, setEditMode] = useState(false);
  let  [caption, setCaption] = useState(file.caption);
  let  [dirty, setDirty] = useState(false);
-  
+
   /***********
    * HELPERS *
    ***********/
@@ -63,9 +63,11 @@ export default SortableElement(({file, onApproveCaption, onDelete}) => {
   
   return (
     <div className={`col-4 ${fileGalleryStyle.imgWpr} ${editMode ? fileGalleryStyle.editMode : ''}`}>
-      <div className={fileGalleryStyle.aspectControl} data-handle="true" style={{
-        background: `url(${file.src})`
+      <div className={`${fileGalleryStyle.aspectControl} ${file.previewUrl ? fileGalleryStyle.preview : ''}`} data-handle="true" style={{
+        background: `url(${file.src || file.previewUrl})`,
+        backgroundSize: 'cover'
       }}>
+        <img src={file.src || file.previewUrl} data-handle="true" />
         <div className={`${fileGalleryStyle.actionsPanel}`}>
           <div className={fileGalleryStyle.editModeHide}>
             <Tooltipify  tooltipId='edit' tooltipText='edit'>
@@ -90,9 +92,17 @@ export default SortableElement(({file, onApproveCaption, onDelete}) => {
               </Tooltipify>
           </div>
         </div>
+        {
+          file.progress ? (
+          <div className={`${fileGalleryStyle.progress}`}>
+            <div className={`${fileGalleryStyle.progressBar}`} style={{width: file.progress + '%'}}></div>
+          </div>)
+          : ''
+        }
         <div className={`${fileGalleryStyle.editModeShow} ${fileGalleryStyle.captionInput}`}>
           <input type='text' value={caption} onChange={updateCaption} />
         </div>
+  
       </div>
     </div>
   )
