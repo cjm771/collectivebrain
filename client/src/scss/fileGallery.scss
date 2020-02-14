@@ -110,6 +110,13 @@ x
     .editModeHide {
       display: block;
     }
+
+    &.error {
+      .actionsPanel {
+        opacity: 1;
+        background: $red;
+      }
+    }
     
     &.editMode {
       .actionsPanel {

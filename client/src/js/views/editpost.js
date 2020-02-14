@@ -81,7 +81,8 @@ export default ({ match, page }) => {
     if (name === 'category') {
       updateSubCategoriesByCatname(postService.getCategoryName(value));
     }
-     setInputs(inputs => ({ ...inputs, [name]: value}));
+    setUnsavedChanges(true);
+    setInputs(inputs => ({ ...inputs, [name]: value}));
   };
 
   /*********

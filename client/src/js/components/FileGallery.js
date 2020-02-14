@@ -166,7 +166,15 @@ export default ({files, onFileUploaded}) => {
         onFileUploaded(resp.data.data.src);
       })
       .catch(function(err){
-        console.log('FAILURE!!', err);
+        const error = (err.response && err.response.data && err.response.data.error) || err;
+        updateFileParams(file, {
+          progress: undefined,
+          error: error
+        }, allFiles);
+        setTimeout(() => {
+          handleDeleteItem(file);
+        }, 5000);
+        notifyError(`An error occurred while uploading: ${error}`);
       });
   };
 

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // components
 import {SortableElement} from 'react-sortable-hoc';
@@ -8,8 +8,8 @@ import Tooltipify from './Tooltipify.js';
 // styles
 import fileGalleryStyle from '../../scss/fileGallery.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWrench, faTrash, faComment, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
-
+import { faWrench, faTrash, faComment, faTimes, faCheck, faExclamationCircle} from '@fortawesome/free-solid-svg-icons';
+import { bounceOut, animated} from 'animate.css';
 
 export default SortableElement(({file, onApproveCaption, onDelete}) => {
 
@@ -21,6 +21,16 @@ export default SortableElement(({file, onApproveCaption, onDelete}) => {
  const [editMode, setEditMode] = useState(false);
  let  [caption, setCaption] = useState(file.caption);
  let  [dirty, setDirty] = useState(false);
+ let [shouldDisappear, setShouldDisappear] = useState(false);
+
+ useEffect(() => {
+  if (file && file.error) {
+    setTimeout(() => {
+      setShouldDisappear(true);
+    }, 4000);
+  }
+ }, [file.error]);
+
 
   /***********
    * HELPERS *
@@ -62,35 +72,44 @@ export default SortableElement(({file, onApproveCaption, onDelete}) => {
    **********/
   
   return (
-    <div className={`col-4 ${fileGalleryStyle.imgWpr} ${editMode ? fileGalleryStyle.editMode : ''}`}>
+    <div className={`col-4 ${fileGalleryStyle.imgWpr} ${editMode ? fileGalleryStyle.editMode : ''}  ${file.error ? fileGalleryStyle.error : ''}  ${shouldDisappear ? `${animated} ${bounceOut}` : ''}`}>
       <div className={`${fileGalleryStyle.aspectControl} ${file.previewUrl ? fileGalleryStyle.preview : ''}`} data-handle="true" style={{
         background: `url(${file.src || file.previewUrl})`,
         backgroundSize: 'cover'
       }}>
         <img src={file.src || file.previewUrl} data-handle="true" />
         <div className={`${fileGalleryStyle.actionsPanel}`}>
-          <div className={fileGalleryStyle.editModeHide}>
-            <Tooltipify  tooltipId='edit' tooltipText='edit'>
-              <FontAwesomeIcon icon={faWrench} onClick={(e) => { enableEditMode() }} />
-            </Tooltipify>
-            <Tooltipify  tooltipId='delete' tooltipText='delete'>
-              <FontAwesomeIcon icon={faTrash} onClick={(e) => { deleteItem() }} />
-            </Tooltipify>
-            { !file.caption ? '' : (
-                <Tooltipify  tooltipId='caption' tooltipText={file.caption}>
-                  <FontAwesomeIcon icon={faComment} />
-                </Tooltipify>
-              )
-            }
-          </div>
-          <div className={fileGalleryStyle.editModeShow}>
-            <Tooltipify  tooltipId='confirm' tooltipText='confirm'>
-                <FontAwesomeIcon icon={faCheck} onClick={(e) => { approveCaption() }} />
+          { file.error ? (
+              <Tooltipify  tooltipId='error' tooltipText={file.error}>
+                <FontAwesomeIcon icon={faExclamationCircle} />
               </Tooltipify>
-              <Tooltipify  tooltipId='deny' tooltipText='deny'>
-                <FontAwesomeIcon icon={faTimes} onClick={(e) => { denyEdits() }} />
-              </Tooltipify>
-          </div>
+            ) : (
+              <div>
+                <div className={fileGalleryStyle.editModeHide}>
+                  <Tooltipify  tooltipId='edit' tooltipText='edit'>
+                    <FontAwesomeIcon icon={faWrench} onClick={(e) => { enableEditMode() }} />
+                  </Tooltipify>
+                  <Tooltipify  tooltipId='delete' tooltipText='delete'>
+                    <FontAwesomeIcon icon={faTrash} onClick={(e) => { deleteItem() }} />
+                  </Tooltipify>
+                  { !file.caption ? '' : (
+                      <Tooltipify  tooltipId='caption' tooltipText={file.caption}>
+                        <FontAwesomeIcon icon={faComment} />
+                      </Tooltipify>
+                    )
+                  }
+                </div>
+                <div className={fileGalleryStyle.editModeShow}>
+                  <Tooltipify  tooltipId='confirm' tooltipText='confirm'>
+                      <FontAwesomeIcon icon={faCheck} onClick={(e) => { approveCaption() }} />
+                    </Tooltipify>
+                    <Tooltipify  tooltipId='deny' tooltipText='deny'>
+                      <FontAwesomeIcon icon={faTimes} onClick={(e) => { denyEdits() }} />
+                    </Tooltipify>
+                </div>
+              </div>
+          )}
+        
         </div>
         {
           file.progress ? (
@@ -99,6 +118,7 @@ export default SortableElement(({file, onApproveCaption, onDelete}) => {
           </div>)
           : ''
         }
+        
         <div className={`${fileGalleryStyle.editModeShow} ${fileGalleryStyle.captionInput}`}>
           <input type='text' value={caption} onChange={updateCaption} />
         </div>
