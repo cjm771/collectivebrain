@@ -1,5 +1,12 @@
 
+@import './colors.scss';
 
+:global {
+  // body {
+  //   background-color: themed('backgroundColor');
+  //   color: themed('textColor');
+  // }
+}
 .app {
   .main {
     padding: 1rem;

@@ -181,18 +181,6 @@
 .post__post___2do4k .post__description___3MvhZ {
   font-size: .75rem; }
 
-.login__login___RqRxu {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  min-height: calc(100vh - 24rem); }
-
 ._forms__form___AECEL {
   text-align: center; }
   ._forms__form___AECEL input[disabled], ._forms__form___AECEL button[disabled], ._forms__form___AECEL select[disabled] {
@@ -381,6 +369,18 @@ textarea._forms__input___1ICNw {
   ._forms__button___2dl_w:focus {
     outline: none;
     background: #050505; }
+
+.login__login___RqRxu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  min-height: calc(100vh - 24rem); }
 
 .asyncHandler__error___3lVeo, .asyncHandler__processing___3AhtG {
   margin: 2rem 0; }

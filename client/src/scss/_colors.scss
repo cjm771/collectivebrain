@@ -1,3 +1,29 @@
 $blue: #008cff;
 $red: #e44d2a;
 $input-bg-color:#eee;
+
+$themes: (
+  light: (
+    backgroundColor: transparent,
+    textColor: #333,
+    inputBGColor: $input-bg-color,
+    buttonTextColor: #333,
+    buttonColor: $blue, 
+  ),
+  dark: (
+    backgroundColor: #000,
+    textColor: #ccc,
+    inputBGColor: rgb(81, 81, 81),
+    inputTextColor: #eee,
+    buttonTextColor: #fff,
+    buttonColor: $blue, 
+  ),
+);
+
+
+$THEME: dark;
+
+@function themed($variant: 'backgroundColor') {
+  $map: map-get($themes, $THEME);
+  @return map-get($map, $variant);
+}
