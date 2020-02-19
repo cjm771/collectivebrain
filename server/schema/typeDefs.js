@@ -3,6 +3,8 @@ module.exports = `
   type Mutation {
     isLoggedIn: AuthPayload,
     addPost(input: PostInput): Post,
+    editPost(input: PostInput): Post,
+    deletePost(id: ID): PostDeletedResult,
     login(
       email: String!, 
       password: String!
@@ -15,6 +17,16 @@ module.exports = `
     users: [User!]!
   }
 
+  type PostDeletedResult {
+    post: Post, 
+    deletedFilesResults: DeletedFilesResults
+  }
+
+  type DeletedFilesResults {
+    deleted: [File], 
+    notDeleted: [File]
+  }
+
   type PostsResult {
     total: Int,
     start: Int,
@@ -25,6 +37,7 @@ module.exports = `
   }
 
   input PostInput {
+    id: ID,
     title: String!, 
     description: String!,
     startDate: String, 
@@ -32,12 +45,13 @@ module.exports = `
     published: Boolean,
     creator: String,
     category: Int,
+    subCategory: Int,
     tags: [String],
     sources: [String],
-    images: [ImageInput]
+    files: [FileInput]
   }
 
-  input ImageInput {
+  input FileInput {
     src: String!,
     caption: String
   }
@@ -54,15 +68,17 @@ module.exports = `
     endDate: String,
     tags: [String],
     sources: [String],
-    images: [Image],
-    keyImage: Image,
+    files: [File],
+    keyFile: File,
     user: User!,
+    lastEditedBy: User,
     createdAt: String,
     updatedAt: String
   }
 
-  type Image {
+  type File {
     src: String,
+    srcThumb: String,
     caption: String,
   }
 

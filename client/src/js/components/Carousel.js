@@ -71,11 +71,16 @@ export default React.memo(({_id, images}) => {
                 <img
                   className={`d-block ${carouselStyle.img}`}
                   src={image.src}
-                  alt="First slide"
+                  alt={image.caption}
                 />
-                <Carousel.Caption>
-                  <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                </Carousel.Caption>
+                {
+                  !image.caption ? '' : (
+                    <Carousel.Caption>
+                    <p>{image.caption}</p>
+                  </Carousel.Caption>
+                  )
+                }
+         
               </Carousel.Item>
             ))}
           </Carousel>

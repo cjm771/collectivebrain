@@ -1,24 +1,25 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 // redux
-import { getMorePostsPreviewAction } from '../actions/posts.actions.js';
-import { useSelector } from 'react-redux';
+import { getMorePostsPreviewAction, clearActivePostAction, deletePostAction } from '../actions/posts.actions.js';
+import { useSelector, useDispatch} from 'react-redux';
 
 // custom hooks / utils
 import useInfiniteScroll from '../hooks/useInfiniteScroll.js';
 
 // services
 import PostsService from '../services/posts.services.js';
+import GeneralService from '../services/general.services.js';
 
 // components
 import Gravatar from 'react-gravatar';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import Tooltipify from '../components/Tooltipify.js';
+
 import moment from 'moment';
 import AsyncHandler from '../components/AsyncHandler.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTimes, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 // styles
 import postsStyle from '../../scss/posts.scss';
@@ -36,7 +37,7 @@ export default ({ match }) => {
   const user = useSelector((state) => state.user);
 
   const postListRef = useRef();
-  const previewPosts = useSelector((state) => {
+  const postsData = useSelector((state) => {
     return state.posts;
   });
 
@@ -44,20 +45,55 @@ export default ({ match }) => {
     getMorePostsPreviewAction, // action
     postListRef, // ref
     'li:last-child', // child selector of ref
-    previewPosts, // data .. looks for data.next to see what
+    postsData, // data .. looks for data.next to see what
     10
   );
+
+  const dispatch = useDispatch();
+  
+
+  useEffect(() => {
+    dispatch(clearActivePostAction());
+  }, []);
+
+  useEffect(() => {
+    if (postsData.deleted) {
+      let imageResults = '';
+      if (postsData.deletedResults && postsData.deletedResults.deleted  && postsData.deletedResults.deleted.length) {
+        imageResults += `${postsData.deletedResults.deleted.length} image(s) associated with post were also deleted! `;
+      }
+      if (postsData.deletedResults && postsData.deletedResults.notDeleted  && postsData.deletedResults.notDeleted.length) {
+        imageResults += `${postsData.deletedResults.notDeleted.length} image(s) associated with posd could not be deleted...`;
+      }
+      GeneralService.notifySuccess(`Post was deleted! ${imageResults}`);
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 1000);
+    }
+  })
+
+  useEffect(() => {
+    if (postsData.deleteError) {
+      GeneralService.notifyError(postsData.deleteError.error);
+    }
+  }, [postsData.deleteError])
 
   /*********
    * HELPERS
    ********/
+
+   const deletePost = (e, id) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch(deletePostAction(id));
+   }
 
   /***********
    * RENDER
    **********/
   return (
     <div className={postsStyle.posts}>
-      {!previewPosts.processing && previewPosts.items ? (
+      {!postsData.processing && postsData.items ? (
         <div className={postsStyle.actions}>
           <Link to="/dashboard/add">
             <FontAwesomeIcon icon={faPlus} />
@@ -68,24 +104,38 @@ export default ({ match }) => {
         ''
       )}
 
-      <AsyncHandler processing={previewPosts.processing} error={previewPosts.error}>
-        {previewPosts.moreProcessing || previewPosts.items ? (
+      <AsyncHandler processing={postsData.processing} error={postsData.error}>
+        {postsData.moreProcessing || postsData.items ? (
           <ul className={`${postsStyle.postList}`} ref={postListRef}>
             {/* preview items */}
-            {previewPosts.items.map((post) => {
+            {postsData.items.map((post) => {
               return (
                 <li key={post.id} className={`row ${postsStyle.postItem}`}>
-                  <Link to={`/dashboard/edit/${post.id}`}>
+                  <Link to={`/dashboard/edit/${post.id}`} className={postsData.deleteProcessing ? postsStyle.disabled : ''}>
                     <div className={`col-sm-7 ${postsStyle.titleSection} ${!post.published ? postsStyle.draft : ''}`}>
-                      <div className={postsStyle.keyImage}>{!post.keyImage ? '' : <img src={post.keyImage.src} />}</div>
+                      <div className={postsStyle.keyImage}>{!post.keyFile ? '' : <img src={post.keyFile.src} />}</div>
                       <div className={postsStyle.text}>
                         <span className={postsStyle.title}>
                           {post.title}
-                          <OverlayTrigger overlay={<Tooltip id="tooltip-category">{post.category}</Tooltip>}>
+                          <Tooltipify tooltipId='category' tooltipText={post.category}>
                             <span className={postsStyle.dot} style={{ background: PostsService.getCategoryColorByName(post.category) }}></span>
-                          </OverlayTrigger>
+                          </Tooltipify>
                         </span>
                         {!post.published ? <span className={`${postsStyle.badge} badge badge-secondary`}>Draft</span> : ''}
+                        {!postsData.deleteProcessing ? (
+                            <span className={postsStyle.actionIcon} onClick={(e) => {deletePost(e, post.id)}}>
+                              <Tooltipify tooltipId='delete' tooltipText='Delete'>
+                                <FontAwesomeIcon icon={faTimes} />
+                              </Tooltipify>
+                            </span>
+                           ) : (  postsData.deleteProcessing === post.id ?
+                            <span className={`${postsStyle.actionIcon} ${postsStyle.persistent}`}>
+                              <Tooltipify tooltipId='deleting..' tooltipText='deleting..'>
+                                <FontAwesomeIcon icon={faSpinner} spin />
+                              </Tooltipify>
+                            </span> : ''
+                           )
+                        }
                       </div>
                     </div>
                     <div className={`col-sm-5 ${postsStyle.by}`}>
@@ -98,13 +148,13 @@ export default ({ match }) => {
                 </li>
               );
             })}
-            {previewPosts.moreProcessing
+            {postsData.moreProcessing
               ? '12345'.split('').map((i) => {
                   return (
                     <li key={i} className={`row ${postsStyle.postItem}`}>
                       <a href='#'>
                         <div className={`col-sm-10 ${postsStyle.titleSection}`}>
-                          <div className={`${skeletonStyle.skeletonCircles} ${postsStyle.keyImage}`}></div>
+                          <div className={`${skeletonStyle.skeletonCircles} ${postsStyle.keyFile}`}></div>
                           <div className={postsStyle.text}>
                             <div className={skeletonStyle.skeletonInlineBlock} style={{ width: '100%' }}></div>
                           </div>

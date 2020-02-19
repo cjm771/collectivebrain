@@ -9,7 +9,9 @@ import uuidv4 from 'uuid/v4';
 import {SortableContainer} from 'react-sortable-hoc';
 import SortableFileItem from './SortableFileItem.js';
 import FileDropZone from './FileDropZone.js';
-import { toast } from 'react-toastify';
+
+// services
+import generalService from '../services/general.services.js';
 
 // styles
 import fileGalleryStyle from '../../scss/fileGallery.scss';
@@ -37,7 +39,7 @@ const SortableList = SortableContainer(({files, onApproveCaption, onDeleteItem, 
   );
 });
 
-export default ({files, onFileUploaded}) => {
+export default ({files, onChange, onFileUploaded}) => {
 
 
   /*********
@@ -48,10 +50,6 @@ export default ({files, onFileUploaded}) => {
  const ALLOWED_FILETYPES = [/^image\/.+$/];
  const MAX_FILE_SIZE_MB = 5;
 
- const toastSettings = {
-  position: toast.POSITION.BOTTOM_RIGHT
-};
-
   /*********
    * HOOKS *
   **********/
@@ -59,37 +57,20 @@ export default ({files, onFileUploaded}) => {
   const [inputFiles, setInputFiles] = useState([]);
 
   useEffect(() => {
-    setInputFiles([
-      {...files[0], key: uuidv4(), src: 'https://picsum.photos/seed/1/200/300', caption: '#1'}, 
-      {...files[0], key: uuidv4(), src: 'https://picsum.photos/seed/2/200/600', caption: '#2'}, 
-      {...files[0], key: uuidv4(), src: 'https://picsum.photos/seed/3/200/200', }, 
-      {...files[0], key: uuidv4(), src: 'https://picsum.photos/seed/4/200/400',caption: '#4'}, 
-      {...files[0], key: uuidv4(), src: 'https://picsum.photos/seed/5/200/150',caption: '#5'}
-    ].map((file) => {
-      return {...file};
-    }));
+    if (files && files.length) {
+      const readyFiles = files.map((file) => {
+        return {
+          ...file,
+          key: uuidv4()
+        }
+      });
+      setInputFiles(readyFiles);
+      onChange(readyFiles, false);
+    }
   }, [files]);
-
-  // useEffect(() => {
-  //   inputFiles.forEach((file) => {
-  //     console.log('we are doing itttt broooooooooo')
-  //     if (file.progress === -1) {
-  //       uploadFile(file);
-  //     } 
-  //   });
-  // }, [inputFiles])
-
   /***********
    * HELPERS *
    ***********/
-
-  const notifyInfo = (msg) => {
-    toast(msg, toastSettings);
-  };
-
-  const notifyError = (error) => {
-    toast.error(error, toastSettings)
-  };
 
   const filteredTooLargeFiles = (files) => {
     return files.filter((file) => {
@@ -138,6 +119,7 @@ export default ({files, onFileUploaded}) => {
       return currItem;
     });
     setInputFiles(newInputFiles);
+    onChange(newInputFiles, true);
   };
 
   
@@ -174,7 +156,7 @@ export default ({files, onFileUploaded}) => {
         setTimeout(() => {
           handleDeleteItem(file);
         }, 5000);
-        notifyError(`An error occurred while uploading: ${error}`);
+        generalService.notifyError(`An error occurred while uploading: ${error}`);
       });
   };
 
@@ -183,14 +165,14 @@ export default ({files, onFileUploaded}) => {
     let filteredFiles = filterInvalidFileTypes(acceptedFiles);
     let filesRemovedCount = acceptedFiles.length - filteredFiles.length;
     if (filesRemovedCount) {
-      notifyInfo(`${filesRemovedCount} files were invalid file types and filtered out.`);
+      generalService.notifyInfo(`${filesRemovedCount} files were invalid file types and filtered out.`);
     }
     let filesLeft = filteredFiles.length;
     // remove too large
     filteredFiles = filteredTooLargeFiles(filteredFiles);
     filesRemovedCount = filesLeft - filteredFiles.length;
     if (filesRemovedCount) {
-      notifyError(`${filesRemovedCount} files were too large (exceeded ${MAX_FILE_SIZE_MB}MB) and filtered out.`);
+      generalService.notifyError(`${filesRemovedCount} files were too large (exceeded ${MAX_FILE_SIZE_MB}MB) and filtered out.`);
     }
    Promise.all(filteredFiles.map((file) => {
       return getPreviewDataUrl(file).then((dataUrl) => {
@@ -204,6 +186,7 @@ export default ({files, onFileUploaded}) => {
         uploadFile(file, allFiles);
       })
       setInputFiles(allFiles);
+      onChange(allFiles, true);
     });
 
   
@@ -214,13 +197,25 @@ export default ({files, onFileUploaded}) => {
    };
    
    const handleDeleteItem = (targetItem) => {
-    setInputFiles(inputFiles.filter((item) => {
+    axios.delete('/fileUpload?f=' + targetItem.src)
+      .then(() => {
+
+      })
+      .catch((err) => {
+        const error = (err.response && err.response.data && err.response.data.error) || err;
+        generalService.notifyError('Could not delete file from server: ' + error);
+      });
+    const newFiles = inputFiles.filter((item) => {
       return targetItem !== item;
-    }));
+    });
+    setInputFiles(newFiles);
+    onChange(newFiles, true);
    };
 
    const handleSortEnd = ({oldIndex, newIndex}) => {
-    setInputFiles(arrayMove(inputFiles, oldIndex, newIndex));
+    const newFiles = arrayMove(inputFiles, oldIndex, newIndex);
+    setInputFiles(newFiles);
+    onChange(newFiles, true);
    };
 
    const shouldCancelStart = (e) => {

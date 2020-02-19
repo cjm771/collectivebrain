@@ -26,8 +26,21 @@
         transition: background-color 0.1s ease-in-out;
         cursor: pointer;
 
+        &.disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+
         &:hover {
           background-color: rgb(248, 248, 248);
+          .titleSection {
+            .text {
+              .actionIcon {
+                opacity: 1;
+              }
+            }
+          }
         }
 
         .titleSection {
@@ -54,6 +67,22 @@
               margin-left: 0.5rem;
             }
 
+            .actionIcon {
+              cursor: pointer;
+
+              &.persistent {
+                opacity: 1;
+              }
+              opacity: 0;
+              transition: all 0.25s ease-in-out;
+              margin-left: 0.5rem;
+
+              &:hover {
+                transform: scale(1.25);
+                color: $blue;
+              }
+            }
+
             .dot {
               border-radius: 50%;
               width: 0.5rem;
@@ -75,7 +104,7 @@
 
             img {
               height: 100%;
-              object-fit: fill;
+              object-fit: cover;
               width: 100%;
               border-radius: 50%;
             }

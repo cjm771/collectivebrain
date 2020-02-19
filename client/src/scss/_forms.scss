@@ -4,7 +4,7 @@
 
 .form {
   text-align: center;
-  input, button {
+  input, button, select {
     &[disabled] { 
       opacity: 0.5;
       cursor: not-allowed;
@@ -219,6 +219,9 @@ textarea.input {
     &.hasErrors {
       background: #facfcf;
       color: #ff0000;
+      &:focus {
+        background: lighten(#facfcf, 2);
+      }
     }
         
     &:focus {

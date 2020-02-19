@@ -15,6 +15,7 @@ const logoutView = require('./views/logout.view.js');
 const app = setupExpress((app) => {
   app.get('/logout', logoutView);
   app.post('/fileUpload', fileUploadView);
+  app.delete('/fileUpload', fileUploadView);
   app.get('/post/static/:id', staticImageCardView);
   app.use('/', express.static(path.join(__dirname, '../client/dist/')));
   app.use('/uploads', express.static(path.join(__dirname, './uploads')));

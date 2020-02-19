@@ -40,18 +40,75 @@ export default {
     BUILT: ['PRECEDENT'],
     CAPTURED: ['ONLINE_CONTENT']
   },
+    getYear: (ts) => {
+    if (ts) {
+      return new Date(parseInt(ts)).getUTCFullYear() + '';
+    } else {
+      return null;
+    }
+   },
   getSubCategoriesFromCategoryName: function (name) {
     let result = {};
-    if (name.toUpperCase() !== 'UNCATEGORIZED') {
+    name = name ? name.toUpperCase() : 'UNCATEGORIZED';
+    if (name !== 'UNCATEGORIZED') {
       result['UNCATEGORIZED'] = this.SUB_CATEGORIES['UNCATEGORIZED'];
     }
-    const subcat_names = this.SUB_CATEGORIES_TO_CATEGORIES_MAPPINGS[name.toUpperCase()];
+    const subcat_names = this.SUB_CATEGORIES_TO_CATEGORIES_MAPPINGS[name];
     if (subcat_names) {
       subcat_names.forEach((key) => {
         result[key] = this.SUB_CATEGORIES[key];
       });
     }
     return result;
+  },
+  cleanInputs: function (inputs, extra={}) {
+    const defaults = {
+      title: '',
+      description: ''
+    }
+
+    // clean files
+    let cleanedFiles = null;
+    if (inputs.files) {
+        cleanedFiles = inputs.files.map((file) => {
+        return {
+          caption: file.caption,
+          src: file.src
+        }
+      });
+    }
+
+    // clean tags 
+    let cleanedTags = null;
+    if (inputs.tags) {
+      cleanedTags = inputs.tags.split(',').map((tag) => {
+        return tag.trim();
+      }).filter((tag) => {
+        return tag !== '';
+      })
+    }
+
+    // clean sources
+    let cleanSources = null;
+    if (inputs.sources) {
+      
+    }
+    // final cleanup
+    const cleanedInputs = {
+      ...defaults,
+      ...inputs,
+      category: parseInt(inputs.category) || 0,
+      subCategory: parseInt(inputs.subCategory) || 0,
+      author: undefined,
+      files: cleanedFiles,
+      tags: cleanedTags,
+      ...extra
+    }
+
+    return cleanedInputs;
+
+
+ 
   },
   getCategoryName: function (val) {
     val = parseInt(val);
@@ -71,7 +128,6 @@ export default {
     return this.CATEGORIES[name.toUpperCase()];
   },
   getCategoryColorByName: function (name) {
-    // debugger;
     return this.CATEGORY_COLORS[this.getCategoryIndexByName(name)]
   } 
 };

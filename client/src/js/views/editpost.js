@@ -6,10 +6,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useBeforeunload } from 'react-beforeunload';
 
 // actions
-import { getPostAction } from '../actions/posts.actions.js';
+import { getPostAction, updateOrCreatePostAction, clearActivePostAction } from '../actions/posts.actions.js';
 
 // services 
 import postService from '../services/posts.services.js';
+import generalService from '../services/general.services.js';
 
 // components
 import AsyncHandler from '../components/AsyncHandler.js';
@@ -19,7 +20,7 @@ import FileGallery from '../components/FileGallery.js';
 //  styles
 import formStyle from '../../scss/_forms.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
 export default ({ match, page }) => {
 
@@ -27,23 +28,36 @@ export default ({ match, page }) => {
    * HOOKS
   ********/
 
-  const [errorFields, setErrorFields] = useState([]);
   const [inputs, setInputs] = useState({title: ''});
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [subCatOptions, setSubCatOptions] = useState(postService.getSubCategoriesFromCategoryName('UNCATEGORIZED'));
 
   const user = useSelector((state) => { return state.user });
-  const postData = useSelector((state) => {
-    return state.posts;
-  })
+  const postData = useSelector((state) => { return state.posts });
+
   const dispatch = useDispatch();
+
+  const hasErrors = (field) => {
+    return postData.savingErrorFields && postData.savingErrorFields.indexOf(field) !== -1 
+  };
+
+
   if (page === 'edit') {
     useEffect(() => {
       dispatch(getPostAction({
         id: match.params.id
       }))
     }, [match.params.id]);
+  } else if (page === 'add') {
+    useEffect(() => {
+      dispatch(clearActivePostAction());
+    }, [match.params.id]);
   }
+  useEffect(() => {
+    if (postData.savingError) {
+      generalService.notifyError(postData.savingError);
+    }
+  }, [postData.savingError])
 
   useEffect(() => {
     if (postData.activeItem) {
@@ -51,8 +65,18 @@ export default ({ match, page }) => {
     }
   }, [postData.activeItem])
 
+  useEffect(() => {
+    if (postData.saved) {
+      generalService.notifySuccess('Post Saved..redirecting!');
+      setTimeout(() => {
+        window.location.href = `/dashboard/edit/${postData.saved.id}`;
+      }, 1000);
+    } 
+  }, [postData.saved])
+
+
   useBeforeunload((e) => {
-    if (unsavedChanges) {
+    if (!postData.saved && unsavedChanges) {
       return 'You have unsaved changes';
     }
   });
@@ -61,6 +85,7 @@ export default ({ match, page }) => {
   /*********
    * HELPERS
    ********/
+
 
    const markUnsavedChanges = (file) => {
     setUnsavedChanges(true);
@@ -73,15 +98,22 @@ export default ({ match, page }) => {
   const handleSubmit = (event) => {
     if (event) {
       event.preventDefault();
+      dispatch(updateOrCreatePostAction(postService.cleanInputs(inputs, page === 'edit' ? {id: match.params.id} : undefined), page === 'add' ? 'create' : 'update'));
     }
     return null;
   };
 
-  const handleInputChange = (value, name) => {
+  const handleFilesChange = (files, flagUnsaved) => {
+    handleInputChange(files, 'files', flagUnsaved);
+  }
+
+  const handleInputChange = (value, name, flagUnsaved) => {
     if (name === 'category') {
       updateSubCategoriesByCatname(postService.getCategoryName(value));
     }
-    setUnsavedChanges(true);
+    if (flagUnsaved) {
+      setUnsavedChanges(true);
+    }
     setInputs(inputs => ({ ...inputs, [name]: value}));
   };
 
@@ -98,10 +130,18 @@ export default ({ match, page }) => {
               className={formStyle.form}
               onSubmit={handleSubmit}
             >
+              { (postData.savingError) ? 
+                <div className={formStyle.errorBox} >
+                  {postData.savingError}
+                </div>
+                : ''
+              }
               <Input 
                 type="dropdown"
                 name="author"
                 onChange={handleInputChange} 
+                error={hasErrors('user')}
+                disabled={true}
                 initValue={page === 'add' ? user.name : postData.activeItem.user.name}
               ></Input>
               <div className={`row ${formStyle.half}`}>
@@ -111,7 +151,7 @@ export default ({ match, page }) => {
                   name="category"
                   options={postService.CATEGORIES}
                   onChange={handleInputChange} 
-                  initValue={page === 'add' ? '' : postService.getCategoryIndexByName(postData.activeItem.category)}
+                  initValue={page === 'add' ? 0 : postService.getCategoryIndexByName(postData.activeItem.category)}
                 ></Input>
                 </div>
                 <div className='col-12 col-sm-6'>
@@ -120,7 +160,7 @@ export default ({ match, page }) => {
                     name="subCategory"
                     options={subCatOptions}
                     onChange={handleInputChange} 
-                    initValue={page === 'add' ? '' :  postService.getSubCategoryIndexByName(postData.activeItem.subCategory)}
+                    initValue={page === 'add' ? 0 :  postService.getSubCategoryIndexByName(postData.activeItem.subCategory)}
                   ></Input>
                 </div>
               </div>
@@ -128,18 +168,21 @@ export default ({ match, page }) => {
                 type="text"
                 name="title"
                 onChange={handleInputChange} 
+                error={hasErrors('title')}
                 initValue={page === 'add' ? '' : postData.activeItem.title}
               ></Input>
               <Input 
                 type="textarea"
                 name="description"
-                onChange={handleInputChange} 
+                onChange={handleInputChange}
+                error={hasErrors('description')}
                 initValue={page === 'add' ? '' : postData.activeItem.description}
               ></Input>
               <Input 
                 type="text"
                 name="creator"
                 onChange={handleInputChange} 
+                error={hasErrors('creator')}
                 initValue={page === 'add' ? '' : postData.activeItem.creator}
               ></Input>
               <div className={`row ${formStyle.halfWithIcon}`}>
@@ -148,7 +191,8 @@ export default ({ match, page }) => {
                     type="date"
                     name="startDate"
                     onChange={handleInputChange} 
-                    initValue={page === 'add' ? '' : postData.activeItem.startDate}
+                    error={hasErrors('startDate')}
+                    initValue={page === 'add' ? null : postService.getYear(postData.activeItem.startDate)}
                   ></Input>
                 </div>
                 <div className='col-12 col-sm-2'>
@@ -159,23 +203,30 @@ export default ({ match, page }) => {
                     type="date"
                     name="endDate"
                     onChange={handleInputChange} 
-                    initValue={page === 'add' ? '' : postData.activeItem.endDate}
+                    error={hasErrors('endDate')}
+                    initValue={page === 'add' ? null : postService.getYear(postData.activeItem.endDate)}
                   ></Input>
                 </div>
               </div>
               <div>
-                <FileGallery files={postData.activeItem.images} onFileUploaded={markUnsavedChanges} />
+                <FileGallery 
+                  files={page === 'add' ? null : postData.activeItem.files} 
+                  onFileUploaded={markUnsavedChanges} 
+                  onChange={handleFilesChange}
+                />
               </div>
               <Input 
                 type="text"
                 name="tags"
                 onChange={handleInputChange} 
+                error={hasErrors('tags')}
                 initValue={page === 'add' ? '' : postData.activeItem.tags && postData.activeItem.tags.join(', ')}
               ></Input>
                <Input 
                 type="textarea"
                 name="sources"
                 onChange={handleInputChange} 
+                error={hasErrors('sources')}
                 initValue={page === 'add' ? '' : postData.activeItem.sources && postData.activeItem.sources.join('\n')}
               ></Input>
               <div className={`row ${formStyle.halfLeftRightAligned}`}>
@@ -192,8 +243,11 @@ export default ({ match, page }) => {
                 </div>
               </div>
             
-              <button onClick={handleSubmit} className={formStyle.button}>
-                {'save'}
+              <button onClick={handleSubmit} className={formStyle.button} disabled={postData.saving}>
+              {postData.saving ? 
+                <span><FontAwesomeIcon icon={faCircleNotch}></FontAwesomeIcon> saving..</span> :
+              'save'
+              }
               </button>
             </form>
             )

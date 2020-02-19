@@ -18,7 +18,7 @@ const postFull = `
     name,
     email
   },
-  images {
+  files {
     src,
     caption
   }
@@ -54,7 +54,7 @@ const QUERIES = {
         createdAt,
         published,
         title,
-        keyImage {
+        keyFile {
           src
         },
         category,
@@ -62,6 +62,42 @@ const QUERIES = {
           name,
           email
         },
+      }
+    }
+  }
+  `,
+  EDIT_POST: gql`
+  mutation($input: PostInput!) {
+    editPost(input: $input) {
+      id, 
+      title,
+      description,
+      createdAt
+    }
+  }
+  `,
+  ADD_POST: gql`
+  mutation($input: PostInput!) {
+    addPost(input: $input) {
+      id, 
+      title,
+      description,
+      createdAt
+    }
+  }`,
+  DELETE_POST: gql`
+  mutation($id: ID) {
+    deletePost(id: $id) {
+      post {
+        id
+      },
+      deletedFilesResults {
+        deleted {
+          src
+        },
+        notDeleted {
+          src
+        }
       }
     }
   }
@@ -77,10 +113,23 @@ const getErrorFromGraphQL = (error) => {
       result.fields = error.graphQLErrors[0].extensions.exception.invalidArgs;
     }
     return result;
+  } else if (typeof error === 'object' && error.networkError && error.networkError.result && error.networkError.result.errors && error.networkError.result.errors.length) {
+    const tmpResultArr = [];
+    const networkError = /(.+)(\{.+\}.*);(.+)/;
+    let matches = null;
+    for (let rawError of error.networkError.result.errors) {
+      matches = null;
+      if (matches = networkError.exec(rawError.message)) {
+        tmpResultArr.push(matches[3]);
+      } else {
+        tmpResultArr.push(rawError.message);
+      }
+    }
+    return {message: tmpResultArr.length ? tmpResultArr.join(', ') : error.toString()};
   } else {
     return { message: error.toString() }
   }
-}
+};
 
 
 export const getPostsAction = (inputs, query=QUERIES.GET_POSTS) => {
@@ -110,17 +159,78 @@ export const getPostsAction = (inputs, query=QUERIES.GET_POSTS) => {
         })
       })
   }
-}
+};
 
 export const getPostsPreviewAction = (inputs) => {
   return getPostsAction(inputs, QUERIES.GET_POSTS_PREVIEW);
-}
+};
 
 
 export const getMorePostsPreviewAction = (inputs) => {
   return getPostsAction({morePosts: true, ...inputs}, QUERIES.GET_POSTS_PREVIEW);
-}
+};
 
+
+export const updateOrCreatePostAction = (inputs, updateOrCreate = 'create') => {
+  inputs = inputs || {};
+  return (dispatch) => {
+    dispatch({
+      type: 'SET_POST_REQUEST'
+    });
+   
+    return ApolloClient.mutate({
+      mutation: (updateOrCreate === 'create') ? QUERIES.ADD_POST : QUERIES.EDIT_POST,
+      variables: {input: inputs}
+    }).then((result) => {
+      dispatch({
+        type: 'SET_POST_SUCCESS',
+        post: (updateOrCreate === 'create') ? result.data.addPost : result.data.editPost
+      })
+    }).catch((error) => {
+      const {message, fields} = getErrorFromGraphQL(error);
+      dispatch({
+        type: 'SET_POST_FAILURE',
+        error: message,
+        errorFields: fields
+      });
+    });
+  }
+};
+
+export const deletePostAction = (id) => {
+  return (dispatch) => {
+    dispatch({
+      type: 'DELETE_POST_REQUEST',
+      toDelete: id
+    });
+   
+    return ApolloClient.mutate({
+      mutation: QUERIES.DELETE_POST,
+      variables: {id: id}
+    }).then((result) => {
+      dispatch({
+        type: 'DELETE_POST_SUCCESS',
+        deleted: id,
+        deletedResults: result.data.deletePost.deletedFilesResults
+      })
+    }).catch((error) => {
+      const {message, fields} = getErrorFromGraphQL(error);
+      dispatch({
+        type: 'DELETE_POST_FAILURE',
+        error: message,
+        errorFields: fields
+      });
+    });
+  }
+};
+
+export const clearActivePostAction = () => {
+  return (dispatch) => {
+    dispatch({
+      type: 'CLEAR_ACTIVE_POST'
+    });
+  }
+};
 
 export const getPostAction = (inputs) => {
   inputs = inputs || {};
@@ -148,4 +258,4 @@ export const getPostAction = (inputs) => {
       });
     });
   }
-}
+};

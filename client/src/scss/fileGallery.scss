@@ -22,8 +22,8 @@
       border-radius: $input-border-radius;
       overflow: hidden;
       position: relative;
-x
-      img {
+
+      img[data-handle] {
         position: absolute;
         top: 0;
         left: 0;

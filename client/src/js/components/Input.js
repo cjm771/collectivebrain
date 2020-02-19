@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 // styles
 import formStyle from '../../scss/_forms.scss';
@@ -17,21 +17,30 @@ export default ({type, name, options, disabled, error, initValue, onChange}) => 
   /********
    * HOOKS
    *******/
-
+  
   const [value, setValue] = useState(initValue);
+
+  useEffect(() => {
+    handleInputChange(null, name, initValue, false);
+  }, [initValue]);
 
   /*********
    * HELPERS
    ********/
 
-  const handleInputChange = (event, nameOverride=false, valueOverride=false) => {
-    event.persist();
-    console.log(valueOverride);
-    setValue(valueOverride || event.target.value);
-    onChange(valueOverride || event.target.value, nameOverride || name);
+  const handleInputChange = (event, nameOverride, valueOverride, flagUnsaved=true) => {
+    if (event) {
+      event.persist();
+    }
+    let newValue = null;
+    if (valueOverride !== undefined ) {
+      newValue = valueOverride;
+    } else {
+      newValue = event && event.target.value;
+    }
+    setValue(newValue);
+    onChange(newValue, nameOverride || name, flagUnsaved);
   };
-
-
 
   switch(type) {
     default:
@@ -72,6 +81,7 @@ export default ({type, name, options, disabled, error, initValue, onChange}) => 
               onChange={handleInputChange}
               className={classNames('form-control')} 
               value={value}
+              disabled={disabled}
             >
               {
                 Object.keys(options).map((key, index) => {

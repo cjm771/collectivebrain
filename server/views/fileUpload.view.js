@@ -2,10 +2,8 @@
 const path = require('path');
 const fs = require('fs');
 
-module.exports = async (req, res) => {
-  if (!(req.session.user && req.cookies.user_sid)) {
-    return res.errorJSON('You must be logged in to upload images', 403);
-  }
+const post = async (req, res) => {
+
 
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.errorJSON('No files were uploaded', 400);
@@ -43,4 +41,42 @@ module.exports = async (req, res) => {
       src: `/uploads/tmp/${fileName}`
     });
   });
+}
+
+const _delete = async (req, res) => {
+  const filePattern = /^\/uploads\/(.+)/;
+  const file = req.query.f;
+  if (!filePattern.test(file)) {
+    return res.errorJSON('Cannot delete file', 403);
+  }
+  const filePath = file.replace(filePattern, (m, m1) => {
+    return path.join(__dirname, '../uploads', m1);
+  });
+  try {
+    await fs.promises.access(filePath);
+  } catch (e) {
+    return res.errorJSON('File does not exist');
+  }
+  try {
+    await fs.promises.unlink(filePath);
+  } catch (e) {
+    return res.errorJSON(`Could not delete file ${file}`);
+  }
+ 
+
+  // make sure file exists
+  return res.successJSON({file})
+}
+
+module.exports = async (req, res) => {
+  if (!(req.session.user && req.cookies.user_sid)) {
+    return res.errorJSON('You must be logged in to upload/remove images', 403);
+  }
+  if (req.method === 'POST') {
+    post(req, res);
+  } else if (req.method === 'DELETE') {
+    _delete(req, res);
+  } else {
+    return res.errorJSON('Forbidden', 403);
+  }
 };

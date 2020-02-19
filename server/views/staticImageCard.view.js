@@ -12,9 +12,13 @@ module.exports  =  (req, res) => {
      * get year as unix timestamp
      * @param {*} date 
      */
-    const getYear = (date) => {
-      return date.getTime();
-    }
+    const getYear = (ts) => {
+        if (ts) {
+          return ts.getUTCFullYear() + '';
+        } else {
+          return null;
+        }
+    };
 
     /**
      * draws image contained to a box
@@ -123,7 +127,7 @@ module.exports  =  (req, res) => {
   
         const canvas = createCanvas(width, height, (req.query.format && req.query.format !=='svg' ? null : 'svg'));
         const ctx = canvas.getContext('2d');
-        // post.images = [];
+        // post.files = [];
   
         ctx.save();
         ctx.strokeStyle = Post.getCategoryColorByName(Post.getCategoryName(post.category));
@@ -146,8 +150,13 @@ module.exports  =  (req, res) => {
         ctx.fillStyle = "rgba(100, 100, 100, 1)";
         ctx.font = '500 10px Helvetica, Arial, Sans-Serif'
         ctx.fillText(Post.getCategoryName(post.category).toUpperCase(), padding, 55)
-        if (post.images && post.images.length) {
-          const image = await loadImage(path.resolve(__dirname + '/../../client/dist' + post.images[0].src))
+        if (post.files && post.files.length) {
+          let image;
+          try {
+            image = await loadImage(path.resolve(__dirname + '/../../client/dist' + post.files[0].src))
+          } catch (e) {
+            image = await loadImage(path.resolve(__dirname + '/../' + post.files[0].src))
+          }
           // ctx.drawImage(image, padding, main_content_y_offset, width - padding * 2, width * .57);
           drawImageContained(
             ctx,
@@ -165,24 +174,26 @@ module.exports  =  (req, res) => {
           ctx, 
           post.description, 
           padding, 
-          main_content_y_offset + (post.images.length ? height * image_caption_offset_pct - 15 : 30), 
+          main_content_y_offset + (post.files && post.files.length ? height * image_caption_offset_pct - 15 : 30), 
           width - padding * 2, 
-          height * (post.images.length ? (image_caption_offset_pct + .005) : .78), 
+          height * (post.files && post.files.length ? (image_caption_offset_pct + .005) : .78), 
           12
         );
         ctx.save();
         ctx.fillStyle ='#bbbbbb';
         ctx.font = 'italic normal 10px Helvetica, Arial, Sans-Serif';
-        if (post.images && post.images.length) {
-          wrapText(
-            ctx,
-            'I am a random caption s dsd sdasdsadsadasd asdasddasds asdsadasdas dsadasdadasasdasdsdasdasdsaadassdasdsadadadsadaddasdasdasdasdasda',
-            padding, 
-            padding + height * image_caption_offset_pct,
-            width - padding * 2,
-            12,
-            12
-          );
+        if (post.files && post.files.length) {
+          if (post.files[0].caption) {
+            wrapText(
+              ctx,
+              post.files[0].caption,
+              padding, 
+              padding + height * image_caption_offset_pct,
+              width - padding * 2,
+              12,
+              12
+            );
+          }
         }
         ctx.restore();
         ctx.fillStyle = '#008cff';
@@ -230,7 +241,6 @@ module.exports  =  (req, res) => {
         res.errorJSON('Post could not be found')
       }
     } catch (e) {
-      debugger;
       res.errorJSON(e.message || e)
     }
   };
