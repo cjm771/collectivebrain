@@ -17,7 +17,7 @@ export default ({type, name, options, disabled, error, initValue, onChange}) => 
   /********
    * HOOKS
    *******/
-  
+
   const [value, setValue] = useState(initValue);
 
   useEffect(() => {
@@ -50,6 +50,23 @@ export default ({type, name, options, disabled, error, initValue, onChange}) => 
           <div className={`${formStyle.inputWpr} ${value ? formStyle.filled : ''}`}>
             <input 
               type="text" 
+              className={classNames(formStyle.input, error ? formStyle.hasErrors : null)} 
+              onChange={handleInputChange} 
+              value={value} 
+              placeholder={name} 
+              disabled={disabled}
+              name={name}
+            />
+            <label>{name}</label>
+          </div>
+        </div>
+      );
+    case 'password':
+      return  (
+        <div>
+          <div className={`${formStyle.inputWpr} ${value ? formStyle.filled : ''}`}>
+            <input 
+              type="password" 
               className={classNames(formStyle.input, error ? formStyle.hasErrors : null)} 
               onChange={handleInputChange} 
               value={value} 

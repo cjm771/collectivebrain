@@ -1,10 +1,14 @@
+// react + redux
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { loginAction, clearErrorFieldAction } from '../actions/user.actions.js';
+import { loginAction } from '../actions/user.actions.js';
 
+// comoponents
+import Input from '../components/Input.js';
+
+// styles
 import loginStyle from '../../scss/login.scss';
 import formStyle from '../../scss/_forms.scss';
-import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
@@ -24,11 +28,13 @@ export default (props) => {
     return null;
   }
 
-  const handleInputChange = (event) => {
-    event.persist();
-    dispatch(clearErrorFieldAction(event.target.name));
-    setInputs(inputs => ({ ...inputs, [event.target.name]: event.target.value }));
+  const handleInputChange = (value, name) => {
+    setInputs(inputs => ({ ...inputs, [name]: value}));;
   };
+
+  const hasErrors = (field) => {
+    return user.loginErrorFields && user.loginErrorFields.indexOf(field) !== -1;
+  }
 
   const focusOnEmailInput = () => {
     document.getElementsByName('email')[0].focus();
@@ -62,24 +68,20 @@ export default (props) => {
         </div>
         : ''
       }
-      <input 
-        type="text" 
-        className={classNames(formStyle.input, (user.loginErrorFields && user.loginErrorFields.indexOf('email') !== -1) ? formStyle.hasErrors : null)} 
-        onChange={handleInputChange} 
-        value={inputs.email} 
-        placeholder="email" 
-        disabled={user.loggingIn}
+      <Input 
+        type="text"
         name="email"
-      />
-      <input 
-        type="password" 
-        className={classNames(formStyle.input, (user.loginErrorFields && user.loginErrorFields.indexOf('password') !== -1) ? formStyle.hasErrors : null)} 
         onChange={handleInputChange} 
-        value={inputs.password} 
-        placeholder="password" 
-        disabled={user.loggingIn}
+        error={hasErrors('email')}
+        initValue={inputs.email}
+      ></Input>
+        <Input 
+        type="password"
         name="password"
-      />
+        onChange={handleInputChange} 
+        error={hasErrors('password')}
+        initValue={inputs.password}
+      ></Input>
       <button onClick={handleSubmit} className={formStyle.button} disabled={user.loggingIn}>
         {user.loggingIn ? <span><FontAwesomeIcon icon={faSpinner} spin /> logging in..</span> : 'login'}
       </button>
