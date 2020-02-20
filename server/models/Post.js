@@ -6,7 +6,7 @@ const path = require('path');
 
 /**
  * SCHEMA
- */
+ */ 
 
  const fileSchema = mongoose.Schema({
     src: {
