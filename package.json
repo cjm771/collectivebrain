@@ -9,6 +9,7 @@
     "start": "node server/index.js",
     "seed": "node sample_data/seedData.js",
     "herokuSSH": "heroku ps:exec --ssh --dyno=web.1",
+    "herokuMongo": "heroku addons:open mongolab",
     "heroku-prebuild": "npm install --dev",
     "build": "webpack -d --config ./webpack.config.js --mode production",
     "buildWatch": "webpack -d --watch --config ./webpack.config.js --mode development"

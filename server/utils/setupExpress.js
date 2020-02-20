@@ -30,8 +30,8 @@ module.exports = async (setupRoutes) => {
   app.use(session({
     key: 'user_sid',
     secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
     cookie: {
       expires: 30 * 24 * 60 * 60 * 1000 ,
