@@ -159,7 +159,7 @@ module.exports  = {
   },
   Query : {
     post: async (_, args, ctx) => {
-      if (ctx.req.session.user) {
+      // if (ctx.req.session.user) {
         try {
           const post = await Post.findOne({_id: args.id}).populate('user');
           return post;
@@ -168,12 +168,12 @@ module.exports  = {
             invalidArgs: ['id'],
            });
         }
-      } else {
-        throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?');
-      }
+      // } else {
+      //   throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?');
+      // }
     },
     posts: async (_, args, ctx) => {
-      if (ctx.req.session.user) {
+      // if (ctx.req.session.user) {
         args.limit = args.limit || 0;
         args.offset = args.offset || 0;
         const count = await Post.estimatedDocumentCount({});
@@ -192,9 +192,9 @@ module.exports  = {
           next: (args.offset + args.limit < count) ? args.offset + args.limit : null,
           posts: posts
         }
-      } else {
-        throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?')
-      }
+      // } else {
+      //   throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?')
+      // }
     },
     users: (_, args, ctx) => {
       if (ctx.req.session.user) {

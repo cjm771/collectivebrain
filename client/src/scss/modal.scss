@@ -1,24 +1,25 @@
-.modal {
-  background-color: #fff;
-  margin: 6em auto auto;
-  padding: 3rem;
-  width: 100%;
-  max-width: 60rem;
-  box-shadow: 0px 9px 21px 0px rgba(0,0,0,0.35);
-}
+@import './themes';
 
-.overlay {
-  position: fixed;
-  // display: flex;
-  // justify-content: center;
-  // align-items: center;
-  overflow: auto;
- 
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.25);
+
+@include themeProvider() using ($themeMap) {
+  .modal {
+    background-color: map-get($themeMap, 'listItemBGColor');
+    margin: 6em auto auto;
+    padding: 3rem;
+    width: 100%;
+    max-width: 60rem;
+    box-shadow: 0px 9px 21px 0px rgba(0,0,0,0.35);
+  }
   
+  .overlay {
+    position: fixed;
+    overflow: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.25);
+    
+  }
 }

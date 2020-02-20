@@ -8,6 +8,13 @@ const Post = require('../models/Post');
 const { createCanvas, loadImage } =require('canvas');
 
 module.exports  =  (req, res) => {
+
+    let colorBG = '50, 50, 50';
+    let colorText = '200, 200, 200';
+    if (req.session.theme && req.session.theme === 'light') {
+      colorBG = '255, 255, 255';
+      colorText = '50, 50, 50';
+    }
     /**
      * get year as unix timestamp
      * @param {*} date 
@@ -132,22 +139,22 @@ module.exports  =  (req, res) => {
         ctx.save();
         ctx.strokeStyle = Post.getCategoryColorByName(Post.getCategoryName(post.category));
         ctx.lineWidth = 20;
-        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+        ctx.fillStyle = `rgba(${colorBG}, 1)`;
         ctx.beginPath();
         ctx.rect(0, 0, width, height);
         ctx.fill();
         ctx.stroke();
         ctx.restore();
         // Write "Awesome!"
+        ctx.fillStyle = `rgba(${colorText}, 1)`;
         ctx.textAlign = 'right'
         ctx.font = '600 10px Helvetica, Arial, Sans-Serif'
         ctx.fillText(dateStr, width - padding, padding)
         ctx.font = '800 10px Helvetica, Arial, Sans-Serif'
-        ctx.fillText(post.creator || 'Dummy Creator', width - padding, 55)
+        ctx.fillText(post.creator || '', width - padding, 55)
         ctx.textAlign = 'left'
         ctx.font = '600 12px Helvetica, Arial, Sans-Serif'
         ctx.fillText(post.title.toUpperCase(), padding, padding)
-        ctx.fillStyle = "rgba(100, 100, 100, 1)";
         ctx.font = '500 10px Helvetica, Arial, Sans-Serif'
         ctx.fillText(Post.getCategoryName(post.category).toUpperCase(), padding, 55)
         if (post.files && post.files.length) {
@@ -169,7 +176,7 @@ module.exports  =  (req, res) => {
           );
         }
         ctx.font = 'normal 10px Helvetica, Arial, Sans-Serif'
-        ctx.fillStyle = "#333";
+        ctx.fillStyle = `rgba(${colorText}, 1)`;
         wrapText(
           ctx, 
           post.description, 
@@ -180,7 +187,7 @@ module.exports  =  (req, res) => {
           12
         );
         ctx.save();
-        ctx.fillStyle ='#bbbbbb';
+        ctx.fillStyle = `rgba(${colorText}, .5)`;
         ctx.font = 'italic normal 10px Helvetica, Arial, Sans-Serif';
         if (post.files && post.files.length) {
           if (post.files[0].caption) {
@@ -211,11 +218,11 @@ module.exports  =  (req, res) => {
         }
         ctx.restore();
         ctx.font = 'italic normal 10px Helvetica, Arial, Sans-Serif';
-        ctx.fillStyle = '#c0c0c0';
+        ctx.fillStyle = `rgba(${colorText}, .75)`;
         if (post.sources && post.sources.length) {   
           // post.sources = post.sources.concat(post.sources).concat(post.sources);  
           let sourceY = height - padding - (post.sources.length < 3 ? 30 : 18);
-          ctx.fillStyle = '#c0c0c0';
+          ctx.fillStyle = `rgba(${colorText}, .75)`;
           limitSources(post.sources, 2).forEach((source, index) => {
             wrapText(
               ctx,

@@ -1,142 +1,148 @@
 @import './colors';
-.posts {
-  .actions {
-    text-align: center;
-    padding: 1rem 0;
-    a {
-      color: $blue;
-      svg {
-        margin-right: 0.5rem;
+@import './themes';
+
+@include themeProvider() using ($themeMap) {
+  .posts {
+    .actions {
+      text-align: center;
+      padding: 1rem 0;
+      a {
+        color: map-get($themeMap, 'linkColor');
+        svg {
+          margin-right: 0.5rem;
+        }
       }
     }
-  }
 
-  ul.postList {
-    padding-left: 0;
+    ul.postList {
+      padding-left: 0;
 
-    li.postItem {
-      a {
-        display: block;
-        text-decoration: none;
-        color: inherit;
-        width: 100%;
-        padding: 0.5rem 0;
-        display: flex;
-        justify-content: center;
-        transition: background-color 0.1s ease-in-out;
-        cursor: pointer;
-
-        &.disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-          pointer-events: none;
-        }
-
-        &:hover {
-          background-color: rgb(248, 248, 248);
-          .titleSection {
-            .text {
-              .actionIcon {
-                opacity: 1;
-              }
-            }
-          }
-        }
-
-        .titleSection {
+      li.postItem {
+        a {
+          display: block;
+          text-decoration: none;
+          color: inherit;
+          width: 100%;
+          padding: 0.5rem 0;
           display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          text-align: left;
+          justify-content: center;
+          transition: background-color 0.1s ease-in-out;
+          cursor: pointer;
 
-          &.draft {
-            opacity: 0.4;
+          &.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
           }
 
-          .text {
-            padding-left: 0.3rem;
-            width: calc(100% - 3rem);
+          &:hover {
+
+            background-color: map-get($themeMap, 'listItemHoverBGColor');
+
+            .titleSection {
+              .text {
+                .actionIcon {
+                  opacity: 1;
+                }
+              }
+            }
+          }
+
+          .titleSection {
             display: flex;
+            justify-content: flex-start;
             align-items: center;
+            text-align: left;
 
-            .title {
-              // pass
+            &.draft {
+              opacity: map-get($themeMap, 'deemphasizeOpacity')
             }
 
-            .badge {
-              margin-left: 0.5rem;
-            }
+            .text {
+              padding-left: 0.3rem;
+              width: calc(100% - 3rem);
+              display: flex;
+              align-items: center;
 
-            .actionIcon {
-              cursor: pointer;
-
-              &.persistent {
-                opacity: 1;
+              .title {
+                // pass
               }
-              opacity: 0;
-              transition: all 0.25s ease-in-out;
-              margin-left: 0.5rem;
 
-              &:hover {
-                transform: scale(1.25);
-                color: $blue;
+              .badge {
+                margin-left: 0.5rem;
+              }
+
+              .actionIcon {
+                cursor: pointer;
+
+                &.persistent {
+                  opacity: 1;
+                }
+                opacity: 0;
+                transition: all 0.25s ease-in-out;
+                margin-left: 0.5rem;
+
+                &:hover {
+                  transform: scale(1.25);
+                  color: map-get($themeMap, 'linkColor')
+                }
+              }
+
+              .dot {
+                border-radius: 50%;
+                width: 0.5rem;
+                background: #eee;
+                height: 0.5rem;
+                margin-top: -0.25rem;
+                display: inline-block;
+                margin-left: 0.5rem;
+                vertical-align: middle;
               }
             }
 
-            .dot {
+            .keyImage {
+              width: 3rem;
+              height: 3rem;
+              background-color: map-get($themeMap, 'inputBGColor');
               border-radius: 50%;
-              width: 0.5rem;
-              background: #eee;
-              height: 0.5rem;
-              margin-top: -0.25rem;
+              vertical-align: middle;
+
+              img {
+                height: 100%;
+                object-fit: cover;
+                width: 100%;
+                border-radius: 50%;
+              }
+            }
+          }
+
+          .by {
+            text-align: right;
+            font-size: 0.9rem;
+            font-style: italic;
+
+            &.skeleton {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+
+            .author {
               display: inline-block;
-              margin-left: 0.5rem;
-              vertical-align: middle;
+
+              .authorProfileImage {
+                width: 1rem;
+                height: 1rem;
+                border-radius: 50%;
+                margin: 0 0.25rem;
+                vertical-align: middle;
+              }
             }
-          }
 
-          .keyImage {
-            width: 3rem;
-            height: 3rem;
-            background-color: #eee;
-            border-radius: 50%;
-            vertical-align: middle;
-
-            img {
-              height: 100%;
-              object-fit: cover;
-              width: 100%;
-              border-radius: 50%;
+            .date {
+              display: block;
+              color: #ccc;
             }
-          }
-        }
-
-        .by {
-          text-align: right;
-          font-size: 0.9rem;
-          font-style: italic;
-
-          &.skeleton {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          }
-
-          .author {
-            display: inline-block;
-
-            .authorProfileImage {
-              width: 1rem;
-              height: 1rem;
-              border-radius: 50%;
-              margin: 0 0.25rem;
-              vertical-align: middle;
-            }
-          }
-
-          .date {
-            display: block;
-            color: #ccc;
           }
         }
       }

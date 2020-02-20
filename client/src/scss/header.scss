@@ -1,5 +1,5 @@
 @import './_dims';
-@import './_colors';
+@import './themes';
 
 // ones that should be stylized for the header
 @mixin specialLinks {
@@ -9,116 +9,122 @@
   }
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem;
-  min-height: $header-height;
-  position: relative;
-  z-index: 10;
-
-  .left {
-    font-weight: bold;
-    a {
-      @include specialLinks();
-    }
-  }
-
-  .right {
-    ul.unauthItems {
-      list-style: none;
-      li {
-        display: inline-block;
-        padding-left: 1rem;
-        a {
-          @include specialLinks();
-        }
+@include themeProvider() using ($themeMap) {
+  .header {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    min-height: $header-height;
+    position: relative;
+    z-index: 10;
+  
+    .left {
+      font-weight: bold;
+      a {
+        @include specialLinks();
       }
     }
-
-
-
-
-    .authDropdown {
-      padding-left: .5rem;
-      user-select: none;
-
-      .profileImage {
-        border-radius: 50%;
-        filter: saturate(0);
-        width: 2rem;
-        height: auto;
-        margin-right: .3rem;
+  
+    .right {
+      ul.unauthItems {
+        list-style: none;
+        li {
+          display: inline-block;
+          padding-left: 1rem;
+          a {
+            @include specialLinks();
+          }
+        }
       }
   
-      .chevron {
+  
+  
+  
+      .authDropdown {
         padding-left: .5rem;
-        font-size: 1.2rem;
-      }
-      
-      .dropdownMenu {
-        padding-bottom: 0;
-        margin-top: 1rem;
-        margin-left: 3.0rem;
-        cursor: pointer;
         user-select: none;
-
-        .dropdownMenuArrow {
-            top: -25px;
-            left: 90%;
-            width: 0;
-            height: 0;
-            position: relative;
-
-          &:before,
-          &:after {
-            content: "";
-            position: absolute;
-            display: block;
-            width: 0;
-            height: 0;
-            border-width: 7px 8px;
-            border-style: solid;
-            border-color: transparent;
-            z-index: 1001;
-          }
-
-          &:after {
-            bottom: -18px;
-            right: -8px;
-            border-bottom-color: #fff;
-          }
-
-          &:before {
-            bottom: -17px;
-            right: -8px;
-            border-bottom-color: rgba(0,0,0,.15);
-          }
+        cursor: pointer;
+  
+        .profileImage {
+          border-radius: 50%;
+          filter: saturate(0);
+          width: 2rem;
+          height: auto;
+          margin-right: .3rem;
         }
-
-        a {
-          display: flex;
-          justify-content: flex-start;
-          padding: .25rem;
-          font-size: .75rem;
-          align-items: center;
-          transition: all .1s ease-in-out;
-          &:hover {
-            background: #000;
-            color: #fff;
-            svg {
-              color: #fff;
+    
+        .chevron {
+          padding-left: .5rem;
+          font-size: 1.2rem;
+        }
+        
+        .dropdownMenu {
+          padding-bottom: 0;
+          background-color: map-get($themeMap, 'listItemBGColor');
+          margin-top: 1rem;
+          margin-left: 3.0rem;
+          cursor: pointer;
+          user-select: none;
+  
+          .dropdownMenuArrow {
+              top: -25px;
+              left: 90%;
+              width: 0;
+              height: 0;
+              position: relative;
+  
+            &:before,
+            &:after {
+              content: "";
+              position: absolute;
+              display: block;
+              width: 0;
+              height: 0;
+              border-width: 7px 8px;
+              border-style: solid;
+              border-color: transparent;
+              z-index: 1001;
+            }
+  
+            &:after {
+              bottom: -18px;
+              right: -8px;
+              border-bottom-color: map-get($themeMap, 'listItemBGColor');
+            }
+  
+            &:before {
+              bottom: -17px;
+              right: -8px;
+              border-bottom-color: rgba(0,0,0,.15);
             }
           }
-          > * {
-            margin: .25rem;
-          }
-          svg {
-            color: #c0c0c0;
-            font-size: 1rem;
+  
+          a {
+            display: flex;
+            justify-content: flex-start;
+            padding: .25rem;
+            font-size: .75rem;
+            align-items: center;
+            transition: all .1s ease-in-out;
+            color: map-get($themeMap, 'textColor');
+            &:hover {
+              background: map-get($themeMap, 'listItemHoverBGColor');
+              color: map-get($themeMap, 'textColor');
+              svg {
+                color: map-get($themeMap, 'textColor');
+              }
+            }
+            > * {
+              margin: .25rem;
+            }
+            svg {
+              // color: map-get($themeMap, 'textColor');
+              font-size: 1rem;
+            }
           }
         }
       }
     }
   }
 }
+

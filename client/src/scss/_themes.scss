@@ -1,0 +1,94 @@
+@import './colors';
+
+// in html, add the theme-{{ theme name }}  to body ex. 'theme-dark'
+// ------------------------------------------------
+// in scss, wrap root element with the mixin for example is header.scss...
+// there you have access to the theme map and can use
+// all themes will be compiled and you can change between them by just changing html body theme class ^ 
+// ------------------------------------------------
+// @include themeProvider() using ($themeMap) { 
+//   .btn {
+//     background-color: map-get($themeMap, 'buttonBGColor');
+//     color: map-get($themeMap, 'buttonTextColor');
+// }
+//
+
+$DEFAULT_THEME: dark;
+$modifierIntensity: 10;
+
+$themes: (
+  light: (
+    // basics
+    backgroundColor: transparent,
+    textColor: #333,
+    linkColor: $blue,
+    errorColor: $red,
+    successColor: $green,
+    // list items
+    listItemBGColor: #fff,
+    inputErrorBGColor: #facfcf,
+    listItemHoverBGColor: darken(#fff, $modifierIntensity / 4),
+    deemphasizeOpacity: 0.4,
+    // input
+    inputBGColor: $light,
+    inputTextColor: $dark,
+    switchColor: lighten($light, $modifierIntensity),
+    inputPlaceholderTextColor: lighten($dark, $modifierIntensity * 2),
+    inputSkeletonGradient: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%),
+    // button
+    buttonTextColor: #fff,
+    buttonBGColor: #000,
+    buttonSecondaryTextColor: $dark,
+    buttonSecondaryBGColor: darken($light, $modifierIntensity / 2),
+    buttonBGHoverColor: $blue, 
+  ),
+  dark: (
+    // basics
+    backgroundColor: #000,
+    textColor: $light,
+    linkColor: lighten($blue, $modifierIntensity),
+    errorColor: lighten($red, $modifierIntensity),
+    successColor: lighten($green, $modifierIntensity),
+    // list items
+    listItemBGColor: $dark,
+    listItemHoverBGColor : darken($dark, $modifierIntensity),
+    deemphasizeOpacity: 0.6,
+    // input
+    inputBGColor: $dark,
+    inputErrorBGColor: darken(#facfcf, $modifierIntensity),
+    inputTextColor: $light,
+    switchColor: $light,
+    inputPlaceholderTextColor: lighten($dark, $modifierIntensity * 2),
+    inputSkeletonGradient: linear-gradient(to right,lighten($dark, $modifierIntensity) 8%, $dark, lighten($dark, $modifierIntensity) 33%),
+    // button
+    buttonTextColor: #fff,
+    buttonBGColor: $blue,
+    buttonSecondaryTextColor: $light,
+    buttonSecondaryBGColor: lighten($dark, $modifierIntensity),
+    buttonBGHoverColor: lighten($blue, $modifierIntensity), 
+
+  ),
+);
+
+// provide theme to content
+@mixin themeProvider() {
+  // default theme
+  :global {
+    body {
+      :local {
+        @content(map-get($themes, $DEFAULT_THEME))
+      }
+    }
+  }
+  // 
+  @each $name, $themeMap in $themes {
+    :global {
+      body.theme-#{$name} {
+        :local {
+          @content($themeMap);
+        } 
+      }
+    }
+  }
+}
+

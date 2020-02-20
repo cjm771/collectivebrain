@@ -1,41 +1,63 @@
-.carousel {
+@import './themes';
+
+@include themeProvider() using ($themeMap) {
+  .carousel {
+    
+    :global {
+      // .carousel-control-prev-icon {
+      //   filter: invert(100);
+      // }
+      // .carousel-control-next-icon {
+      //   filter: invert(100);
+      // }
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+        background-size: 100%, 100%;
+        background-image: none;
+        &:after {
+          font-size: 2rem;
+          color: map-get($themeMap, 'textColor');
+        }
+      }
+      
+      .carousel-control-next-icon:after
+      {
+        content: '>';
+      }
+      .carousel-control-prev-icon:after {
+        content: '<';
+      }
   
-  :global {
-    .carousel-control-prev-icon {
-      filter: invert(100);
+      .carousel-indicators li {
+        width: .5rem;
+        height: .5rem;
+        border-radius: 50%;
+        margin: 0 .25rem;
+        background-color: map-get($themeMap, 'textColor');
+      }
+      .carousel-caption {
+        position: relative;
+        // color: map-get($themeMap, 'textColor');
+        opacity: map-get($themeMap, 'deemphasizeOpacity');
+        font-style: italic;
+        padding: 2rem 1rem;
+        left: auto;
+        right: auto;
+        text-align: center;
+      }
     }
-    .carousel-control-next-icon {
-      filter: invert(100);
+  
+    .loading {
+      min-height: 20rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-
-    .carousel-indicators li {
-      width: .5rem;
-      height: .5rem;
-      border-radius: 50%;
-      margin: 0 .25rem;
-      background-color: #000;
+  
+    .img {
+      width: 70%;
+      max-width: 24rem;
+      margin: auto;
     }
-    .carousel-caption {
-      position: relative;
-      color: #ccc;
-      font-style: italic;
-      padding: 2rem 1rem;
-      left: auto;
-      right: auto;
-      text-align: center;
-    }
-  }
-
-  .loading {
-    min-height: 20rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .img {
-    width: 70%;
-    max-width: 24rem;
-    margin: auto;
   }
 }

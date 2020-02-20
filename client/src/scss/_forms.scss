@@ -1,249 +1,275 @@
-@import './sizes.scss';
-@import './colors.scss';
-@import './mixins.scss';
+@import './sizes';
+// @import './colors';
+@import './mixins';
+@import './themes';
 
-.form {
-  text-align: center;
-  input, button, select {
-    &[disabled] { 
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
 
-  .fieldError,
-  .errorBox {
-    color: #ff0000;
+@include themeProvider using ($themeMap) {
+  .form {
     text-align: center;
-    margin: .5rem 0;
-  }
-
-  .successBox {
-    color: #00802b;
-    text-align: center;
-    margin: .5rem 0;
-  }
-
-  .half {
-    @include desktop {
-      > :first-child {
-       padding-right: $padding-gutter / 2;
-     }
-     > :last-child {
-       padding-left: $padding-gutter / 2;
-     }
-    }
-  }
-
-  .halfWithIcon {
-
-    > :nth-child(2) {
-      display: none;
-     }
-
-    @include desktop {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-
-      > :first-child {
-       padding-right: $padding-gutter / 2;
-     }
-
-     > :nth-child(2) {
-      display: block;
-      padding-left: 0;
-      padding-right: 0;
-     }
-
-     > :last-child {
-       padding-left: $padding-gutter / 2;
-     }
-     
-    }
-  }
-
-  .halfLeftRightAligned {
-    > *:first-child {
-      text-align: left;
-      float: left;
-    }
-    > *:last-child {
-      text-align: right;
-      > * {
-        float: right;
+    input, button, select {
+      &[disabled] { 
+        opacity: 0.5;
+        cursor: not-allowed;
       }
     }
-  }
-
-}
-
-textarea.input {
-  min-height: 10rem;
-  vertical-align: top;
   
-}
-
-.inputWpr {
-  position: relative;
-  margin-bottom: 1rem;
-
-  &.filled {
-    label {
-      display: block;
+    .fieldError,
+    .errorBox {
+      color: map-get($themeMap, 'errorColor');
+      text-align: center;
+      margin: .5rem 0;
     }
-    
-    &.dropdown, 
-    .input {
-      padding-top: $input-padding * 1.5;
+  
+    .successBox {
+      color: map-get($themeMap, 'successColor');
+      text-align: center;
+      margin: .5rem 0;
     }
+  
+    .half {
+      @include desktop {
+        > :first-child {
+         padding-right: $padding-gutter / 2;
+       }
+       > :last-child {
+         padding-left: $padding-gutter / 2;
+       }
+      }
+    }
+  
+    .halfWithIcon {
+  
+      > :nth-child(2) {
+        display: none;
+       }
+  
+      @include desktop {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+  
+  
+        > :first-child {
+         padding-right: $padding-gutter / 2;
+       }
+  
+       > :nth-child(2) {
+        display: block;
+        padding-left: 0;
+        padding-right: 0;
+       }
+  
+       > :last-child {
+         padding-left: $padding-gutter / 2;
+       }
+       
+      }
+    }
+  
+    .halfLeftRightAligned {
+      > *:first-child {
+        text-align: left;
+        float: left;
+      }
+      > *:last-child {
+        text-align: right;
+        > * {
+          float: right;
+        }
+      }
+    }
+  
   }
-
-  &.switch {
+  
+  textarea.input {
+    min-height: 10rem;
+    vertical-align: top;
+    
+  }
+  
+  .inputWpr {
     position: relative;
-    margin: 0.25rem 0;
-    text-align: left;
-    
-    input[type=checkbox],
-    .fakeCheckBox {
-      position: absolute;
-      height: 0;
-      width: 0;
-      visibility: hidden;
-      &.checked + label,
-      &:checked + label {
-        background: #5cb85c;
+    margin-bottom: 1rem;
+  
+    &.filled {
+      label {
+        display: block;
       }
-      &.checked + label.blue, 
-      &:checked + label.blue {
-        background: $blue;
+      
+      &.dropdown, 
+      .input {
+        padding-top: $input-padding * 1.5;
       }
-      &.checked + label:after,
-      &:checked + label:after {
-        left: 93%;
-        transform: translateX(-100%);
-      }
-    
     }
   
-    label {
-      margin: 0;
-      cursor: pointer;
-      text-indent: -9999px;
-      width: 50px;
-      height: 25px;
-      background: #ccc;
-      transition: background .5s ease-in-out;
-      display: block;
-      border-radius: 100px;
+    &.switch {
       position: relative;
-    }
-  
-    .checkmark {
-      position: absolute;
-      top: 15%;
-      right: 10%;
-      font-size: 1.3rem;
-      color: $blue;
-    }
-  
-  
-    label:after {
-      content: '';
-      position: absolute;
-      top: 12%;
-      left: 7%;
-      width: 35%;
-      height: 75%;
-      background: #fff;
-      border-radius: 90px;
-      transition: 0.3s;
-    }
-  
-  
-
-    label:active:after {
-      width: 20px;
-    }
-  }  
-  
-  label {
-    position: absolute;
-    display: none;
-    top: 0;
-    left: 0;
-    font-size: $input-padding * .6;
-    color: $blue;
-    padding-left: $input-padding;
-    padding-top: $input-padding * .5;
-  }
-
-
-  &.dropdown,
-  .input {
-    background: $input-bg-color;
-    border: 0;
-    padding: $input-padding;
-    transition: padding .25s ease-in-out;
-    border-radius: $input-border-radius;
-    width: 100%;
-    position: relative;
-
-    .arrow {
-      color: #000;
-      position: absolute;
-      top: 30%;
-      right: $input-padding;
-    }
+      margin: 0.25rem 0;
+      text-align: left;
+      
+      input[type=checkbox],
+      .fakeCheckBox {
+        position: absolute;
+        height: 0;
+        width: 0;
+        visibility: hidden;
+        &.checked + label,
+        &:checked + label {
+          background: map-get($themeMap, 'successColor');
+        }
+        &.checked + label.blue, 
+        &:checked + label.blue {
+          background: ≈
+        }
+        &.checked + label:after,
+        &:checked + label:after {
+          left: 93%;
+          transform: translateX(-100%);
+        }
+      
+      }
     
+      label {
+        margin: 0;
+        cursor: pointer;
+        text-indent: -9999px;
+        width: 50px;
+        height: 25px;
+        background: map-get($themeMap, 'inputBGColor');
+        transition: background .5s ease-in-out;
+        display: block;
+        border-radius: 100px;
+        position: relative;
+      }
+    
+      .checkmark {
+        position: absolute;
+        top: 15%;
+        right: 10%;
+        font-size: 1.3rem;
+        color: map-get($themeMap, 'linkColor');
+      }
+    
+    
+      label:after {
+        content: '';
+        position: absolute;
+        top: 12%;
+        left: 7%;
+        width: 35%;
+        height: 75%;
+        background: map-get($themeMap, 'switchColor');
+        border-radius: 90px;
+        transition: 0.3s;
+      }
+    
+    
+  
+      label:active:after {
+        width: 20px;
+      }
+    }  
+    
+    label {
+      position: absolute;
+      display: none;
+      top: 0;
+      left: 0;
+      font-size: $input-padding * .6;
+      color: map-get($themeMap, 'linkColor');
+      padding-left: $input-padding;
+      padding-top: $input-padding * .5;
+    }
+  
+  
+    &.dropdown,
+    .input {
+      &::placeholder {
+        color: map-get($themeMap, 'inputPlaceholderTextColor');
+      }
 
-    select {
-      padding: 0;
+      background: map-get($themeMap, 'inputBGColor');
+      color: map-get($themeMap, 'inputTextColor');
       border: 0;
-      text-indent: 0;
-      -webkit-appearance: none;
-      -moz-appearance : none;
-      box-shadow: none;
-      background: transparent;
-      height: auto;
-      color: inherit;
-    }
-    
-    &:-webkit-autofill,
-    &:-webkit-autofill:hover {
-      box-shadow: 0 0 0px 1000px #eee inset;
-      transition: background-color 5000s ease-in-out 0s;
-    }
+      padding: $input-padding;
+      transition: padding .25s ease-in-out;
+      border-radius: $input-border-radius;
+      width: 100%;
+      position: relative;
   
-    &.hasErrors {
-      background: #facfcf;
-      color: #ff0000;
+      .arrow {
+        color: map-get($themeMap, 'textColor');
+        position: absolute;
+        top: 30%;
+        right: $input-padding;
+      }
+      
+  
+      select {
+        padding: 0;
+        border: 0;
+        text-indent: 0;
+        -webkit-appearance: none;
+        -moz-appearance : none;
+        box-shadow: none;
+        background: transparent;
+        height: auto;
+        color: inherit;
+      }
+      
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover {
+        box-shadow: 0 0 0px 1000px map-get($themeMap, 'inputBGColor') inset;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+    
+      &.hasErrors {
+        background: map-get($themeMap, 'inputErrorBGColor');
+        color: map-get($themeMap, 'errorColor');
+        &:focus {
+          background: lighten(map-get($themeMap, 'inputErrorBGColor'), 2);
+        }
+      }
+          
       &:focus {
-        background: lighten(#facfcf, 2);
+        outline: none;
+        background: lighten(map-get($themeMap, 'inputBGColor'), 2);
       }
     }
-        
+  }
+  
+  .button {
+    margin: .5rem 0;
+    background: map-get($themeMap, 'buttonBGColor');
+    color: map-get($themeMap, 'buttonTextColor');
+    padding: $input-padding;
+    border-radius: $input-border-radius;
+    border: none;
+    transition: background .25s ease-in-out;
+    &:not([disabled]):hover {
+      background: map-get($themeMap, 'linkColor')
+    }
     &:focus {
       outline: none;
-      background: lighten($input-bg-color, 2);
+      background: lighten(map-get($themeMap, 'buttonBGColor'), 2);
     }
   }
-}
 
-.button {
-  margin: .5rem 0;
-  background: #000;
-  color: #fff;
-  padding: $input-padding;
-  border-radius: $input-border-radius;
-  border: none;
-  transition: background .25s ease-in-out;
-  &:not([disabled]):hover {
-    background: $blue;
-  }
-  &:focus {
-    outline: none;
-    background: lighten(#000, 2);
+  .buttonSecondary {
+    margin: .5rem 0;
+    background: map-get($themeMap, 'buttonSecondaryBGColor');
+    color: map-get($themeMap, 'buttonSecondaryTextColor');
+    padding: $input-padding;
+    border-radius: $input-border-radius;
+    border: none;
+    transition: background .25s ease-in-out;
+    &:not([disabled]):hover {
+      background: map-get($themeMap, 'linkColor')
+    }
+    &:focus {
+      outline: none;
+      background: map-get($themeMap, 'buttonSecondaryBGColor');
+    }
   }
 }

@@ -1,7 +1,8 @@
 
-@import './sizes.scss';
-@import './colors.scss';
-@import './mixins.scss';
+@import './sizes';
+@import './colors';
+@import './mixins';
+@import './themes';
 
 
 :global {
@@ -36,186 +37,190 @@
   }
 }
 
-.fileGallery {
-  padding:  0 $input-padding;
-
-  .imgWpr {
-    padding-right: $input-padding / 4;
-    padding-left: $input-padding / 4;
-    padding-bottom: $input-padding;
-    overflow: hidden;
-
-    &:nth-child(1),
-    &:nth-child(3n + 4) {
-      padding-left: 0;
-      padding-right: $input-padding / 2;
-     
-    }
-
-    &:nth-child(3n + 4) {
-      .addMore {
-        min-height: 12rem;
-      }
-    }
-
-    &:nth-child(3n) {
-      padding-left: $input-padding / 2;
-      padding-right: 0;
-    }
-
-    &.fileDropZone {
-
-      &, *, &:focus, *:focus {
-        outline: none;
-      }
-
-      &.noFiles {
-        flex: 100%;
-        max-width: none;
-        width: 100%;
-        padding-right: 0;
-        min-height: auto;
+@include themeProvider() using ($themeMap) {
+  .fileGallery {
+    padding:  0 $input-padding;
   
+    .imgWpr {
+      padding-right: $input-padding / 4;
+      padding-left: $input-padding / 4;
+      padding-bottom: $input-padding;
+      overflow: hidden;
+  
+      &:nth-child(1),
+      &:nth-child(3n + 4) {
+        padding-left: 0;
+        padding-right: $input-padding / 2;
+       
+      }
+  
+      &:nth-child(3n + 4) {
         .addMore {
-          background: #c0c0c0;
-          color: #fff;
+          min-height: 12rem;
+        }
+      }
+  
+      &:nth-child(3n) {
+        padding-left: $input-padding / 2;
+        padding-right: 0;
+      }
+  
+      &.fileDropZone {
+  
+        &, *, &:focus, *:focus {
+          outline: none;
+        }
+  
+        &.noFiles {
+          flex: 100%;
+          max-width: none;
+          width: 100%;
+          padding-right: 0;
+          min-height: auto;
+        }
+
+        .addMore {
+          background: map-get($themeMap, 'buttonSecondaryBGColor');
+          color: map-get($themeMap, 'buttonSecondaryTextColor');
           padding: $input-padding;
+          transition: background .25s ease-in-out, color .25S ease-in-out;
           &:hover {
             color: #fff;
-            background: lighten(#c0c0c0, 2);
+            background: map-get($themeMap, 'buttonBGHoverColor');
           }
         }
       }
-    }
-
-    .progress {
-      height: .5rem;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #000;
-      border-radius: 0 0 $input-border-radius $input-border-radius;
-      .progressBar {
-        height: 100%;
-        background: #fff;
-        transition: width .25s ease-in-out;
-      }
-    }
-
-    .editModeShow {
-      display: none;
-    }
-
-    .editModeHide {
-      display: block;
-    }
-
-    &.error {
-      .actionsPanel {
-        opacity: 1;
-        background: $red;
-      }
-    }
-    
-    &.editMode {
-      .actionsPanel {
-        opacity: 1;
-      }
-      .editModeShow {
-        display: block;
-      }
-      .editModeHide {
-        display: none;
-      }
-    }
-
-    .captionInput {
-      position: absolute;
-      padding: $input-padding;
-      bottom: 0;
-      left: 0;
-      input {
-        border: 0;
-        background: #000;
-        border-radius: $input-border-radius;
-        width: 100%;
-        color: #fff;
-        &:focus {
-          background: lighten(#000, 2);
-        }
-      }
-    }
-
-    .actionsPanel {
-      position: absolute;
-      top: $input-padding;
-      right: $input-padding;
-      opacity: 0;
-      z-index: 2;
-      background-color: #000;
-      border-radius: $input-border-radius;
-      transition: opacity .25s ease-in-out;
-      padding: $input-padding / 2;
-      color: #fff;
-
-
-      svg {
-        cursor: pointer;
-        transition: color .25s ease-in-out;
-
-        &:hover {
-          color: $blue;
-        }
-
-        &:first-child {
-          margin-left: 0;
-        }
-
-        margin-left: $input-padding / 2;
-      }
-    }
-
-    &:hover {
-      .actionsPanel {
-        opacity: 1;
-      }
-    }
-
-    .addMore {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      background: $input-bg-color;
-      transition: background, color .25s ease-in-out;
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-      border-radius: $input-border-radius;
-      &:hover {
-        background: lighten($input-bg-color, 2);
-        color: $blue;
-      }
-    }
-
-    .aspectControl {
-      padding-bottom: 100%;
-      background-size: cover;
-      position: relative;
-      border-radius: $input-border-radius;
-
-      &.preview {
-        opacity: 0.75;
-      }
-      img {
+  
+      .progress {
+        height: .5rem;
         position: absolute;
-        top: 0;
+        bottom: 0;
         left: 0;
         width: 100%;
-        height: 100%;
+        background: #000;
+        border-radius: 0 0 $input-border-radius $input-border-radius;
+        .progressBar {
+          height: 100%;
+          background: #fff;
+          transition: width .25s ease-in-out;
+        }
+      }
+  
+      .editModeShow {
+        display: none;
+      }
+  
+      .editModeHide {
+        display: block;
+      }
+  
+      &.error {
+        .actionsPanel {
+          opacity: 1;
+          background: $red;
+        }
+      }
+      
+      &.editMode {
+        .actionsPanel {
+          opacity: 1;
+        }
+        .editModeShow {
+          display: block;
+        }
+        .editModeHide {
+          display: none;
+        }
+      }
+  
+      .captionInput {
+        position: absolute;
+        padding: $input-padding;
+        bottom: 0;
+        left: 0;
+        input {
+          border: 0;
+          background: #000;
+          border-radius: $input-border-radius;
+          width: 100%;
+          color: #fff;
+          &:focus {
+            background: lighten(#000, 2);
+          }
+        }
+      }
+  
+      .actionsPanel {
+        position: absolute;
+        top: $input-padding;
+        right: $input-padding;
+        opacity: 0;
+        z-index: 2;
+        background-color: #000;
         border-radius: $input-border-radius;
-        object-fit: cover;
+        transition: opacity .25s ease-in-out;
+        padding: $input-padding / 2;
+        color: #fff;
+  
+  
+        svg {
+          cursor: pointer;
+          transition: color .25s ease-in-out;
+  
+          &:hover {
+            color: $blue;
+          }
+  
+          &:first-child {
+            margin-left: 0;
+          }
+  
+          margin-left: $input-padding / 2;
+        }
+      }
+  
+      &:hover {
+        .actionsPanel {
+          opacity: 1;
+        }
+      }
+  
+      .addMore {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        // background: map-get($themeMap, 'buttonSecondaryBGColor');
+        // color: map-get($themeMap, 'buttonTextColor');
+        // transition: background, color .25s ease-in-out;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        border-radius: $input-border-radius;
+        // &:hover {
+        //   background: map-get($themeMap, 'buttonBGHoverColor');
+        //   // color: map-get($themeMap, 'buttonTextColor');
+        // }
+      }
+  
+      .aspectControl {
+        padding-bottom: 100%;
+        background-size: cover;
+        position: relative;
+        border-radius: $input-border-radius;
+  
+        &.preview {
+          opacity: 0.75;
+        }
+        img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border-radius: $input-border-radius;
+          object-fit: cover;
+        }
       }
     }
   }

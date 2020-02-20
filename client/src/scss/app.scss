@@ -1,12 +1,11 @@
 
-@import './colors.scss';
+@import './themes.scss';
 
-:global {
-  // body {
-  //   background-color: themed('backgroundColor');
-  //   color: themed('textColor');
-  // }
+@include themeProvider() using ($themeMap) {
+  background-color: map-get($themeMap, 'backgroundColor');
+  color: map-get($themeMap, 'textColor');
 }
+
 .app {
   .main {
     padding: 1rem;

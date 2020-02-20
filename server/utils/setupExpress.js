@@ -7,6 +7,7 @@ const session = require('express-session');
 const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const exphbs = require('express-handlebars');
 
 // models / mongo / mongoose
 const mongoose = require('../db.js');
@@ -22,6 +23,9 @@ const PORT = process.env.PORT || 3000;
 module.exports = async (setupRoutes) => {
   const app = express();
 
+  app.engine('.html', exphbs({extname: '.html'}));
+  app.set('views', path.resolve(__dirname, '../../client/dist/'));
+  app.set('view engine', '.html');
   app.use(cookieParser());
   app.use(session({
     key: 'user_sid',
@@ -63,8 +67,8 @@ module.exports = async (setupRoutes) => {
   });
   server.applyMiddleware({ app });
   app.use(bodyParser.urlencoded({ extended: true }));
-  
-  const PROTECTED_ROUTES = ['/', /\/dashboard\/?(.*)/];
+  const OK_ROUTES = [/^\/$/];
+  const PROTECTED_ROUTES = [/\/dashboard\/?(.*)/];
   const SKIP_IF_LOGGED_IN_ROUTES = ['/login', '/register'];
   
   // middleware function to check for logged-in users
@@ -75,10 +79,31 @@ module.exports = async (setupRoutes) => {
       res.redirect('/login');
     }    
   };
+
+  const renderRoot = (req, res) => {
+    const availableThemes = ['light', 'dark'];
+    if (req.query.theme) {
+      if (availableThemes.indexOf(req.query.theme) !== -1) {
+        req.session.theme = req.query.theme;
+      } else {
+        req.session.theme = undefined;
+      }
+    } 
+    res.render('index', {
+      layout: false,
+      theme: req.session.theme || 'dark'
+    });
+  }
   
   PROTECTED_ROUTES.forEach((route) => {
     app.get(route, sessionChecker, (req, res) => {
-      res.sendFile(path.join(__dirname, '../../client/dist/'));
+      renderRoot(req, res);
+    });
+  });
+
+  OK_ROUTES.forEach((route) => {
+    app.get(route, (req, res) => {
+      renderRoot(req, res);
     });
   });
   
@@ -86,9 +111,10 @@ module.exports = async (setupRoutes) => {
     app.route(route)
     .get((req, res) => {
         if (req.session.user && req.cookies.user_sid) {
+          
           res.redirect('/');
         } else {
-          res.sendFile(path.join(__dirname, '../../client/dist/'));
+          renderRoot(req, res);
         }
     });
   });
