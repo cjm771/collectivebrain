@@ -1,25 +1,11 @@
 const mongoose = require('../db.js');
-const Schema = mongoose.Schema;
-const User = require('../models/User.js');
-const fs = require('fs');
-const path = require('path');
+
+const User = require('./User.js');
+const File = require('./File.js');
 
 /**
  * SCHEMA
  */ 
-
- const fileSchema = mongoose.Schema({
-    src: {
-      type: String,
-      required: true
-    },
-    srcThumb: {
-      type: String
-    },
-    caption: {
-      type: String
-    }
- });
 
 const postSchema = mongoose.Schema({
   title: {
@@ -31,12 +17,12 @@ const postSchema = mongoose.Schema({
     default: false
   },
   user: { 
-    type: Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId, 
     ref: 'User',
     required: true
   },
   lastEditedBy: { 
-    type: Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId, 
     ref: 'User'
   },
   creator: {
@@ -84,8 +70,8 @@ const postSchema = mongoose.Schema({
   tags: [{
     type: String
   }],
-  images: [fileSchema],
-  files: [fileSchema],
+  images: [File.schema],
+  files: [File.schema],
 }, {
   timestamps: true
 });
@@ -104,25 +90,14 @@ postSchema.pre('remove', async function (next) {
 
 postSchema.pre('save', async function (next) {
   const post = this;
-
+  
   if (!post.isNew) {
-      // if ( post.editor !== post.user._id) {
-    //   // no editor? instant error
-    //   if (!post.editor) {
-    //     return next(permissionsError);
-    //   }
-    //   const editor = await User.findOne({_id: post.editor});
-    //   if (!editor) {
-    //     return next(new Error('Editor required to edit user'));
-    //   }
-    //   if (editor.isNormalUser()) {
-    //     return next(permissionsError);
-    //   } else if (editor.role <= post.user.role) {
-    //     return next(permissionsError);
-    //   }
-    // } 
     const permissionsError = new Error('You are not permitted to edit this post');
-    next(post.canBeEdited() ? undefined : permissionsError);
+    if (await post.canBeEdited()) {
+      next()
+    } else {
+      next(permissionsError);
+    }
   }
   post.lastEditedBy = post.editor;
   post.editor = null;
@@ -142,7 +117,8 @@ postSchema.virtual('categoryName').get(function () {
  * METHODS
  */
 
-postSchema.methods.canBeEdited = async function(editorId=post.editor) {
+
+postSchema.methods.canBeEdited = async function(editorId=this.editor) {
   const post = this;
   if ( editorId !== post.user._id) {
     // no editor? instant error
@@ -162,28 +138,17 @@ postSchema.methods.canBeEdited = async function(editorId=post.editor) {
   return true;
 };
 
-postSchema.methods.moveTmpFiles = async function() {
+postSchema.methods.moveTmpFiles = async function(user) {
   if (this.canBeEdited()) {
     if (this.files && this.files.length) {
       for (file of this.files) {
-        const filePattern = /\/uploads\/(.+)/;
-        const tmpFilePattern = /^\/uploads\/tmp\/(.+)/;
-        if (tmpFilePattern.test(file.src)) {
-          const oldFilePath = file.src.replace(tmpFilePattern, (m, m1) => {
-            return path.join(__dirname, '../uploads/tmp', m1);
-          });
-          const newFilePath = await postSchema.statics.getUniqueFileName(file.src.replace(tmpFilePattern, (m, m1) => {
-            return path.join(__dirname, '../uploads', m1);
-          }));
           try {
-            await fs.promises.rename(oldFilePath, newFilePath);
-            let matches = filePattern.exec(newFilePath);
-            file.src = `/uploads/${matches[1]}`;
-            await this.save();
+            this.editor = user._id;
+            await file.uploadFile();
+            await this.save();     
           } catch (e) {
-            throw new Error(`Could not move file from tmp: ${oldFilePath}, ${e}`);
+            throw new Error(`Could not move file from tmp: ${e}`);
           }  
-        }
       }
     }
     return true;
@@ -197,13 +162,9 @@ postSchema.methods.deleteFiles = async function() {
   if (this.canBeEdited()) {
     if (this.files && this.files.length) {
       for (file of this.files) {
-        const filePattern = /^\/uploads\/(.+)/;
-        const filePath = file.src.replace(filePattern, (m, m1) => {
-          return path.join(__dirname, '../uploads', m1);
-        });
         try {
-          await fs.promises.unlink(filePath);
-          result.deleted.push(file);
+            await file.deleteFile();
+            result.deleted.push(file);
         } catch (e) {
           result.notDeleted.push(file);
         }
@@ -215,35 +176,9 @@ postSchema.methods.deleteFiles = async function() {
   }
 };
 
-
-
 /**
  * STATICS
  */
-
-postSchema.statics.getUniqueFileName = async function (fullPath) {
-  const targetDir =  path.dirname(fullPath) + '/';
-  fs.mkdirSync(path.join(__dirname, targetDir), { recursive: true });
-  const originalPath = targetDir;
-  let originalFileName = path.basename(fullPath);
-  let fileName = originalFileName;
-  let pathToSave = originalPath + fileName;
-  
-  let keepGoing = true;
-  let count = 0;
-  while (keepGoing) {
-    try {
-      await fs.promises.access(pathToSave);
-      count++;
-      fileName = count + '-' + originalFileName;
-      pathToSave =  originalPath + fileName; 
-      keepGoing = true;
-    } catch (e) {
-      keepGoing = false;
-    }
-  }
-  return pathToSave;
-}
 
 postSchema.statics.CATEGORIES = {
   UNCATEGORIZED: 0,

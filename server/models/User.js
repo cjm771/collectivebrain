@@ -67,14 +67,22 @@ userSchema.pre('save', async function (next) {
     } else if (user.token.metaData && user.token.metaData.role) {
         user.role = user.token.metaData.role;
     }
-    await Token.deleteOne({token: user.token.token});
+    const token = await Token.findOne({token: user.token.token});
+    token.status = Token.STATUS.USED;
+    token.metaData.user = user;
+    await token.save();
+    if (user.password) {
+      this.updatePassword(this.password);
+      next();
+    }
+  
   } else { // existing user
     const permissionsError = new Error('You are not permitted to edit this user');
-    if ( user.editor !== user._id) {
-      // no editor? instant error
-      if (!user.editor) {
-        return next(permissionsError);
-      }
+    // no editor? instant error
+    if (!user.editor) {
+      return next(permissionsError);
+    }
+    if (String(user.editor._id) !== user.id) {
       const editor = await User.findOne({_id: user.editor});
       if (!editor) {
         return next(new Error('Editor required to edit user'));
@@ -90,21 +98,11 @@ userSchema.pre('save', async function (next) {
       }
     } else if (user.isModified('role')) {
       return next(new Error('You cannot change your own role'));
+    } else {
+      next();
     }
   }
-  if (user.password) {
-      // this.password = hashPassword(this.password)
-      bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-        bcrypt.hash(user.password, salt, null, function(err, hash) {
-          if (err) return next(err);
-          user.password = hash;
-          next();
-        });
-        if (err) return next(err);
-      });
-  }
   user.editor = null;
-  next();
 });
 
 /**
@@ -125,6 +123,27 @@ userSchema.methods.validatePassword = async function(pw) {
   return valid;
 };
 
+userSchema.methods.updatePassword = async function(pw) {
+  const hash = await bcrypt.hash(pw, 10);
+  this.password = hash;
+  return this;
+}
+
+userSchema.methods.update = async function(data) {
+  const safeFields = ['role', 'editor', 'name', 'email', 'password'];
+  for (field of safeFields) {
+    if (data[field] !== undefined) {
+      this[field] = data[field];
+    }
+    if (field === 'password') {
+      await this.updatePassword(this.password);
+    }
+  }
+  await this.save();
+  return this;
+};
+
+
 userSchema.methods.isNormalUser = function() {
   return this.role === this.schema.statics.USER_ROLES.USER;
 };
@@ -133,9 +152,23 @@ userSchema.methods.isModerator = function() {
   return this.role === this.schema.statics.USER_ROLES.MODERATOR;
 };
 
+userSchema.methods.canInvite = function(role) {
+  return this.getEditableRoles().indexOf(role) !== -1;
+};
+
 userSchema.methods.isAdmin = function() {
   return this.role === this.schema.statics.USER_ROLES.ADMIN;
 };
+
+userSchema.methods.getEditableRoles = function() {
+  if (this.isNormalUser()) {
+    return [];
+  } else if (this.isModerator()) {
+    return [this.schema.statics.USER_ROLES.USER];
+  } else if (this.isAdmin()) {
+    return [this.schema.statics.USER_ROLES.USER, this.schema.statics.USER_ROLES.ADMIN, this.schema.statics.USER_ROLES.MODERATOR];
+  }
+}
 
 userSchema.set('toObject', {
   transform: (doc, ret, opt) => {

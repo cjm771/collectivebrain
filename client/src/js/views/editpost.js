@@ -22,7 +22,7 @@ import formStyle from '../../scss/_forms.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
-export default ({ match, page }) => {
+export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscardChanges }) => {
 
   /*********
    * HOOKS
@@ -76,7 +76,7 @@ export default ({ match, page }) => {
 
 
   useBeforeunload((e) => {
-    if (!postData.saved && unsavedChanges) {
+    if (!postData.saved && unsavedChanges && !ignoreUnsavedChanges) {
       return 'You have unsaved changes';
     }
   });
@@ -88,6 +88,9 @@ export default ({ match, page }) => {
 
 
    const markUnsavedChanges = (file) => {
+    if (onUnsavedChanges) {
+      onUnsavedChanges(true);
+    }
     setUnsavedChanges(true);
    }
 
@@ -112,7 +115,7 @@ export default ({ match, page }) => {
       updateSubCategoriesByCatname(postService.getCategoryName(value));
     }
     if (flagUnsaved) {
-      setUnsavedChanges(true);
+      markUnsavedChanges();
     }
     setInputs(inputs => ({ ...inputs, [name]: value}));
   };
@@ -249,6 +252,9 @@ export default ({ match, page }) => {
               'save'
               }
               </button>
+              {
+                unsavedChanges ? <div class={formStyle.warningBox}><a href='#' onClick={onDiscardChanges}>Discard Changes</a></div> : ''
+              }
             </form>
             )
           }

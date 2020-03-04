@@ -24,6 +24,7 @@ $themes: (
     linkColor: $blue,
     errorColor: $red,
     successColor: $green,
+    warningColor: $amber,
     // list items
     listItemBGColor: #fff,
     inputErrorBGColor: #facfcf,
@@ -49,6 +50,7 @@ $themes: (
     linkColor: lighten($blue, $modifierIntensity),
     errorColor: lighten($red, $modifierIntensity),
     successColor: lighten($green, $modifierIntensity),
+    warningColor: $amber,
     // list items
     listItemBGColor: $dark,
     listItemHoverBGColor : darken($dark, $modifierIntensity),

@@ -1,37 +1,21 @@
 const mongoose = require('../db.js');
 const Schema = mongoose.Schema;
 const shortUUID = require('short-uuid');
+const User = require('../models/User.js');
 /**
  * SCHEMA
  */
 const metaDataSchema = mongoose.Schema({
     name: String,
     role: Number,
+    user: { 
+      type: Schema.Types.ObjectId, 
+      ref: 'User'
+    },
     email: {
       type: String,
       match: [/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, `Invalid Email address`],
-      validate: {
-        validator: function() {
-          return new Promise((res, rej) =>{
-            User.findOne({email: this.email, _id: {$ne: this._id}})
-                .then(data => {
-                    if(data) {
-                        res(false)
-                    } else {
-                        res(true)
-                    }
-                })
-                .catch(err => {
-                    res(false)
-                })
-          })
-        }, message: 'Email Already a member'
-      }
-    },
-    user: { 
-      type: Schema.Types.ObjectId, 
-      ref: 'User' 
-    },
+    }
 })
 
 const tokenSchema = mongoose.Schema({
@@ -40,6 +24,11 @@ const tokenSchema = mongoose.Schema({
     required: [true, 'token required']
   },
   metaData: metaDataSchema,
+  status: {
+    type: Number,
+    required: [true, 'status required'],
+    default: 0
+  },
   type: {
     type: Number,
     required: [true, 'type required'],
@@ -52,6 +41,10 @@ const tokenSchema = mongoose.Schema({
         }
       }, message: 'Not valid token type'
     }
+  },
+  user: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'User'
   },
 
 });
@@ -75,6 +68,11 @@ tokenSchema.statics.TOKEN_TYPES = {
   FORGOT_PASSWORD: 2
 };
 
+tokenSchema.statics.STATUS = {
+  AVAILABLE: 0,
+  USED: 1,
+  REMOVED: 2
+};
 /**
  * METHODS
  */

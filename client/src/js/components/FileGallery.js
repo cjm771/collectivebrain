@@ -199,11 +199,12 @@ export default ({files, onChange, onFileUploaded}) => {
    const handleDeleteItem = (targetItem) => {
     axios.delete('/fileUpload?f=' + targetItem.src)
       .then(() => {
-
       })
       .catch((err) => {
         const error = (err.response && err.response.data && err.response.data.error) || err;
         generalService.notifyError('Could not delete file from server: ' + error);
+      }).finally(() => {
+        onChange(newFiles, true);
       });
     const newFiles = inputFiles.filter((item) => {
       return targetItem !== item;

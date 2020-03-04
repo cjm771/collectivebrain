@@ -1,10 +1,10 @@
 
 const path = require('path');
 const fs = require('fs');
+const FileModel = require('../models/File');
+
 
 const post = async (req, res) => {
-
-
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.errorJSON('No files were uploaded', 400);
   }
@@ -41,32 +41,17 @@ const post = async (req, res) => {
       src: `/uploads/tmp/${fileName}`
     });
   });
-}
+};
 
 const _delete = async (req, res) => {
-  const filePattern = /^\/uploads\/(.+)/;
-  const file = req.query.f;
-  if (!filePattern.test(file)) {
-    return res.errorJSON('Cannot delete file', 403);
-  }
-  const filePath = file.replace(filePattern, (m, m1) => {
-    return path.join(__dirname, '../uploads', m1);
-  });
+  const fileInstance = new FileModel({src: req.query.f});
   try {
-    await fs.promises.access(filePath);
+    await fileInstance.deleteFile();
   } catch (e) {
-    return res.errorJSON('File does not exist');
+    return res.errorJSON(e);
   }
-  try {
-    await fs.promises.unlink(filePath);
-  } catch (e) {
-    return res.errorJSON(`Could not delete file ${file}`);
-  }
- 
-
-  // make sure file exists
-  return res.successJSON({file})
-}
+  return res.successJSON({file: fileInstance.src});
+};
 
 module.exports = async (req, res) => {
   if (!(req.session.user && req.cookies.user_sid)) {

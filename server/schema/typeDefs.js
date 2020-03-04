@@ -2,9 +2,12 @@ module.exports = `
 
   type Mutation {
     isLoggedIn: AuthPayload,
+    addInvite(input: MetaDataInput): Token,
     addPost(input: PostInput): Post,
     editPost(input: PostInput): Post,
     deletePost(id: ID): PostDeletedResult,
+    addUser(input: RegisterInput): AuthPayload,
+    editUser(input: EditUserInput): User,
     login(
       email: String!, 
       password: String!
@@ -14,7 +17,8 @@ module.exports = `
   type Query {
     posts(limit: Int, offset: Int): PostsResult,
     post(id: String): Post,
-    users: [User!]!
+    users: [User!]!,
+    userSettings: UserSettings
   }
 
   type PostDeletedResult {
@@ -88,9 +92,61 @@ module.exports = `
   }
   
   type User {
+    name: String,
+    email: String,
+    id: ID,
+    role: Int,
+    profileUrl: String
+  }
+
+  type MetaData {
+    name: String,
+    role: Int,
+    email: String,
+    user: User
+  }
+
+  input MetaDataInput {
+    name: String,
+    role: Int,
+    email: String
+  }
+
+  input RegisterInput {
     name: String!,
     email: String!,
-    profileUrl: String!
+    password: String!,
+    passwordConfirm: String!,
+    inviteToken: String!
+  }
+
+  input EditUserInput {
+    name: String,
+    email: String,
+    password: String,
+    role: Int,
+    id: ID!
+  }
+
+  
+
+  input userSettingsInput {
+    name: String!,
+    email: String!,
+  }
+
+  type Token {
+    token: String!,
+    status: Int,
+    type: Int!,
+    metaData: MetaData,
+    user: User
+  }
+
+  type UserSettings {
+    user: User!,
+    invites: [Token],
+    canInvite: [Int]
   }
 
 `;

@@ -8,8 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 
-export default ({id, page}) => {
-
+export default ({id, page, hasUnsavedChanges, onDiscardChanges}) => {
 
   /***********
    * HELPERS *
@@ -19,9 +18,9 @@ export default ({id, page}) => {
    * updates the breadcrumbs on the screen
    * @param {String=null} title name of title optional to add to breadcrumbs
    */
-  const updateBreadCrumbs = (title = null) => {
+  const updateBreadCrumbs = (title = null, hasUnsavedChanges) => {
     const editSettings = [
-      <Link to='/dashboard'>Posts</Link>,
+      <Link to='/dashboard' className={hasUnsavedChanges ? dashboardMenuStyle.disabledLink : ''}>Posts</Link>,
       'Edit Post'
     ];
     if (title) {
@@ -29,7 +28,7 @@ export default ({id, page}) => {
     }
     return {
       'add': [
-      <Link to='/dashboard'>Posts</Link>,
+      <Link to='/dashboard'  className={hasUnsavedChanges ? dashboardMenuStyle.disabledLink : ''}>Posts</Link>,
         'New Post'
       ],
       'edit': editSettings
@@ -45,23 +44,23 @@ export default ({id, page}) => {
     return state.posts
   });
 
-  const [pageBreadCrumbData, setPageBreadCrumbData] = useState(updateBreadCrumbs());
+  const [pageBreadCrumbData, setPageBreadCrumbData] = useState(updateBreadCrumbs(null, hasUnsavedChanges));
   useEffect(() => {
     
     if (postData.activeItem && page === 'edit') {
-      setPageBreadCrumbData(updateBreadCrumbs(postData.activeItem.title));
+      setPageBreadCrumbData(updateBreadCrumbs(postData.activeItem.title, hasUnsavedChanges));
     }
-  }, [postData]);
+  }, [postData, hasUnsavedChanges]);
 
 
   return (
     <div className={dashboardMenuStyle.dashboard}>
       <ul className={dashboardMenuStyle.dashboardMenu}>
         <li className={!page || ['add', 'edit'].indexOf(page) !== -1 ? dashboardMenuStyle.active : ''}>
-          <Link to='/dashboard/'>Posts</Link>
+          <Link to='/dashboard/'  className={hasUnsavedChanges ? dashboardMenuStyle.disabledLink : ''}>Posts</Link>
         </li>
         <li className={page === 'settings' ? dashboardMenuStyle.active : ''}>
-          <Link to='/dashboard/settings'>Settings</Link>
+          <Link to='/dashboard/settings'  className={hasUnsavedChanges ? dashboardMenuStyle.disabledLink : ''}>Settings</Link>
         </li>
       </ul>
       {
@@ -83,6 +82,9 @@ export default ({id, page}) => {
           }
         </ul>
         ) : ''
+      }
+      {
+        hasUnsavedChanges ? <div className={dashboardMenuStyle.warningBox}>Unsaved changes! Make sure to save before leaving. Or click here to <a href='/dashboard' onClick={onDiscardChanges}>discard changes</a>.</div> : ''
       }
     </div>
   )

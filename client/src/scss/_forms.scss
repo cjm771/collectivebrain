@@ -13,6 +13,17 @@
         cursor: not-allowed;
       }
     }
+
+    .warningBox {
+      color: map-get($themeMap, 'warningColor');
+      font-weight: bold;
+      margin: 2rem 0;
+      
+      a {
+        text-decoration: underline;
+        color: inherit;
+      }
+    }
   
     .fieldError,
     .errorBox {

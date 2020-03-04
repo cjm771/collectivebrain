@@ -12,7 +12,7 @@ const User = require('../server/models/User.js');
     let allPosts = await Post.find({});
     for (post of allPosts) {
       try {
-        await post.moveTmpFiles();
+        await post.moveTmpFiles(admin);
         console.log(`${post.title}: any temp files have been moved`)
       } catch (e) {
         console.error(`${post.title} error: ${e}`);
