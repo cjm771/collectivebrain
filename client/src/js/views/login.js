@@ -13,9 +13,28 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 export default (props) => {
+
+  /*************
+   *   HOOKS   *
+   *************/
+
   const [inputs, setInputs] = useState({email: '', password: ''});
   const user = useSelector((state) => { return state.user });
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    focusOnEmailInput();
+  }, []);
+
+  useEffect(() => {
+    if (user.loggedIn) {
+      window.location.href = '/';
+    }
+  }, [user.loggedIn]);
+
+  /*************
+   *  HELPERS  *
+   *************/
 
   const handleSubmit = (event) => {
     if (event) {
@@ -40,20 +59,14 @@ export default (props) => {
     document.getElementsByName('email')[0].focus();
   };
 
-  useEffect(() => {
-    focusOnEmailInput();
-  }, []);
-
-  useEffect(() => {
-    if (user.loggedIn) {
-      window.location.href = '/';
-    }
-  }, [user.loggedIn]);
+  /*************
+   *  RENDER   *
+   *************/
 
   return (
     <div className={loginStyle.login}>
     <form 
-      className={formStyle.form}
+      className={`${formStyle.form} ${formStyle.maxWidth}`}
       onSubmit={handleSubmit}
     >
         { (user.loggedIn) ? 

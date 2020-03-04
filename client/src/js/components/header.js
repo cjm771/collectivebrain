@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import {Link} from 'react-router-dom';
 import Gravatar from 'react-gravatar';
 
 import classNames from 'classnames';
@@ -39,8 +40,9 @@ export default () => {
             </span>
           ) : (user ? (
             <ul className = {headerStyle.unauthItems}>
-              <li><a href='/login'>login</a></li>
-              <li><a href='/register'>register</a></li>
+
+              <li><Link to='/login'>login</Link></li>
+              <li><Link to='/register'>register</Link></li>
             </ul>
           ) : (
             ''

@@ -1,5 +1,9 @@
-import ApolloClient from '../services/ApolloClient.js';
+// apollo
 import { gql } from 'apollo-boost';
+
+// services
+import ApolloClient from '../services/ApolloClient.js';
+import GeneralService from '../services/general.services.js';
 
 const postFull = `
   id,
@@ -104,34 +108,6 @@ const QUERIES = {
   `
 };
 
-const getErrorFromGraphQL = (error) => {
-  if (typeof error === 'object' && error.graphQLErrors && error.graphQLErrors.length) {
-    const result = {
-      message: error.graphQLErrors[0].message,
-    }
-    if (error.graphQLErrors[0].extensions && error.graphQLErrors[0].extensions.exception && error.graphQLErrors[0].extensions.exception.invalidArgs) {
-      result.fields = error.graphQLErrors[0].extensions.exception.invalidArgs;
-    }
-    return result;
-  } else if (typeof error === 'object' && error.networkError && error.networkError.result && error.networkError.result.errors && error.networkError.result.errors.length) {
-    const tmpResultArr = [];
-    const networkError = /(.+)(\{.+\}.*);(.+)/;
-    let matches = null;
-    for (let rawError of error.networkError.result.errors) {
-      matches = null;
-      if (matches = networkError.exec(rawError.message)) {
-        tmpResultArr.push(matches[3]);
-      } else {
-        tmpResultArr.push(rawError.message);
-      }
-    }
-    return {message: tmpResultArr.length ? tmpResultArr.join(', ') : error.toString()};
-  } else {
-    return { message: error.toString() }
-  }
-};
-
-
 export const getPostsAction = (inputs, query=QUERIES.GET_POSTS) => {
   inputs = inputs || {};
   return (dispatch) => {
@@ -150,7 +126,7 @@ export const getPostsAction = (inputs, query=QUERIES.GET_POSTS) => {
         });
         return result.data.posts;
       }).catch((error) => {
-        const {message, fields} = getErrorFromGraphQL(error);
+        const {message, fields} = GeneralService.getErrorFromGraphQL(error);
         console.log('Error:', message, '\nFields:', fields);
         dispatch({
           type: 'GET_POSTS_FAILURE',
@@ -187,7 +163,7 @@ export const updateOrCreatePostAction = (inputs, updateOrCreate = 'create') => {
         post: (updateOrCreate === 'create') ? result.data.addPost : result.data.editPost
       })
     }).catch((error) => {
-      const {message, fields} = getErrorFromGraphQL(error);
+      const {message, fields} = GeneralService.getErrorFromGraphQL(error);
       dispatch({
         type: 'SET_POST_FAILURE',
         error: message,
@@ -214,7 +190,7 @@ export const deletePostAction = (id) => {
         deletedResults: result.data.deletePost.deletedFilesResults
       })
     }).catch((error) => {
-      const {message, fields} = getErrorFromGraphQL(error);
+      const {message, fields} = GeneralService.getErrorFromGraphQL(error);
       dispatch({
         type: 'DELETE_POST_FAILURE',
         error: message,
@@ -250,7 +226,7 @@ export const getPostAction = (inputs) => {
         post: result.data.post
       })
     }).catch((error) => {
-      const {message, fields} = getErrorFromGraphQL(error);
+      const {message, fields} = GeneralService.getErrorFromGraphQL(error);
       dispatch({
         type: 'GET_POST_FAILURE',
         error: message,

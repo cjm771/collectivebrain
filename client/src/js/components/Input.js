@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 
-export default ({type, name, options, disabled, error, initValue, onChange}) => {
+export default ({type, name, placeholder, options, disabled, error, initValue, onChange}) => {
 
   /********
    * VARS
@@ -53,7 +53,7 @@ export default ({type, name, options, disabled, error, initValue, onChange}) => 
               className={classNames(formStyle.input, error ? formStyle.hasErrors : null)} 
               onChange={handleInputChange} 
               value={value} 
-              placeholder={name} 
+              placeholder={placeholder || name} 
               disabled={disabled}
               name={name}
             />
@@ -70,7 +70,7 @@ export default ({type, name, options, disabled, error, initValue, onChange}) => 
               className={classNames(formStyle.input, error ? formStyle.hasErrors : null)} 
               onChange={handleInputChange} 
               value={value} 
-              placeholder={name} 
+              placeholder={placeholder || name} 
               disabled={disabled}
               name={name}
             />
@@ -121,7 +121,7 @@ export default ({type, name, options, disabled, error, initValue, onChange}) => 
             <textarea 
               className={classNames(formStyle.input, error ? formStyle.hasErrors : null)} 
               onChange={handleInputChange} 
-              placeholder={name} 
+              placeholder={placeholder || name} 
               value={value}
               disabled={disabled}
               name={name}

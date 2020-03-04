@@ -596,6 +596,10 @@ body.theme-dark .carousel__carousel___1GJ7B .carousel__img___3U5Xh {
 body ._forms__form___AECEL {
   text-align: center;
 }
+body ._forms__form___AECEL._forms__maxWidth___wxMZA {
+  max-width: 30rem;
+  width: 100%;
+}
 body ._forms__form___AECEL input[disabled], body ._forms__form___AECEL button[disabled], body ._forms__form___AECEL select[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
@@ -844,6 +848,10 @@ body ._forms__buttonSecondary___2Bsnk:focus {
 body.theme-light ._forms__form___AECEL {
   text-align: center;
 }
+body.theme-light ._forms__form___AECEL._forms__maxWidth___wxMZA {
+  max-width: 30rem;
+  width: 100%;
+}
 body.theme-light ._forms__form___AECEL input[disabled], body.theme-light ._forms__form___AECEL button[disabled], body.theme-light ._forms__form___AECEL select[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
@@ -1091,6 +1099,10 @@ body.theme-light ._forms__buttonSecondary___2Bsnk:focus {
 
 body.theme-dark ._forms__form___AECEL {
   text-align: center;
+}
+body.theme-dark ._forms__form___AECEL._forms__maxWidth___wxMZA {
+  max-width: 30rem;
+  width: 100%;
 }
 body.theme-dark ._forms__form___AECEL input[disabled], body.theme-dark ._forms__form___AECEL button[disabled], body.theme-dark ._forms__form___AECEL select[disabled] {
   opacity: 0.5;

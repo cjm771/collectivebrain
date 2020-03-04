@@ -13,7 +13,21 @@ export default (state = {
         }
       }
       return newState;
-    case 'LOGIN_REQUEST':
+      case 'REGISTER_REQUEST':
+        return {
+          registering: true
+        }
+      case 'REGISTER_SUCCESS':
+        return {
+          ...action.user,
+          registered: true
+        }
+      case 'REGISTER_FAILURE':
+        return {
+          registerError: action.error,
+          registerErrorFields: action.errorFields
+        }
+      case 'LOGIN_REQUEST':
       return {
         loggingIn: true
       }

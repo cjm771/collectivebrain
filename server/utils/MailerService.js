@@ -10,7 +10,7 @@ module.exports = {
   shouldSendEmails: process.env.SEND_EMAILS === 'true',
   send: (data) => {
     data = Object.assign({
-      from: 'Collective Brain <noreply@collectivebrain.com>',
+      from: 'Collective Brain <noreply@collectivehomeoffice.com>',
     }, data);    
     return new Promise((res, rej) => {
       mailgun.messages().send(data, (err, body) => {

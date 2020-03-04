@@ -1,5 +1,9 @@
-import ApolloClient from '../services/ApolloClient.js';
+// apollo
 import { gql } from 'apollo-boost';
+
+// services
+import ApolloClient from '../services/ApolloClient.js';
+import GeneralService from '../services/general.services.js';
 
 const IS_USER_LOGGED_IN = gql`
 mutation {
@@ -24,27 +28,47 @@ const USER_LOGIN = gql`
     }
   }
 `;
-// const GET_USERS = gql`
-//   {
-//     users {
-//       name 
-//       email
-//     }
-//   }
-// `;
-const getErrorFromGraphQL = (error) => {
-  if (error.graphQLErrors.length) {
-    const result = {
-      message: error.graphQLErrors[0].message,
+
+const USER_REGISTER = gql`
+  mutation($input: RegisterInput) {
+    addUser(input: $input) {
+      token,
+      user { 
+        name, 
+        email
+      }
     }
-    if (error.graphQLErrors[0].extensions && error.graphQLErrors[0].extensions.exception && error.graphQLErrors[0].extensions.exception.invalidArgs) {
-      result.fields = error.graphQLErrors[0].extensions.exception.invalidArgs;
-    }
-    return result;
-  } else {
-    return { message: error.toString() }
   }
-}
+`;
+
+export const registerAction = (inputs) => {
+  return (dispatch) => {
+    debugger;
+    dispatch({
+      type: 'REGISTER_REQUEST',
+      payload: inputs
+    });
+    ApolloClient.mutate({
+      variables: {input: inputs},
+      mutation: USER_REGISTER,
+    })
+      .then((result) => {
+        debugger;
+        dispatch({
+          type: 'REGISTER_SUCCESS',
+          user: result.user
+        })
+      }).catch((error) => {
+        const {message, fields} = GeneralService.getErrorFromGraphQL(error);
+        debugger;
+        dispatch({
+          type: 'REGISTER_FAILURE',
+          error: message,
+          errorFields: fields
+        })
+      })
+  }
+};
 
 export const loginAction = (inputs) => {
   return (dispatch) => {
@@ -52,7 +76,6 @@ export const loginAction = (inputs) => {
       type: 'LOGIN_REQUEST',
       payload: inputs
     });
-    // ApolloClient.query({query: GET_USERS})
     ApolloClient.mutate({
       variables: { email: inputs.email, password: inputs.password},
       mutation: USER_LOGIN,
@@ -63,7 +86,7 @@ export const loginAction = (inputs) => {
           user: result.user
         })
       }).catch((error) => {
-        const {message, fields} = getErrorFromGraphQL(error);
+        const {message, fields} = GeneralService.getErrorFromGraphQL(error);
         dispatch({
           type: 'LOGIN_FAILURE',
           error: message,
@@ -75,7 +98,6 @@ export const loginAction = (inputs) => {
 
 export const isLoggedInAction = () => {
   return (dispatch) => {
-    // ApolloClient.query({query: GET_USERS})
     ApolloClient.mutate({
       mutation: IS_USER_LOGGED_IN
     })
