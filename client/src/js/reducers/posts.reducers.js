@@ -49,6 +49,7 @@ export default (state = {
     case 'CLEAR_ACTIVE_POST':
       return {
         ...state,
+        deleteError: null,
         activeItem: null,
         processing: false,
         saving: false,

@@ -1,0 +1,35 @@
+@mixin sharedIconStyles {
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  margin-left: 0.5rem;
+}
+
+@mixin cb-icons($themeMap) {
+
+  &:hover {
+    .actionIcon {
+      opacity: map-get($themeMap, 'lightDeemphasizeOpacity');
+    }
+  }
+
+  .icon {
+    @include sharedIconStyles();
+    opacity: map-get($themeMap, 'lightDeemphasizeOpacity');
+  }
+
+  .actionIcon {
+    @include sharedIconStyles();
+    display: inline-block;
+
+    &.persistent {
+      opacity: map-get($themeMap, 'lightDeemphasizeOpacity');
+    }
+    opacity: 0;
+
+    &:hover {
+      transform: scale(1.25);
+      color: map-get($themeMap, 'linkColor')
+    }
+  }
+
+}

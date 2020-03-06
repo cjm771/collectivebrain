@@ -19,7 +19,7 @@ import Tooltipify from '../components/Tooltipify.js';
 import moment from 'moment';
 import AsyncHandler from '../components/AsyncHandler.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTimes, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTimes, faLock, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 // styles
 import postsStyle from '../../scss/posts.scss';
@@ -112,7 +112,7 @@ export default ({ match }) => {
               return (
                 <li key={post.id} className={`row ${postsStyle.postItem}`}>
                   <Link to={`/dashboard/edit/${post.id}`} className={postsData.deleteProcessing ? postsStyle.disabled : ''}>
-                    <div className={`col-sm-7 ${postsStyle.titleSection} ${!post.published ? postsStyle.draft : ''}`}>
+                    <div className={`col-sm-7 ${postsStyle.titleSection} ${!post.published ? postsStyle.draft : ''}  ${!post.canEdit ? postsStyle.notEditable  : ''} `}>
                       <div className={postsStyle.keyImage}>{!post.keyFile ? '' : <img src={post.keyFile.src} />}</div>
                       <div className={postsStyle.text}>
                         <span className={postsStyle.title}>
@@ -122,7 +122,9 @@ export default ({ match }) => {
                           </Tooltipify>
                         </span>
                         {!post.published ? <span className={`${postsStyle.badge} badge badge-secondary`}>Draft</span> : ''}
-                        {!postsData.deleteProcessing ? (
+                        {!post.canEdit ?  
+                          <Tooltipify tooltipId='readOnly' tooltipText='Read-Only'><span className={postsStyle.icon}><FontAwesomeIcon icon={faLock} /></span></Tooltipify>  : ''}
+                        {!postsData.deleteProcessing && post.canEdit ? (
                             <span className={postsStyle.actionIcon} onClick={(e) => {deletePost(e, post.id)}}>
                               <Tooltipify tooltipId='delete' tooltipText='Delete'>
                                 <FontAwesomeIcon icon={faTimes} />

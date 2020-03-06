@@ -29,6 +29,7 @@ $themes: (
     listItemBGColor: #fff,
     inputErrorBGColor: #facfcf,
     listItemHoverBGColor: darken(#fff, $modifierIntensity / 4),
+    lightDeemphasizeOpacity: 0.7,
     deemphasizeOpacity: 0.4,
     // input
     inputBGColor: $light,
@@ -54,6 +55,7 @@ $themes: (
     // list items
     listItemBGColor: $dark,
     listItemHoverBGColor : darken($dark, $modifierIntensity),
+    lightDeemphasizeOpacity: 0.85,
     deemphasizeOpacity: 0.6,
     // input
     inputBGColor: $dark,

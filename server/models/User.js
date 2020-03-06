@@ -1,6 +1,8 @@
 const mongoose = require('../db.js');
 const bcrypt = require('bcrypt');
 const Token = require('./Token.js');
+
+const UserService = require('../utils/UserService.js');
 const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
 
@@ -72,7 +74,7 @@ userSchema.pre('save', async function (next) {
     token.metaData.user = user;
     await token.save();
     if (user.password) {
-      this.updatePassword(this.password);
+      await this.updatePassword(this.password);
       next();
     }
   
@@ -108,11 +110,9 @@ userSchema.pre('save', async function (next) {
 /**
  * STATICS
  */
-userSchema.statics.USER_ROLES = {
-  USER: 0,
-  MODERATOR: 1,
-  ADMIN: 2
-};
+
+ userSchema.statics.USER_ROLES = UserService.USER_ROLES;
+userSchema.statics.getRoleName =UserService.getRoleName;
 
 /**
  * METHODS

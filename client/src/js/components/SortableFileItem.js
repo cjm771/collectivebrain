@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench, faTrash, faComment, faTimes, faCheck, faExclamationCircle} from '@fortawesome/free-solid-svg-icons';
 import { bounceOut, animated} from 'animate.css';
 
-export default SortableElement(({file, onApproveCaption, onDelete}) => {
+export default SortableElement(({file, onApproveCaption, onDelete, _disabled}) => {
 
 
   /*********
@@ -22,6 +22,8 @@ export default SortableElement(({file, onApproveCaption, onDelete}) => {
  let  [caption, setCaption] = useState(file.caption);
  let  [dirty, setDirty] = useState(false);
  let [shouldDisappear, setShouldDisappear] = useState(false);
+
+ console.log(_disabled);
 
  useEffect(() => {
   if (file && file.error) {
@@ -86,12 +88,17 @@ export default SortableElement(({file, onApproveCaption, onDelete}) => {
             ) : (
               <div>
                 <div className={fileGalleryStyle.editModeHide}>
-                  <Tooltipify  tooltipId='edit' tooltipText='edit'>
-                    <FontAwesomeIcon icon={faWrench} onClick={(e) => { enableEditMode() }} />
-                  </Tooltipify>
-                  <Tooltipify  tooltipId='delete' tooltipText='delete'>
-                    <FontAwesomeIcon icon={faTrash} onClick={(e) => { deleteItem() }} />
-                  </Tooltipify>
+                  { _disabled ? '' : 
+                    <div>
+                      <Tooltipify  tooltipId='edit' tooltipText='edit'>
+                        <FontAwesomeIcon icon={faWrench} onClick={(e) => { enableEditMode() }} />
+                      </Tooltipify>
+                      <Tooltipify  tooltipId='delete' tooltipText='delete'>
+                        <FontAwesomeIcon icon={faTrash} onClick={(e) => { deleteItem() }} />
+                      </Tooltipify>
+                    </div>
+                  }
+                  
                   { !file.caption ? '' : (
                       <Tooltipify  tooltipId='caption' tooltipText={file.caption}>
                         <FontAwesomeIcon icon={faComment} />

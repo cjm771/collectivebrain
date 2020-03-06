@@ -84,7 +84,8 @@ const postSchema = mongoose.Schema({
 
 postSchema.pre('remove', async function (next) {
   const permissionsError = new Error('You are not permitted to remove this post');
-  next(post.canBeEdited() ? undefined : permissionsError);
+  const canBeEdited = await post.canBeEdited();
+  next(canBeEdited ? undefined : permissionsError);
 });
 
 
@@ -120,7 +121,11 @@ postSchema.virtual('categoryName').get(function () {
 
 postSchema.methods.canBeEdited = async function(editorId=this.editor) {
   const post = this;
-  if ( editorId !== post.user._id) {
+  const author = await User.findOne({ _id: post.user });
+  if (!author) {
+    return true;
+  }
+  if ( String(editorId) !== String(post.user._id)) {
     // no editor? instant error
     if (!editorId) {
       return false;
@@ -131,7 +136,7 @@ postSchema.methods.canBeEdited = async function(editorId=this.editor) {
     }
     if (editor.isNormalUser()) {
       return false;
-    } else if (editor.role <= post.user.role) {
+    } else if (editor.role !== User.USER_ROLES.ADMIN && editor.role <= author.role) {
       return false;
     }
   } 
@@ -139,7 +144,7 @@ postSchema.methods.canBeEdited = async function(editorId=this.editor) {
 };
 
 postSchema.methods.moveTmpFiles = async function(user) {
-  if (this.canBeEdited()) {
+  if (await this.canBeEdited(user.id)) {
     if (this.files && this.files.length) {
       for (file of this.files) {
           try {
@@ -159,7 +164,7 @@ postSchema.methods.moveTmpFiles = async function(user) {
 
 postSchema.methods.deleteFiles = async function() {
   const result = {deleted: [], notDeleted: []};
-  if (this.canBeEdited()) {
+  if (await this.canBeEdited()) {
     if (this.files && this.files.length) {
       for (file of this.files) {
         try {
@@ -267,7 +272,6 @@ postSchema.statics.getSubCategoryName = (val) => {
   }
 }
 
-
 postSchema.statics.getCategoryName = (val) => {
   const keys = Object.keys(postSchema.statics.CATEGORIES);
   if (typeof val !== 'number' ||val < 0 || val > keys.length - 1 ) {
@@ -282,9 +286,6 @@ postSchema.statics.getCategoryName = (val) => {
 /**
  * METHODS
  */
-// userSchema.methods.isNormalUser = function() {
-//   return this.role === this.schema.statics.USER_ROLES.USER;
-// };
 
 
 /**

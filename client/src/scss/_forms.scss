@@ -4,9 +4,30 @@
 @import './themes';
 
 
+@mixin buttonSharedStylings() {
+  padding: $input-padding;
+  border-radius: $input-border-radius;
+  margin: .5rem 0;
+  border: none;
+  transition: background .25s ease-in-out;
+
+  &.fullWidth {
+    width: 100%;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
 @include themeProvider using ($themeMap) {
+
   .form {
 
+    &.fullWidth {
+      width: 100%;
+    }
+    
     &.maxWidth {
       max-width: 30rem;
       width: 100%;
@@ -14,7 +35,7 @@
 
     text-align: center;
 
-    input, button, select {
+    input, button, select, textarea {
       &[disabled] { 
         opacity: 0.5;
         cursor: not-allowed;
@@ -125,6 +146,10 @@
       position: relative;
       margin: 0.25rem 0;
       text-align: left;
+      &.disabled {
+        cursor: not-allowed;
+        pointer-events: none;
+      }
       
       input[type=checkbox],
       .fakeCheckBox {
@@ -256,37 +281,47 @@
       }
     }
   }
-  
-  .button {
-    margin: .5rem 0;
-    background: map-get($themeMap, 'buttonBGColor');
-    color: map-get($themeMap, 'buttonTextColor');
-    padding: $input-padding;
-    border-radius: $input-border-radius;
+
+  .buttonLink {
+    @include buttonSharedStylings();
+    background: none;
     border: none;
-    transition: background .25s ease-in-out;
+    color: map-get($themeMap, 'linkColor');
+    padding: 0;
+    transition: color .25s ease-in-out;
+
     &:not([disabled]):hover {
-      background: map-get($themeMap, 'linkColor')
+      color: lighten(map-get($themeMap, 'linkColor'), 15);
     }
     &:focus {
       outline: none;
+    }
+   
+  }
+  
+  .button {
+    @include buttonSharedStylings();
+    background: map-get($themeMap, 'buttonBGColor');
+    color: map-get($themeMap, 'buttonTextColor');
+
+    &:not([disabled]):hover {
+      background: map-get($themeMap, 'linkColor');
+    }
+
+    &:focus {
       background: lighten(map-get($themeMap, 'buttonBGColor'), 2);
     }
   }
 
   .buttonSecondary {
-    margin: .5rem 0;
+    @include buttonSharedStylings();
     background: map-get($themeMap, 'buttonSecondaryBGColor');
     color: map-get($themeMap, 'buttonSecondaryTextColor');
-    padding: $input-padding;
-    border-radius: $input-border-radius;
-    border: none;
-    transition: background .25s ease-in-out;
+
     &:not([disabled]):hover {
       background: map-get($themeMap, 'linkColor')
     }
     &:focus {
-      outline: none;
       background: map-get($themeMap, 'buttonSecondaryBGColor');
     }
   }

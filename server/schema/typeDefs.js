@@ -2,6 +2,7 @@ module.exports = `
 
   type Mutation {
     isLoggedIn: AuthPayload,
+    resendInvite(token: ID!): Token,
     addInvite(input: MetaDataInput): Token,
     addPost(input: PostInput): Post,
     editPost(input: PostInput): Post,
@@ -75,6 +76,7 @@ module.exports = `
     files: [File],
     keyFile: File,
     user: User!,
+    canEdit: Boolean,
     lastEditedBy: User,
     createdAt: String,
     updatedAt: String
@@ -107,9 +109,9 @@ module.exports = `
   }
 
   input MetaDataInput {
-    name: String,
-    role: Int,
-    email: String
+    name: String!,
+    role: Int!,
+    email: String!
   }
 
   input RegisterInput {
@@ -140,7 +142,10 @@ module.exports = `
     status: Int,
     type: Int!,
     metaData: MetaData,
-    user: User
+    user: User,
+    url: String, 
+    createdAt: String,
+    updatedAt: String
   }
 
   type UserSettings {

@@ -16,8 +16,9 @@ import generalService from '../services/general.services.js';
 // styles
 import fileGalleryStyle from '../../scss/fileGallery.scss';
 
-const SortableList = SortableContainer(({files, onApproveCaption, onDeleteItem, onFileDropOnDropZone, onFileUploadError}) => {
+const SortableList = SortableContainer(({files, onApproveCaption, onDeleteItem, onFileDropOnDropZone, onFileUploadError, disabled}) => {
 
+  console.log(disabled);
 
   return (
     <div className={`row ${fileGalleryStyle.fileGallery}`}>
@@ -26,12 +27,15 @@ const SortableList = SortableContainer(({files, onApproveCaption, onDeleteItem, 
           onApproveCaption={onApproveCaption}
           onDelete={onDeleteItem}
           key={`item-${file.key}`} 
+          disabled={disabled}
+          _disabled={disabled}
           index={index} 
           file={file} 
         />
       ))}
       <FileDropZone 
         inputFiles={files} 
+        disabled={disabled}
         onError={onFileUploadError}
         onDrop={onFileDropOnDropZone}
       />
@@ -39,7 +43,7 @@ const SortableList = SortableContainer(({files, onApproveCaption, onDeleteItem, 
   );
 });
 
-export default ({files, onChange, onFileUploaded}) => {
+export default ({files, onChange, onFileUploaded, disabled}) => {
 
 
   /*********
@@ -237,6 +241,7 @@ export default ({files, onChange, onFileUploaded}) => {
       helperClass={'floating'}
       onSortEnd={handleSortEnd} 
       axis={'xy'}
+      disabled={disabled}
       onApproveCaption={handleApproveCaption}
       onDeleteItem={handleDeleteItem}
       onFileDropOnDropZone={handleDrop}

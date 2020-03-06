@@ -1,3 +1,74 @@
-.settings {
-  text-align: center;
+@import './themes';
+@import './icons';
+
+
+@include themeProvider using ($themeMap) {
+  .settings {
+    text-align: left;
+
+    h5 {
+      padding-top: 2rem;
+      padding-bottom: 1.5rem;
+
+      .note {
+        font-size: 0.8rem;
+        opacity: map-get($themeMap, 'deemphasizeOpacity');
+      }
+    }
+
+    .inviteSection {
+      .newInvite {
+        button {
+          width: 100%;
+          margin: 0;
+          margin-bottom: 2rem;
+        }
+      }
+    
+      .inviteUserButton {
+        font-size: 1.0rem;
+        margin-left: .5rem;
+      }
+      .invites {
+        .invite {
+          display: flex;
+          padding: 0.25rem 0;
+          justify-content: space-between;
+          align-items: center;
+          cursor: pointer;
+
+          &:hover {
+            background-color: map-get($themeMap, 'listItemHoverBGColor');
+          }
+          @include cb-icons($themeMap);
+
+          .colUser {
+            text-align: left;
+            i {
+              opacity: map-get($themeMap, 'lightDeemphasizeOpacity');
+            }
+            .name {
+              padding-right: .5rem;
+            }
+          }
+          .colStatus {
+            text-align: right;
+            font-style: italic;
+            
+            .inviteStatusInvited {
+              opacity: map-get($themeMap, 'deemphasizeOpacity');
+            }
+
+            .inviteStatusAccepted {
+              color: map-get($themeMap, 'successColor');
+            }
+
+            .inviteStatusRemoved {
+              color: map-get($themeMap, 'errorColor');
+            }
+          }
+        }
+      }
+    }
+  }
 }

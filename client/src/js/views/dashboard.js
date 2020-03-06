@@ -61,7 +61,7 @@ export default ({match}) => {
         <Switch>
           <Route path="/dashboard" exact component={PostsView} />
           <Route path="/dashboard/settings" component={SettingsView} />
-          <Route path="/dashboard/add"  render={props => <EditPostView {...props} page="add" onUnsavedChanges={onUnsavedChanges} ignoreUnsavedChanges={ignoreUnsavedChanges} onDiscardChanges={onDiscardChanges} />} />
+          <Route path="/dashboard/add"  render={props => <EditPostView {...props} page="add"  />} />
           <Route path="/dashboard/edit/:id" render={props => <EditPostView {...props} page="edit" onUnsavedChanges={onUnsavedChanges} ignoreUnsavedChanges={ignoreUnsavedChanges} onDiscardChanges={onDiscardChanges} />} />
           <Route component={NotFoundView} />
         </Switch>

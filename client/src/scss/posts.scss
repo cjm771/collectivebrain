@@ -1,5 +1,8 @@
 @import './colors';
 @import './themes';
+@import './icons';
+
+
 
 @include themeProvider() using ($themeMap) {
   .posts {
@@ -38,15 +41,16 @@
           &:hover {
 
             background-color: map-get($themeMap, 'listItemHoverBGColor');
-
-            .titleSection {
-              .text {
-                .actionIcon {
-                  opacity: 1;
-                }
-              }
-            }
+            // .titleSection {
+            //   .text {
+            //     .actionIcon {
+            //       opacity: 1;
+            //     }
+            //   }
+            // }
           }
+
+          @include cb-icons($themeMap);
 
           .titleSection {
             display: flex;
@@ -55,7 +59,10 @@
             text-align: left;
 
             &.draft {
-              opacity: map-get($themeMap, 'deemphasizeOpacity')
+              opacity: map-get($themeMap, 'deemphasizeOpacity');
+            }
+            &.notEditable:not(.draft) {
+              opacity: map-get($themeMap, 'lightDeemphasizeOpacity');
             }
 
             .text {
@@ -72,21 +79,7 @@
                 margin-left: 0.5rem;
               }
 
-              .actionIcon {
-                cursor: pointer;
-
-                &.persistent {
-                  opacity: 1;
-                }
-                opacity: 0;
-                transition: all 0.25s ease-in-out;
-                margin-left: 0.5rem;
-
-                &:hover {
-                  transform: scale(1.25);
-                  color: map-get($themeMap, 'linkColor')
-                }
-              }
+              
 
               .dot {
                 border-radius: 50%;

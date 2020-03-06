@@ -18,6 +18,7 @@ const postFull = `
   startDate,
   endDate,
   tags,
+  canEdit,
   user {
     name,
     email
@@ -58,6 +59,7 @@ const QUERIES = {
         createdAt,
         published,
         title,
+        canEdit,
         keyFile {
           src
         },

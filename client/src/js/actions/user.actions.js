@@ -10,8 +10,10 @@ mutation {
   isLoggedIn {
     token,
     user { 
-      name, 
-      email
+      name,
+      id 
+      email,
+      role
     }
   }
 }
@@ -23,7 +25,9 @@ const USER_LOGIN = gql`
       token,
       user { 
         name, 
-        email
+        id
+        email,
+        role
       }
     }
   }
@@ -35,7 +39,61 @@ const USER_REGISTER = gql`
       token,
       user { 
         name, 
-        email
+        id
+        email,
+        role
+      }
+    }
+  }
+`;
+
+const USER_INVITE = gql`
+  mutation($input: MetaDataInput) {
+    addInvite(input: $input) {
+      token, 
+      status,
+      type,
+      metaData {
+        role,
+        email,
+        name
+      }
+    }
+  }
+`;
+
+const USER_RESEND_INVITE = gql`
+  mutation ($token:ID!) {
+    resendInvite(token: $token) {
+      token
+    }
+  }
+`;
+
+const GET_SETTINGS = gql`
+  query {
+    userSettings {
+      user {
+        name, 
+        email,
+        profileUrl
+      },
+      canInvite,
+      invites {
+        token,
+        status,
+        type,
+        url,
+        metaData {
+          name,
+          role,
+          email,
+          user {
+            name,
+            email,
+            
+          }
+        }
       }
     }
   }
@@ -43,7 +101,6 @@ const USER_REGISTER = gql`
 
 export const registerAction = (inputs) => {
   return (dispatch) => {
-    debugger;
     dispatch({
       type: 'REGISTER_REQUEST',
       payload: inputs
@@ -53,14 +110,12 @@ export const registerAction = (inputs) => {
       mutation: USER_REGISTER,
     })
       .then((result) => {
-        debugger;
         dispatch({
           type: 'REGISTER_SUCCESS',
           user: result.user
         })
       }).catch((error) => {
         const {message, fields} = GeneralService.getErrorFromGraphQL(error);
-        debugger;
         dispatch({
           type: 'REGISTER_FAILURE',
           error: message,
@@ -80,21 +135,107 @@ export const loginAction = (inputs) => {
       variables: { email: inputs.email, password: inputs.password},
       mutation: USER_LOGIN,
     })
+    .then((result) => {
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        user: result.user
+      })
+    }).catch((error) => {
+      const {message, fields} = GeneralService.getErrorFromGraphQL(error);
+      dispatch({
+        type: 'LOGIN_FAILURE',
+        error: message,
+        errorFields: fields
+      })
+    });
+  };
+};
+
+export const clearResendInviteAction = (inputs) => {
+  return (dispatch) => {
+    dispatch({
+      type: 'RESEND_INVITE_RESET',
+      payload: inputs
+    });
+  };
+};
+
+export const resendInviteAction = (inputs) => {
+  return (dispatch) => {
+    dispatch({
+      type: 'RESEND_INVITE_REQUEST',
+      payload: inputs
+    });
+    ApolloClient.mutate({
+      variables: {token: inputs.token},
+      mutation: USER_RESEND_INVITE,
+    })
+    .then((result) => {
+      dispatch({
+        type: 'RESEND_INVITE_SUCCESS',
+        token: result.data.resendInvite
+      })
+    }).catch((error) => {
+      const {message, fields} = GeneralService.getErrorFromGraphQL(error);
+      dispatch({
+        type: 'RESEND_INVITE_FAILURE',
+        error: message,
+        errorFields: fields
+      })
+    });
+  };
+};
+
+export const addInviteAction = (inputs) => {
+  return (dispatch) => {
+    dispatch({
+      type: 'INVITE_REQUEST',
+      payload: inputs
+    });
+    ApolloClient.mutate({
+      variables: {input: inputs},
+      mutation: USER_INVITE,
+    })
       .then((result) => {
         dispatch({
-          type: 'LOGIN_SUCCESS',
-          user: result.user
+          type: 'INVITE_SUCCESS',
+          token: result.data.addInvite
         })
       }).catch((error) => {
         const {message, fields} = GeneralService.getErrorFromGraphQL(error);
         dispatch({
-          type: 'LOGIN_FAILURE',
+          type: 'INVITE_FAILURE',
           error: message,
           errorFields: fields
         })
       })
   }
-}
+};
+
+export const getUserSettingsAction = (inputs) => {
+  return (dispatch) => {
+    dispatch({
+      type: 'GET_SETTINGS_REQUEST',
+      payload: inputs
+    });
+    ApolloClient.query({
+      query: GET_SETTINGS,
+    })
+      .then((result) => {
+        dispatch({
+          type: 'GET_SETTINGS_SUCCESS',
+          userSettings: result.data.userSettings
+        })
+      }).catch((error) => {
+        const {message, fields} = GeneralService.getErrorFromGraphQL(error);
+        dispatch({
+          type: 'GET_SETTINGS_FAILURE',
+          error: message,
+          errorFields: fields
+        })
+      })
+  }
+};
 
 export const isLoggedInAction = () => {
   return (dispatch) => {

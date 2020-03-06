@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 
-export default ({type, name, placeholder, options, disabled, error, initValue, onChange}) => {
+export default ({type, name, placeholder, options, cast, disabled, error,  initValue, onChange}) => {
 
   /********
    * VARS
@@ -37,6 +37,9 @@ export default ({type, name, placeholder, options, disabled, error, initValue, o
       newValue = valueOverride;
     } else {
       newValue = event && event.target.value;
+    }
+    if (cast) {
+      newValue = cast(newValue);
     }
     setValue(newValue);
     onChange(newValue, nameOverride || name, flagUnsaved);
@@ -81,7 +84,7 @@ export default ({type, name, placeholder, options, disabled, error, initValue, o
     case 'checkbox':
       return  (
         <div>
-          <div className={`${formStyle.inputWpr} ${ formStyle.switch} ${value ? formStyle.filled : ''}`}  onClick={(e) => {handleInputChange(e, name, !value)}} >
+          <div className={`${disabled ? formStyle.disabled : ''} ${formStyle.inputWpr} ${ formStyle.switch} ${value ? formStyle.filled : ''}`}  onClick={(e) => {handleInputChange(e, name, !value)}} >
             <div className={`${formStyle.fakeCheckBox} ${value ? formStyle.checked : '' }`}></div>
             <label>{name}</label>
           </div>

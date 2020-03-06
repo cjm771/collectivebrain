@@ -2,9 +2,6 @@ const Post = require('../models/Post');
 const User = require('../models/User');
 const Token = require('../models/Token');
 
-
-const MailerService = require('../utils/MailerService.js');
-
 const {UserInputError, AuthenticationError, SchemaError} = require('apollo-server-express');
 
 const confirmLoggedInUser = async (ctx) => {
@@ -24,10 +21,11 @@ const loginUser = (user, ctx) => {
   ctx.req.session.user = {
     email: user.email, 
     name: user.name,
+    id: user._id
   };
   return {
     token,
-    user: user.toJSON(),
+    user: user
   }
 }
 
@@ -72,24 +70,43 @@ module.exports  = {
         return null;
       }
     },
+    resendInvite: async (_, args, ctx) =>  {
+      const user = await confirmLoggedInUser(ctx);
+      invite = await Token.findOne({ token: args.token, user: user });
+      if (!invite) {
+        throw new SchemaError('Could not find this invite to resend!');
+      }
+      try {
+        await invite.sendInviteEmail();
+        return invite;
+      } catch (e) {
+        throw new SchemaError(`An error occurred while trying to resend invite: ${e}`);
+      }
+    },
     deletePost: async (_, args, ctx) => {
       const user = await confirmLoggedInUser(ctx);
       let post;
       try {
         post = await Post.findOne({_id: args.id || -1});
       } catch (e) {
-        throw SchemaError(`Could not find post with given id: ${args.id}`);
+        throw new SchemaError(`Could not find post with given id: ${args.id}`);
       }
-      let deletedFilesResults = {};
-      if (post.files) {
-        deletedFilesResults = await post.deleteFiles();
+      if (await post.canBeEdited(user.id)) {
+        let deletedFilesResults = {};
+        post.editor = user.id;
+        if (post.files) {
+          deletedFilesResults = await post.deleteFiles();
+        }
+        try {
+          await Post.deleteOne({_id: args.id});
+        } catch (e) {
+          handlePostErrors(e);
+        }
+        return {post, deletedFilesResults};
+      } else {
+        throw new AuthenticationError('You are not permitted to delete this post!');
       }
-      try {
-        await Post.deleteOne({_id: args.id});
-      } catch (e) {
-        handlePostErrors(e);
-      }
-      return {post, deletedFilesResults};
+     
     },
     editPost: async (_, args, ctx) => {
       const user = await confirmLoggedInUser(ctx);
@@ -139,22 +156,7 @@ module.exports  = {
       let invite;
       try {
         invite = await newInvite.save();
-        if (MailerService.shouldSendEmails && invite.metaData.email) {
-          const inviteMessage = MailerService.MESSAGES.INVITE({
-            user,
-            invitee: {
-              token: invite.token,
-              email: invite.metaData.email,
-              name: invite.metaData.name,
-            }
-          });
-          console.log(inviteMessage);
-          try {
-            await MailerService.send(inviteMessage);
-          } catch (e) {
-            console.log('Could not mail invite email:', e);
-          }
-        }
+        invite.sendInviteEmail();
       } catch (e) {
         handlePostErrors(e);
       }
@@ -223,6 +225,7 @@ module.exports  = {
       // if (ctx.req.session.user) {
         try {
           const post = await Post.findOne({_id: args.id}).populate('user');
+          post.editor = ctx.req.session.user && ctx.req.session.user.id;
           return post;
         } catch (e) {
           throw new UserInputError('Post not found', {
@@ -238,13 +241,17 @@ module.exports  = {
         args.limit = args.limit || 0;
         args.offset = args.offset || 0;
         const count = await Post.estimatedDocumentCount({});
-        const posts = await Post
+        let posts = await Post
         .find({})
         .sort([['_id', -1]])
         .limit(args.limit)
         .skip(args.offset)
         .populate('user')
         .populate('lastEditedBy');
+        posts = posts.map((post) => {
+          post.editor = ctx.req.session.user && ctx.req.session.user.id;
+          return post;
+        })
         return {
           total: count, 
           start: args.offset,
@@ -280,6 +287,9 @@ module.exports  = {
     keyFile: ({files}) => (files && files.length) ? files[0] : null,
     updatedAt: ({_id, updatedAt}) => {
       return updatedAt ? new Date(updatedAt).toJSON() : null
+    },
+    canEdit: (post) => {
+      return post.canBeEdited();
     },
     createdAt: ({_id, createdAt}) => {
       return createdAt ? new Date(createdAt).toJSON() : _id.getTimestamp().toJSON()

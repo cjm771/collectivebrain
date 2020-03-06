@@ -12,11 +12,17 @@ import formStyle from '../../scss/_forms.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 export default (props) => {
+  
   /*************
-   *   HOOKS   *
+   *   VARS    *
    *************/
 
   const searchParams = new URLSearchParams(props.location.search);
+
+  /*************
+   *   HOOKS    *
+   *************/
+
   const [inputs, setInputs] = useState({
     email: searchParams.get('email') || '', 
     name: searchParams.get('name') || '',
@@ -63,10 +69,12 @@ export default (props) => {
   const focusOnInviteTokenInput = () => {
     document.getElementsByName('inviteToken')[0].focus();
   };
+
    /*************
    *  RENDER   *
    *************/
-  return (
+  
+   return (
     <div className={registerStyle.register}>
       <form 
         className={`${formStyle.form} ${formStyle.maxWidth}`}

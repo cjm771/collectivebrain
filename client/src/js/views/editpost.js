@@ -86,6 +86,10 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
    * HELPERS
    ********/
 
+   const allowedToEdit = () => {
+    return (postData.activeItem) ? postData.activeItem.canEdit : true;
+   }
+
 
    const markUnsavedChanges = (file) => {
     if (onUnsavedChanges) {
@@ -152,6 +156,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                   <Input 
                   type="dropdown"
                   name="category"
+                  disabled={!allowedToEdit()}
                   options={postService.CATEGORIES}
                   onChange={handleInputChange} 
                   initValue={page === 'add' ? 0 : postService.getCategoryIndexByName(postData.activeItem.category)}
@@ -161,6 +166,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                   <Input 
                     type="dropdown"
                     name="subCategory"
+                    disabled={!allowedToEdit()}
                     options={subCatOptions}
                     onChange={handleInputChange} 
                     initValue={page === 'add' ? 0 :  postService.getSubCategoryIndexByName(postData.activeItem.subCategory)}
@@ -171,6 +177,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                 type="text"
                 name="title"
                 onChange={handleInputChange} 
+                disabled={!allowedToEdit()}
                 error={hasErrors('title')}
                 initValue={page === 'add' ? '' : postData.activeItem.title}
               ></Input>
@@ -178,6 +185,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                 type="textarea"
                 name="description"
                 onChange={handleInputChange}
+                disabled={!allowedToEdit()}
                 error={hasErrors('description')}
                 initValue={page === 'add' ? '' : postData.activeItem.description}
               ></Input>
@@ -185,6 +193,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                 type="text"
                 name="creator"
                 onChange={handleInputChange} 
+                disabled={!allowedToEdit()}
                 error={hasErrors('creator')}
                 initValue={page === 'add' ? '' : postData.activeItem.creator}
               ></Input>
@@ -194,6 +203,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                     type="date"
                     name="startDate"
                     onChange={handleInputChange} 
+                    disabled={!allowedToEdit()}
                     error={hasErrors('startDate')}
                     initValue={page === 'add' ? null : postService.getYear(postData.activeItem.startDate)}
                   ></Input>
@@ -206,6 +216,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                     type="date"
                     name="endDate"
                     onChange={handleInputChange} 
+                    disabled={!allowedToEdit()}
                     error={hasErrors('endDate')}
                     initValue={page === 'add' ? null : postService.getYear(postData.activeItem.endDate)}
                   ></Input>
@@ -213,6 +224,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
               </div>
               <div>
                 <FileGallery 
+                  disabled={!allowedToEdit()}
                   files={page === 'add' ? null : postData.activeItem.files} 
                   onFileUploaded={markUnsavedChanges} 
                   onChange={handleFilesChange}
@@ -223,6 +235,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                 name="tags"
                 onChange={handleInputChange} 
                 error={hasErrors('tags')}
+                disabled={!allowedToEdit()}
                 initValue={page === 'add' ? '' : postData.activeItem.tags && postData.activeItem.tags.join(', ')}
               ></Input>
                <Input 
@@ -230,6 +243,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                 name="sources"
                 onChange={handleInputChange} 
                 error={hasErrors('sources')}
+                disabled={!allowedToEdit()}
                 initValue={page === 'add' ? '' : postData.activeItem.sources && postData.activeItem.sources.join('\n')}
               ></Input>
               <div className={`row ${formStyle.halfLeftRightAligned}`}>
@@ -241,15 +255,16 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                   type="checkbox"
                   name="published"
                   onChange={handleInputChange} 
+                  disabled={!allowedToEdit()}
                   initValue={page === 'add' ? false : postData.activeItem.published}
                 ></Input>
                 </div>
               </div>
             
-              <button onClick={handleSubmit} className={formStyle.button} disabled={postData.saving}>
+              <button onClick={handleSubmit} className={formStyle.button} disabled={postData.saving || !allowedToEdit()}>
               {postData.saving ? 
                 <span><FontAwesomeIcon icon={faCircleNotch}></FontAwesomeIcon> saving..</span> :
-              'save'
+              (!allowedToEdit() ? 'Read Only' : 'save')
               }
               </button>
               {
