@@ -112,7 +112,7 @@ module.exports = async (setupRoutes) => {
     .get((req, res) => {
         if (req.session.user && req.cookies.user_sid) {
           
-          res.redirect('/');
+          res.redirect('/dashboard');
         } else {
           renderRoot(req, res);
         }

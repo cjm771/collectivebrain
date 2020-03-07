@@ -1,22 +1,23 @@
 require('dotenv').config();
 const Handlebars = require('handlebars');
-
-const mailgun = require('mailgun-js')({
-    apiKey: process.env.MAILGUN_API_KEY, 
-    domain: process.env.MAILGUN_DOMAIN
-});
+const sendgrid = require('@sendgrid/mail');
+sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 module.exports = {
   shouldSendEmails: process.env.SEND_EMAILS === 'true',
   send: (data) => {
     data = Object.assign({
-      from: 'Collective Brain <noreply@collectivehomeoffice.com>',
+      from: 'noreply@collectivehomeoffice.com',
+      from: {
+        email: 'noreply@collectivehomeoffice.com',
+        name: 'collectivebrain'
+    },
     }, data);    
-    return new Promise((res, rej) => {
-      mailgun.messages().send(data, (err, body) => {
-        if (err) return rej(err);
-        res(body);
-      });
+    return sendgrid.send(data).then((data) => {
+      debugger;
+    }).catch((error) => {
+      debugger;
+      throw error;
     })
   },
   MESSAGES: {
