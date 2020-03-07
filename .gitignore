@@ -63,3 +63,5 @@ typings/
 # misc
 .DS_STORE
 server/uploads/**/*
+client/dist/**/*.gz
+client/dist/**/*.br

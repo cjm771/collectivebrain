@@ -28,7 +28,7 @@ export default (props) => {
 
   useEffect(() => {
     if (user.loggedIn) {
-      window.location.href = '/';
+      window.location.href = '/dashboard';
     }
   }, [user.loggedIn]);
 
