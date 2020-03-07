@@ -85,7 +85,7 @@ tokenSchema.pre('validate', function (next) {
 
 tokenSchema.virtual('url').get(function () {
   if (this.type === this.schema.statics.TOKEN_TYPES.INVITE) {
-    return `${process.env.DOMAIN}/register?inviteToken=${this.token}&name=${this.metaData.name}&email=${this.metaData.email}`
+    return `${process.env.DOMAIN}/register?inviteToken=${this.token}&name=${encodeURIComponent(this.metaData.name)}&email=${this.metaData.email}`
   } else {
     return null;
   }
