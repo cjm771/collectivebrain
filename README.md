@@ -10,7 +10,8 @@ Collectivebrain
   - [1.5. Seed db](#15-seed-db)
   - [1.6. Run Migrations](#16-run-migrations)
   - [1.7. Run tests](#17-run-tests)
-  - [1.8. Login](#18-login)
+  - [1.8. Start dev server + build](#18-start-dev-server--build)
+  - [1.9. Login](#19-login)
 
 <!-- /TOC -->
 
@@ -65,7 +66,14 @@ Using Jest, run tests via. All should pass.
 $ npm test
 ```
 
-## 1.8. Login 
+## 1.8. Start dev server + build
+```sh
+$ npm run startDev # nodemon server
+$ npm run buildWatch # webpack / react build 
+$ open http://localhost:3000
+```
+
+## 1.9. Login 
 Should be one user (admin) added with following
   - *Username* [email specified in .env]
   - *password* [password specified in .env]
