@@ -111,6 +111,11 @@ tokenSchema.statics.STATUS = {
 /**
  * METHODS
  */
+
+tokenSchema.methods.isAvailable = function() {
+  return this.status === this.schema.statics.STATUS.AVAILABLE;
+};
+
 tokenSchema.methods.isInvite = function() {
   return this.type === this.schema.statics.TOKEN_TYPES.INVITE;
 };

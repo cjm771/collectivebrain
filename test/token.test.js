@@ -1,19 +1,14 @@
 const mongoose = require('../server/db.js');
 const Token = require('../server/models/Token.js');
-beforeAll(() => {
-  // clean up test database
+
+const cleanup =  () => {
   if (process.env.NODE_ENV === 'test') {
     mongoose.connection.dropDatabase();
-  }
-});
+  };
+}
 
-afterAll(() => {
-  // clean up test database
-  if (process.env.NODE_ENV === 'test') {
-    mongoose.connection.dropDatabase();
-  }
-});
-
+beforeAll(cleanup);
+afterAll(() => { cleanup(); mongoose.connection.close() });
 
 describe("Token tests", () => {
 

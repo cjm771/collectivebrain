@@ -2,19 +2,14 @@ const User = require('../server/models/User.js');
 const Token = require('../server/models/Token.js')
 const mongoose = require('../server/db.js');
 
-beforeAll(() => {
-  // clean up test database
+const cleanup =  () => {
   if (process.env.NODE_ENV === 'test') {
     mongoose.connection.dropDatabase();
-  }
-});
+  };
+}
 
-afterAll(() => {
-  // clean up test database
-  if (process.env.NODE_ENV === 'test') {
-    mongoose.connection.dropDatabase();
-  }
-});
+beforeAll(cleanup);
+afterAll(() => { cleanup(); mongoose.connection.close() });
 
 const inviteTokens = []
 let normalUser, moderator, admin;
@@ -154,11 +149,12 @@ describe("User tests", () => {
   });
 
   it ('doesn\'t reuse a used token!', async () => {
+    debugger;
     const user = new User({
       email: 'user_reusedToken@test123.com',
       password: '123456',
       name: 'test',
-      token: inviteTokens[0]
+      token:  (await Token.findOne({token: inviteTokens[0].token}))
     });
     await expect(user.save()).rejects.toThrow('Invite Token is invalid');
   });

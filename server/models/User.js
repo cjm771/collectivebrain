@@ -64,14 +64,30 @@ userSchema.pre('save', async function (next) {
   if (user.isNew) { // new user
     if (!user.token) {
       return next(new Error('Invite Token is Required'));
-    } else if (!user.token || !user.token.isInvite() || !(await Token.findOne({token: user.token.token}))) {
-      return next(new Error('Invite Token is invalid'));
+    } else if (
+      !user.token ||
+      !user.token.isAvailable() ||
+      !user.token.isInvite() ||
+      !(await Token.findOne({token: user.token.token}))) {
+      let extra = '';
+      if (!user.token) {
+        extra += ': No token on user';
+      } else if (!user.token.isAvailable()) {
+        extra += ': Not available, Token was used or removed.';
+      } else if (!user.token.isInvite()) {
+        extra += ': Token is not an invite token. Type = ' + user.token.type;
+      } else if (!(await Token.findOne({token: user.token.token}))) {
+        extra += ': Token could not be found';
+      }
+      return next(new Error('Invite Token is invalid' + extra));
     } else if (user.token.metaData && user.token.metaData.role) {
         user.role = user.token.metaData.role;
     }
     const token = await Token.findOne({token: user.token.token});
     token.status = Token.STATUS.USED;
-    token.metaData.user = user;
+    if (token.metaData) {
+      token.metaData.user = user;
+    }
     await token.save();
     if (user.password) {
       await this.updatePassword(this.password);

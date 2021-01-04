@@ -3,19 +3,14 @@ const Token = require('../server/models/Token.js');
 const Post = require('../server/models/Post.js');
 const mongoose = require('../server/db.js');
 
-beforeAll(() => {
-  // clean up test database
+const cleanup =  () => {
   if (process.env.NODE_ENV === 'test') {
     mongoose.connection.dropDatabase();
-  }
-});
+  };
+}
 
-afterAll(() => {
-  // clean up test database
-  if (process.env.NODE_ENV === 'test') {
-    mongoose.connection.dropDatabase();
-  }
-});
+beforeAll(cleanup);
+afterAll(() => { cleanup(); mongoose.connection.close() });
 
 
 let normalUser, moderator, admin;
@@ -43,9 +38,12 @@ describe("post tests", () => {
         inviteTokens.push(tmpDoc);
 
       } catch (e) {
+        debugger;
         throw 'Error: ' + e
       }
     }
+    console.log(inviteTokens[0], inviteTokens[0].type);
+    debugger;
     normalUser = new User({
       email: 'normaluser@test123.com',
       password: '123456',
@@ -182,10 +180,10 @@ describe("post tests", () => {
     postByUser.editor = editor;
     await expect(postByUser.save()).resolves.toBeDefined();
   });
-  it('should allow an admin to modify an  user / mod posts', async () => {
+  it('should allow an admin to modify an  user / mod / admin posts', async () => {
     const editor = admin._id;
     postByOtherAdmin.editor = editor;
-    await expect(postByOtherAdmin.save()).rejects.toThrow();
+    await expect(postByOtherAdmin.save()).resolves.toBeDefined();
     postByMod.editor = editor;
     await expect(postByMod.save()).resolves.toBeDefined();
     postByAdmin.editor = editor;

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "startDev": "nodemon --inspect server/index.js",
     "start": "node server/index.js",
     "seed": "node sample_data/seedData.js",
