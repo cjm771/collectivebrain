@@ -1,12 +1,14 @@
 // react / redux
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addInviteAction, getUserSettingsAction, resendInviteAction, clearResendInviteAction } from '../actions/user.actions.js';
+import { addInviteAction, getUserSettingsAction, resendInviteAction, clearResendInviteAction, updateActiveGroupAction } from '../actions/user.actions.js';
+import { getGroupsAction } from '../actions/group.actions.js';
 
 // resources
 import axios from 'axios';
 import uuidv4 from 'uuid/v4';
 import copy from 'copy-to-clipboard';
+import classNames from 'classnames';
 
 // services
 import UserService from '../services/users.services.js';
@@ -15,6 +17,7 @@ import GeneralService from '../services/general.services.js';
 // components
 import SimpleForm from '../components/SimpleForm.js';
 import Tooltipify from '../components/Tooltipify.js';
+import Input from '../components/Input.js';
 
 // styles
 import settingsStyle from '../../scss/settings.scss';
@@ -34,12 +37,22 @@ export default () => {
   const userData = useSelector((state) => { 
     return state.user;
   });
+  const groupsData = useSelector((state) => {
+    state.groups.options = {};
+    state.groups.items.forEach((option) => {
+      state.groups.options[option.name] = option.id;
+    });
+    return state.groups;
+
+  });
+
   const [inviteMode, setInviteMode] = useState(false);
   const [invitableRoles, setInvitableRoles] = useState({});
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getUserSettingsAction());
+    dispatch(getGroupsAction());
   }, []);
 
   useEffect(() => {
@@ -97,6 +110,13 @@ export default () => {
     }, 2000);
   };
 
+  const handleGroupsChange = (groupId) => {
+    if (!userData.activeGroup || (userData.activeGroup.id !== groupId)) {
+      console.log(userData.activeGroup.id, groupId);
+      dispatch(updateActiveGroupAction({activeGroup: groupId}));
+    }
+  };
+
   /*************
    *  RENDER   *
   *************/
@@ -121,6 +141,22 @@ export default () => {
 
     return (
       <div  className={settingsStyle.settings}>
+        {/* group section */}
+        <div>
+          <h5>Active Group</h5>
+          {
+            groupsData && groupsData.items.length ? 
+            <Input 
+              type="dropdown"
+              name="group"
+              onChange={handleGroupsChange}
+              options={groupsData.options}
+              disabled={userData.role !== 2}
+              initValue={(userData.activeGroup && userData.activeGroup.id) || groupsData.items[0].id}
+            ></Input> :
+            ''
+          }
+        </div>
         {/* you section */}
         <div className={settingsStyle.youSection}>
           <h5> You <RoleBadge role={userData.role} /><i className={settingsStyle.note}> Editing Coming Soon</i></h5>
@@ -239,7 +275,7 @@ export default () => {
           <h5> Change Theme </h5>
           <div className={formStyle.form}>
             <div>
-              <button onClick={(e) => {changeTheme('light')}} className={`${formStyle.buttonSecondary} ${formStyle.fullWidth}`}>Light Mode</button>
+              <button onClick={(e) => {changeTheme('light')}} className={`${formStyle.buttonSecondary} ${formStyle.fullWidth}`}>Night Mode</button>
             </div>
             <div>
               <button onClick={(e) => {changeTheme('dark')}} className={`${formStyle.buttonSecondary} ${formStyle.fullWidth}`} >Dark mode</button>                

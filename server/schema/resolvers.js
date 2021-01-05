@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+const Group = require('../models/Group');
 const Token = require('../models/Token');
 
 const {UserInputError, AuthenticationError, SchemaError} = require('apollo-server-express');
@@ -8,7 +9,7 @@ const confirmLoggedInUser = async (ctx) => {
   if (!ctx.req.session.user) {
     throw new AuthenticationError('You must be logged into post');
   }
-  user = await User.findOne({ email: ctx.req.session.user.email });
+  user = await User.findOne({ email: ctx.req.session.user.email }).populate('activeGroup');
   if (!user) {
     throw new AuthenticationError('Could not resolve user. Are you logged in?');
   }
@@ -64,7 +65,7 @@ module.exports  = {
       if (ctx.req.session.user) {
         return {
           token: 'DUMMY TOKEN',
-          user: await User.findOne({ email: ctx.req.session.user.email }),
+          user: await User.findOne({ email: ctx.req.session.user.email }).populate('activeGroup'),
         }
       } else {
         return null;
@@ -212,29 +213,53 @@ module.exports  = {
     editUser: async (_, args, ctx) => {
       const editor = await confirmLoggedInUser(ctx);
       args.input.editor = editor._id;
-      let user = await User.findOne({_id: args.input.id})
+      let user = await User.findOne({_id: args.input.id || editor._id}).populate('activeGroup');
       if (!user) {
         throw new Error('No such user found');
       }
-      user = await user.update(args.input);
-      return loginUser(user, ctx);
+      for (key of Object.keys(args.input)) {
+        if (key === 'activeGroup') {
+          user[key] = await Group.findOne({_id: args.input[key]});
+        } else {
+          user[key] = args.input[key];
+        }
+      }
+
+      try {
+        user = await user.save();
+        user.populate('activeGroup');
+      } catch (e) {
+        throw new Error('Could not save');
+      }
+      invites = Token.find({user, type: Token.TOKEN_TYPES.INVITE}).populate('metaData.user');
+      return {
+        user,
+        invites,
+        canInvite: user.getEditableRoles()
+      }
     }
   },
   Query : {
+    group: async (_, args, ctx) => {
+      try {
+        const group = await Group.findOne({_id: args.id});
+        return group;
+      } catch (e) {
+        throw new UserInputError('Group not found', {
+          invalidArgs: ['id'],
+          });
+      }
+    },
     post: async (_, args, ctx) => {
-      // if (ctx.req.session.user) {
-        try {
-          const post = await Post.findOne({_id: args.id}).populate('user');
-          post.editor = ctx.req.session.user && ctx.req.session.user.id;
-          return post;
-        } catch (e) {
-          throw new UserInputError('Post not found', {
-            invalidArgs: ['id'],
-           });
-        }
-      // } else {
-      //   throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?');
-      // }
+      try {
+        const post = await (await Post.findOne({_id: args.id}).populate('user').populate('group'));
+        post.editor = ctx.req.session.user && ctx.req.session.user.id;
+        return post;
+      } catch (e) {
+        throw new UserInputError('Post not found', {
+          invalidArgs: ['id'],
+          });
+      }
     },
     posts: async (_, args, ctx) => {
       // if (ctx.req.session.user) {
@@ -247,6 +272,7 @@ module.exports  = {
         .limit(args.limit)
         .skip(args.offset)
         .populate('user')
+        .populate('group')
         .populate('lastEditedBy');
         posts = posts.map((post) => {
           post.editor = ctx.req.session.user && ctx.req.session.user.id;
@@ -263,6 +289,13 @@ module.exports  = {
       // } else {
       //   throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?')
       // }
+    },
+    groups: async (_, args, ctx) => {
+      if (ctx.req.session.user) {
+        return Group.find({})
+      } else {
+        throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?')
+      }
     },
     users: (_, args, ctx) => {
       if (ctx.req.session.user) {

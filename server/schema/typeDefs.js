@@ -8,7 +8,7 @@ module.exports = `
     editPost(input: PostInput): Post,
     deletePost(id: ID): PostDeletedResult,
     addUser(input: RegisterInput): AuthPayload,
-    editUser(input: EditUserInput): User,
+    editUser(input: EditUserInput): UserSettings,
     login(
       email: String!, 
       password: String!
@@ -18,7 +18,9 @@ module.exports = `
   type Query {
     posts(limit: Int, offset: Int): PostsResult,
     post(id: String): Post,
+    group(id: String): Group,
     users: [User!]!,
+    groups: [Group!]!,
     userSettings: UserSettings
   }
 
@@ -76,6 +78,7 @@ module.exports = `
     files: [File],
     keyFile: File,
     user: User!,
+    group: Group,
     canEdit: Boolean,
     lastEditedBy: User,
     createdAt: String,
@@ -88,6 +91,11 @@ module.exports = `
     caption: String,
   }
 
+  type Group {
+    id: ID,
+    name: String
+  }
+
   type AuthPayload {
     token: String
     user: User
@@ -98,7 +106,8 @@ module.exports = `
     email: String,
     id: ID,
     role: Int,
-    profileUrl: String
+    profileUrl: String,
+    activeGroup: Group
   }
 
   type MetaData {
@@ -126,15 +135,9 @@ module.exports = `
     name: String,
     email: String,
     password: String,
+    activeGroup: ID,
     role: Int,
-    id: ID!
-  }
-
-  
-
-  input userSettingsInput {
-    name: String!,
-    email: String!,
+    id: ID
   }
 
   type Token {

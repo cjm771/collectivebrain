@@ -149,7 +149,6 @@ describe("User tests", () => {
   });
 
   it ('doesn\'t reuse a used token!', async () => {
-    debugger;
     const user = new User({
       email: 'user_reusedToken@test123.com',
       password: '123456',

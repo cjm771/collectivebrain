@@ -21,6 +21,10 @@ const postSchema = mongoose.Schema({
     ref: 'User',
     required: true
   },
+  group: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Group'
+  },
   lastEditedBy: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User'

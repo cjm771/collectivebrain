@@ -35,13 +35,6 @@
 
     text-align: center;
 
-    input, button, select, textarea {
-      &[disabled] { 
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-
     .warningBox {
       color: map-get($themeMap, 'warningColor');
       font-weight: bold;
@@ -130,6 +123,14 @@
   .inputWpr {
     position: relative;
     margin-bottom: 1rem;
+
+    input, button, textarea {
+      &.disabled,
+      &[disabled] { 
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
   
     &.filled {
       label {
@@ -150,6 +151,7 @@
         cursor: not-allowed;
         pointer-events: none;
       }
+      
       
       input[type=checkbox],
       .fakeCheckBox {
@@ -224,10 +226,22 @@
       padding-left: $input-padding;
       padding-top: $input-padding * .5;
     }
+
+    &.dropdown {
+      &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        
+        select {
+          cursor: not-allowed;
+        }
+      }
+    }
   
   
     &.dropdown,
     .input {
+
       &::placeholder {
         color: map-get($themeMap, 'inputPlaceholderTextColor');
       }

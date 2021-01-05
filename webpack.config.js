@@ -57,6 +57,7 @@ module.exports = {
   entry: {
     app: './client/src/js/index.js',
   },
+  devtool: 'source-map',
   stats: {
     children: false,
     chunks: false,

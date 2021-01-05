@@ -5,15 +5,52 @@ import { gql } from 'apollo-boost';
 import ApolloClient from '../services/ApolloClient.js';
 import GeneralService from '../services/general.services.js';
 
+const sharedUserParams = `
+name,
+id,
+email,
+role,
+`;
+
+const sharedUserSettingsParams = `
+user {
+  name, 
+  email,
+  profileUrl,
+  activeGroup {
+    id,
+    name
+  }
+},
+canInvite,
+invites {
+  token,
+  status,
+  type,
+  url,
+  metaData {
+    name,
+    role,
+    email,
+    user {
+      name,
+      email,
+      
+    }
+  }
+}
+`;
+
 const IS_USER_LOGGED_IN = gql`
 mutation {
   isLoggedIn {
     token,
     user { 
-      name,
-      id 
-      email,
-      role
+      ${sharedUserParams}
+      activeGroup {
+        id,
+        name
+      }
     }
   }
 }
@@ -24,10 +61,7 @@ const USER_LOGIN = gql`
     login(email: $email, password: $password) {
       token,
       user { 
-        name, 
-        id
-        email,
-        role
+        ${sharedUserParams}
       }
     }
   }
@@ -38,10 +72,7 @@ const USER_REGISTER = gql`
     addUser(input: $input) {
       token,
       user { 
-        name, 
-        id
-        email,
-        role
+        ${sharedUserParams}
       }
     }
   }
@@ -70,31 +101,18 @@ const USER_RESEND_INVITE = gql`
   }
 `;
 
+const UPDATE_GROUP = gql`
+  mutation ($input: EditUserInput) {
+    editUser(input: $input) {
+      ${sharedUserSettingsParams}
+    }
+  }
+`;
+
 const GET_SETTINGS = gql`
   query {
     userSettings {
-      user {
-        name, 
-        email,
-        profileUrl
-      },
-      canInvite,
-      invites {
-        token,
-        status,
-        type,
-        url,
-        metaData {
-          name,
-          role,
-          email,
-          user {
-            name,
-            email,
-            
-          }
-        }
-      }
+      ${sharedUserSettingsParams}
     }
   }
 `;
@@ -124,6 +142,32 @@ export const registerAction = (inputs) => {
       })
   }
 };
+
+export const updateActiveGroupAction = (inputs) => {
+  return (dispatch) => {
+    dispatch({
+      type: 'UPDATE_GROUP_REQUEST',
+      payload: inputs
+    });
+    ApolloClient.mutate({
+      variables: {input: inputs},
+      mutation: UPDATE_GROUP,
+    })
+      .then((result) => {
+        dispatch({
+          type: 'UPDATE_GROUP_SUCCESS',
+          userSettings: result.data.editUser
+        })
+      }).catch((error) => {
+        const {message, fields} = GeneralService.getErrorFromGraphQL(error);
+        dispatch({
+          type: 'UPDATE_GROUP_FAILURE',
+          error: message,
+          errorFields: fields
+        })
+      })
+  }
+}
 
 export const loginAction = (inputs) => {
   return (dispatch) => {

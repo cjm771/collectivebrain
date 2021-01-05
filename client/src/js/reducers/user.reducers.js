@@ -109,6 +109,26 @@ export default (state = {
         settingsError: action.error,
         settingsErrorFields: action.errorFields
       }
+    case 'UPDATE_GROUP_REQUEST':
+      return {
+        ...state,
+        settingsLoading: true,
+        saving: true
+      }
+    case 'UPDATE_GROUP_SUCCESS':
+      return {
+        ...state,
+        ...action.userSettings.user,
+        userSettings: action.userSettings,
+        settingsLoading: false,
+      }
+    case 'UPDATE_GROUP_FAILURE':
+      return {
+        ...state,
+        settingsLoading: false,
+        settingsError: action.error,
+        settingsErrorFields: action.errorFields
+      }
     case 'LOGOUT':
       return state;
     case 'UPDATE':

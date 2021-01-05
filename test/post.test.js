@@ -38,12 +38,9 @@ describe("post tests", () => {
         inviteTokens.push(tmpDoc);
 
       } catch (e) {
-        debugger;
         throw 'Error: ' + e
       }
     }
-    console.log(inviteTokens[0], inviteTokens[0].type);
-    debugger;
     normalUser = new User({
       email: 'normaluser@test123.com',
       password: '123456',

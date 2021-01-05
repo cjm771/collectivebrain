@@ -96,7 +96,7 @@ export default ({type, name, placeholder, options, cast, disabled, error,  initV
       }
       return (
         <div>
-          <div className={classNames(formStyle.inputWpr, formStyle.dropdown, error ? formStyle.hasErrors : null, formStyle.filled)}>
+          <div className={classNames(formStyle.inputWpr, formStyle.dropdown, error ? formStyle.hasErrors : null, formStyle.filled,  disabled ? formStyle.disabled : null)}>
             <select 
               onChange={handleInputChange}
               className={classNames('form-control')} 

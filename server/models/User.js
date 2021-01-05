@@ -20,6 +20,10 @@ const userSchema = mongoose.Schema({
   editor: {
     type: Schema.Types.ObjectId
   },
+  activeGroup: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Group'
+  },
   email: {
     type: String,
     required: true,
