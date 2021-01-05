@@ -39,7 +39,7 @@ export default (props) => {
 
   useEffect(() => {
     if (user.registered) {
-      window.location.href = '/';
+      window.location.href = '/dashboard';
     }
   }, [user.registered]);
   

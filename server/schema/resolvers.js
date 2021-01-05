@@ -270,7 +270,6 @@ module.exports  = {
         if (args.group) {
           filter = {group: args.group};
         }
-        debugger;
         let posts = await Post
         .find(filter)
         .sort([['_id', -1]])

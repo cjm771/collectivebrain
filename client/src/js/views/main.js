@@ -31,7 +31,6 @@ export default ({match}) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [activePost, setActivePost] = useState(null);
     const groupsData = useSelector((state) => { return state.groups });
-    
     useEffect(() => {
       dispatch(getGroupsAction());
     }, []);
@@ -41,8 +40,7 @@ export default ({match}) => {
         const filteredGroups = groupsData.items.filter((group) => {
           return group.name === match.params.group;
         });
-        const groupToSet = filteredGroups.length ? filteredGroups[0] : null;
-        debugger;
+        const groupToSet = filteredGroups.length ? filteredGroups[0] : groupsData.items[0];
         dispatch(getPostsAction(
           {group: (groupToSet && groupToSet.id) || null}
         ));

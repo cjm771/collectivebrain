@@ -121,7 +121,6 @@ export const getPostsAction = (inputs, query=QUERIES.GET_POSTS) => {
       type:  inputs.morePosts ? 'GET_MORE_POSTS_REQUEST' : 'GET_POSTS_REQUEST',
       payload: inputs
     });
-    debugger
     return ApolloClient.query({query: query, variables: {
       group: inputs.group,
       limit: inputs.limit,

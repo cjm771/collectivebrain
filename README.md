@@ -12,6 +12,9 @@ Collectivebrain
   - [1.7. Run tests](#17-run-tests)
   - [1.8. Start dev server + build](#18-start-dev-server--build)
   - [1.9. Login](#19-login)
+- [2. Services](#2-services)
+  - [2.1. Sendgrid setup](#21-sendgrid-setup)
+  - [2.2. Cloudinary](#22-cloudinary)
 
 <!-- /TOC -->
 
@@ -77,3 +80,17 @@ $ open http://localhost:3000
 Should be one user (admin) added with following
   - *Username* [email specified in .env]
   - *password* [password specified in .env]
+
+# 2. Services
+Various 3rd party services are used. Refer to shared accounts doc for credentials 
+  - Sendgrid (email api)
+  - Heroku (hosting)
+  - ImprovMX (email forwarding)
+  - godaddy (domains)
+  - cloudinary (file uploads)
+
+## 2.1. Sendgrid setup
+  - make sure .env `SENDGRID_API_KEY` is set and authorized sender is set to `admin@collectivehomeoffice.com` in sendgrid dashboard
+
+## 2.2. Cloudinary
+  - make sure .env `CLOUDINARY_URL` is set. Access web portal via heroku

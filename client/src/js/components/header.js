@@ -24,7 +24,7 @@ export default () => {
               </span>
               <div className={classNames("dropdown-menu dropdown-menu-right", headerStyle.dropdownMenu)} aria-labelledby="dropdownMenuButton">
                   <div className={headerStyle.dropdownMenuArrow}></div>
-                  <a className="dropdown-item" href="/">
+                  <a className="dropdown-item" href={user.activeGroup ? `/g/${user.activeGroup.name}` : ''}>
                     <FontAwesomeIcon icon={faHome} />
                     <span>Home</span>
                   </a>

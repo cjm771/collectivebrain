@@ -1,6 +1,7 @@
 const mongoose = require('../db.js');
 const bcrypt = require('bcrypt');
 const Token = require('./Token.js');
+const Group = require('./Group.js');
 
 const UserService = require('../utils/UserService.js');
 const Schema = mongoose.Schema;
@@ -86,6 +87,10 @@ userSchema.pre('save', async function (next) {
       return next(new Error('Invite Token is invalid' + extra));
     } else if (user.token.metaData && user.token.metaData.role) {
         user.role = user.token.metaData.role;
+    }
+    if (user.token.metaData && user.token.metaData.group) {
+      const group = await Group.findById(user.token.metaData.group._id);
+      user.activeGroup = group;
     }
     const token = await Token.findOne({token: user.token.token});
     token.status = Token.STATUS.USED;

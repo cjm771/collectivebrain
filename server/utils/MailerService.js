@@ -7,14 +7,15 @@ module.exports = {
   shouldSendEmails: process.env.SEND_EMAILS === 'true',
   send: (data) => {
     data = Object.assign({
-      from: 'noreply@collectivehomeoffice.com',
+      from: 'admin@collectivehomeoffice.com',
       from: {
-        email: 'noreply@collectivehomeoffice.com',
+        email: 'admin@collectivehomeoffice.com',
         name: 'collectivebrain'
     },
     }, data);    
     return sendgrid.send(data).then((data) => {
     }).catch((error) => {
+      debugger;
       throw error;
     })
   },
@@ -26,7 +27,12 @@ module.exports = {
         text: Handlebars.compile(`
 Hi {{ invitee.name }},
 
-{{ user.name }} invites you to the collectivebrain group: {{ invites.group }} as role:{{ invitee.roleName }}! Please follow the link below to get started!
+{{ user.name }} invites you to a collectivebrain group.
+
+group: {{ invitee.group }}
+role: {{ invitee.roleName }}! 
+
+Please follow the link below to get started!
 {{{ invitee.inviteUrl }}}
 
 All the best,

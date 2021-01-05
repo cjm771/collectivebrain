@@ -284,7 +284,7 @@ export default () => {
           <h5> Change Theme </h5>
           <div className={formStyle.form}>
             <div>
-              <button onClick={(e) => {changeTheme('light')}} className={`${formStyle.buttonSecondary} ${formStyle.fullWidth}`}>Night Mode</button>
+              <button onClick={(e) => {changeTheme('light')}} className={`${formStyle.buttonSecondary} ${formStyle.fullWidth}`}>Light Mode</button>
             </div>
             <div>
               <button onClick={(e) => {changeTheme('dark')}} className={`${formStyle.buttonSecondary} ${formStyle.fullWidth}`} >Dark mode</button>                

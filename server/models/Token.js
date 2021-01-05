@@ -127,7 +127,6 @@ tokenSchema.methods.isInvite = function() {
 
 tokenSchema.methods.sendInviteEmail = async function() {
   const invite = this;
-  debugger;
   if (MailerService.shouldSendEmails &&
       this.metaData.email &&
       this.status === this.schema.statics.STATUS.AVAILABLE &&
