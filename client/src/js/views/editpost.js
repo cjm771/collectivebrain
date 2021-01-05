@@ -173,7 +173,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                   onChange={handleInputChange}
                   options={groupsData.options}
                   disabled={user.role !== 2}
-                  initValue={postData.activeItem.group.id || (user.activeGroup && user.activeGroup.id) || groupsData.items[0].id}
+                  initValue={(postData && postData.activeItem && postData.activeItem.group.id) || (user.activeGroup && user.activeGroup.id) || groupsData.items[0].id}
                 ></Input> :
                 ''
               }
