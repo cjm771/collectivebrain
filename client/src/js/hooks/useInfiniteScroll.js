@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 
 
-export default (action=null, _ref=null, _refChildSelector=null, data={}, _limit=10,_offset=0) => {
+export default (action=null, _ref=null, _refChildSelector=null, data={}, user={}, _limit=10,_offset=0) => {
   if (!action) {
     throw 'Action must be specified as first parameter.';
   }
@@ -26,6 +26,7 @@ export default (action=null, _ref=null, _refChildSelector=null, data={}, _limit=
   const [offset, setOffset] = useState(data.next || _offset);
   const [shouldFetch, setShouldFetch] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
+
 
   // when we recieve new offset..do dispatch
 
@@ -51,11 +52,12 @@ export default (action=null, _ref=null, _refChildSelector=null, data={}, _limit=
 
   // to prevent multiple triggered events it is only triggered when use ready to fetch
   useEffect(() => {
-    if (shouldFetch && !isFetching && data.next !== null) {
+    if (user && user.loggedIn && shouldFetch && !isFetching && data.next !== null) {
       setIsFetching(true);
       dispatch(action({
-        limit: limit,
-        offset: offset
+        group: user.activeGroup.id,
+        limit,
+        offset
       })).then((data) => {
         if (data.next) {
           setOffset(data.next);
@@ -66,7 +68,7 @@ export default (action=null, _ref=null, _refChildSelector=null, data={}, _limit=
         handleScroll();
       });
     }
-  }, [shouldFetch, isFetching])
+  }, [shouldFetch, isFetching, user])
 
       
   /*********

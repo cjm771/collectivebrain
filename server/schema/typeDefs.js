@@ -16,7 +16,7 @@ module.exports = `
   }
 
   type Query {
-    posts(limit: Int, offset: Int): PostsResult,
+    posts(group: ID, limit: Int, offset: Int): PostsResult,
     post(id: String): Post,
     group(id: String): Group,
     users: [User!]!,
@@ -45,6 +45,7 @@ module.exports = `
 
   input PostInput {
     id: ID,
+    group: ID,
     title: String!, 
     description: String!,
     startDate: String, 

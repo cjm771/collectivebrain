@@ -30,6 +30,17 @@ export default (state = {
         moreProcessing: false,
         processing: false
       }
+    case 'CLEAR_POSTS':
+      return {
+        ...state,
+        total: undefined, 
+        start: undefined,
+        end: undefined,
+        limit: undefined,
+        next: undefined,
+        posts: undefined,
+        items: []
+      }
     case 'GET_MORE_POSTS_SUCCESS':
       return {
         ...state,

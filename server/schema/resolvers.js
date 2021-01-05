@@ -266,8 +266,12 @@ module.exports  = {
         args.limit = args.limit || 0;
         args.offset = args.offset || 0;
         const count = await Post.estimatedDocumentCount({});
+        let filter = {};
+        if (args.group) {
+          filter = {group: args.group};
+        }
         let posts = await Post
-        .find({})
+        .find(filter)
         .sort([['_id', -1]])
         .limit(args.limit)
         .skip(args.offset)

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addInviteAction, getUserSettingsAction, resendInviteAction, clearResendInviteAction, updateActiveGroupAction } from '../actions/user.actions.js';
 import { getGroupsAction } from '../actions/group.actions.js';
+import { clearPostsAction } from '../actions/posts.actions.js';
 
 // resources
 import axios from 'axios';
@@ -114,6 +115,7 @@ export default () => {
     if (!userData.activeGroup || (userData.activeGroup.id !== groupId)) {
       console.log(userData.activeGroup.id, groupId);
       dispatch(updateActiveGroupAction({activeGroup: groupId}));
+      dispatch(clearPostsAction());
     }
   };
 

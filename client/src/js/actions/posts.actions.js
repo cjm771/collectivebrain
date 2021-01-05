@@ -19,6 +19,10 @@ const postFull = `
   endDate,
   tags,
   canEdit,
+  group {
+    id,
+    name
+  },
   user {
     name,
     email
@@ -47,8 +51,8 @@ const QUERIES = {
   }
   `,
   GET_POSTS_PREVIEW: gql`
-  query($limit: Int, $offset: Int) {
-    posts(limit: $limit, offset: $offset) {
+  query($limit: Int, $offset: Int, $group: ID) {
+    posts(limit: $limit, offset: $offset, group: $group) {
       total,
     	start,
     	end, 
@@ -118,6 +122,7 @@ export const getPostsAction = (inputs, query=QUERIES.GET_POSTS) => {
       payload: inputs
     });
     return ApolloClient.query({query: query, variables: {
+      group: inputs.group,
       limit: inputs.limit,
       offset: inputs.offset
     }})
@@ -174,6 +179,14 @@ export const updateOrCreatePostAction = (inputs, updateOrCreate = 'create') => {
     });
   }
 };
+
+export const clearPostsAction = () => {
+  return (dispatch) => {
+    dispatch({
+      type: 'CLEAR_POSTS'
+    });
+  }
+}
 
 export const deletePostAction = (id) => {
   return (dispatch) => {

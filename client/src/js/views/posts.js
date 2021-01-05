@@ -46,11 +46,11 @@ export default ({ match }) => {
     postListRef, // ref
     'li:last-child', // child selector of ref
     postsData, // data .. looks for data.next to see what
+    user,
     10
   );
 
   const dispatch = useDispatch();
-  
 
   useEffect(() => {
     dispatch(clearActivePostAction());

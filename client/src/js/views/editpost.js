@@ -7,6 +7,7 @@ import { useBeforeunload } from 'react-beforeunload';
 
 // actions
 import { getPostAction, updateOrCreatePostAction, clearActivePostAction } from '../actions/posts.actions.js';
+import { getGroupsAction } from '../actions/group.actions.js';
 
 // services 
 import postService from '../services/posts.services.js';
@@ -33,7 +34,17 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
   const [subCatOptions, setSubCatOptions] = useState(postService.getSubCategoriesFromCategoryName('UNCATEGORIZED'));
 
   const user = useSelector((state) => { return state.user });
-  const postData = useSelector((state) => { return state.posts });
+  const postData = useSelector((state) => { 
+     
+    return state.posts;
+  });
+  const groupsData = useSelector((state) => {
+    state.groups.options = {};
+    state.groups.items.forEach((option) => {
+      state.groups.options[option.name] = option.id;
+    });
+    return state.groups;
+  });
 
   const dispatch = useDispatch();
 
@@ -42,6 +53,9 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
   };
 
 
+  useEffect(() => {
+    dispatch(getGroupsAction());
+  }, []);
   if (page === 'edit') {
     useEffect(() => {
       dispatch(getPostAction({
@@ -151,6 +165,18 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                 disabled={true}
                 initValue={page === 'add' ? user.name : postData.activeItem.user.name}
               ></Input>
+              {
+                groupsData && groupsData.items.length ? 
+                <Input 
+                  type="dropdown"
+                  name="group"
+                  onChange={handleInputChange}
+                  options={groupsData.options}
+                  disabled={user.role !== 2}
+                  initValue={postData.activeItem.group.id || (user.activeGroup && user.activeGroup.id) || groupsData.items[0].id}
+                ></Input> :
+                ''
+              }
               <div className={`row ${formStyle.half}`}>
                 <div className='col-12 col-sm-6'>
                   <Input 
@@ -268,7 +294,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
               }
               </button>
               {
-                unsavedChanges ? <div class={formStyle.warningBox}><a href='#' onClick={onDiscardChanges}>Discard Changes</a></div> : ''
+                unsavedChanges ? <div className={formStyle.warningBox}><a href='#' onClick={onDiscardChanges}>Discard Changes</a></div> : ''
               }
             </form>
             )
