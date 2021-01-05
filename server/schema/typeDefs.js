@@ -115,12 +115,14 @@ module.exports = `
     name: String,
     role: Int,
     email: String,
-    user: User
+    user: User,
+    group: Group
   }
 
   input MetaDataInput {
     name: String!,
     role: Int!,
+    group: ID,
     email: String!
   }
 

@@ -44,7 +44,6 @@ export default () => {
       state.groups.options[option.name] = option.id;
     });
     return state.groups;
-
   });
 
   const [inviteMode, setInviteMode] = useState(false);
@@ -211,7 +210,14 @@ export default () => {
                       errorFieldName: 'metaData.role',
                       options: invitableRoles,
                       cast: Number,
-                      initValue: invitableRoles ? invitableRoles[Object.keys(invitableRoles)[0]] : ''
+                      initValue: invitableRoles ? invitableRoles[Object.keys(invitableRoles)[0]] : '',
+                    },
+                    group: {
+                      type: 'dropdown',
+                      errorFieldName: 'metaData.group',
+                      options: groupsData.options,
+                      disabled: userData.role !== 2,
+                      initValue: (userData.activeGroup && userData.activeGroup.id) || groupsData.items[0].id
                     }
                   } }
                 />
@@ -240,6 +246,7 @@ export default () => {
                         )}
                       </span>
                       <RoleBadge role={invite.metaData.role} />
+                      <span>{(invite.metaData.group && invite.metaData.group.name) || '' }</span>
                       {
                         invite.status === UserService.INVITE_STATUS.INVITED ? 
                         <span>

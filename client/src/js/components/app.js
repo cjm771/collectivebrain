@@ -33,6 +33,7 @@ export default () => {
         <div className={appStyle.container}>
           <div className={appStyle.main}>
             <Route exact path="/" component={RootView} />
+            <Route exact path="/g/:group" component={RootView} />
             <Route path="/login" component={LoginView} />
             <Route path="/register" component={RegisterView} />
             <Route path="/dashboard/:page?/:id?" component={DashboardView} />

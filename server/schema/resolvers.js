@@ -231,7 +231,7 @@ module.exports  = {
       } catch (e) {
         throw new Error('Could not save');
       }
-      invites = Token.find({user, type: Token.TOKEN_TYPES.INVITE}).populate('metaData.user');
+      invites = Token.find({user, type: Token.TOKEN_TYPES.INVITE}).populate('metaData.user').populate('metaData.group');
       return {
         user,
         invites,
@@ -270,6 +270,7 @@ module.exports  = {
         if (args.group) {
           filter = {group: args.group};
         }
+        debugger;
         let posts = await Post
         .find(filter)
         .sort([['_id', -1]])
@@ -310,7 +311,7 @@ module.exports  = {
     },
     userSettings: async (_, args, ctx) => {
       user = await confirmLoggedInUser(ctx);
-      invites = Token.find({user, type: Token.TOKEN_TYPES.INVITE}).populate('metaData.user');
+      invites = Token.find({user, type: Token.TOKEN_TYPES.INVITE}).populate('metaData.user').populate('metaData.group');
       return {
         user,
         invites,

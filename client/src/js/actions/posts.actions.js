@@ -42,8 +42,8 @@ const QUERIES = {
   }
   `,
   GET_POSTS: gql`
-  query {
-    posts {
+  query($limit: Int, $offset: Int, $group: ID) {
+    posts(limit: $limit, offset: $offset, group: $group) {
       posts {
         ${postFull}
       }
@@ -121,6 +121,7 @@ export const getPostsAction = (inputs, query=QUERIES.GET_POSTS) => {
       type:  inputs.morePosts ? 'GET_MORE_POSTS_REQUEST' : 'GET_POSTS_REQUEST',
       payload: inputs
     });
+    debugger
     return ApolloClient.query({query: query, variables: {
       group: inputs.group,
       limit: inputs.limit,

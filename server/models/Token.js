@@ -8,6 +8,7 @@ const shortUUID = require('short-uuid');
 // services
 const MailerService = require('../utils/MailerService.js');
 const UserService = require('../utils/UserService.js');
+const Group = require('./Group.js');
 
 /**
  * SCHEMA
@@ -26,6 +27,10 @@ const metaDataSchema = mongoose.Schema({
     user: { 
       type: Schema.Types.ObjectId, 
       ref: 'User'
+    },
+    group: { 
+      type: Schema.Types.ObjectId, 
+      ref: 'Group'
     },
     email: {
       type: String,
@@ -122,14 +127,20 @@ tokenSchema.methods.isInvite = function() {
 
 tokenSchema.methods.sendInviteEmail = async function() {
   const invite = this;
+  debugger;
   if (MailerService.shouldSendEmails &&
       this.metaData.email &&
       this.status === this.schema.statics.STATUS.AVAILABLE &&
       this.type === this.schema.statics.TOKEN_TYPES.INVITE
     ) {
+    let group = null;
+    if (this.metaData && this.metaData.group) {
+      group = await Group.findById(this.metaData.group);
+    }
     const inviteMessage = MailerService.MESSAGES.INVITE({
       user,
       invitee: {
+        group: (group && group.name) || 'collectiveBrain',
         token: invite.token,
         email: invite.metaData.email,
         name: invite.metaData.name,

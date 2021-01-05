@@ -32,10 +32,13 @@ invites {
     name,
     role,
     email,
+    group {
+      id,
+      name
+    },
     user {
       name,
       email,
-      
     }
   }
 }

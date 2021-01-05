@@ -67,7 +67,7 @@ module.exports = async (setupRoutes) => {
   });
   server.applyMiddleware({ app });
   app.use(bodyParser.urlencoded({ extended: true }));
-  const OK_ROUTES = [/^\/$/];
+  const OK_ROUTES = [/^\/$/, /\/g\/?(.*)/];
   const PROTECTED_ROUTES = [/\/dashboard\/?(.*)/];
   const SKIP_IF_LOGGED_IN_ROUTES = ['/login', '/register'];
   

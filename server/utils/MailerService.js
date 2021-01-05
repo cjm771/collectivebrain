@@ -26,7 +26,7 @@ module.exports = {
         text: Handlebars.compile(`
 Hi {{ invitee.name }},
 
-{{ user.name }} invites you to the collectivebrain as role:{{ invitee.roleName }}! Please follow the link below to get started!
+{{ user.name }} invites you to the collectivebrain group: {{ invites.group }} as role:{{ invitee.roleName }}! Please follow the link below to get started!
 {{{ invitee.inviteUrl }}}
 
 All the best,

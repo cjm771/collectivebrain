@@ -1,16 +1,22 @@
+// react / redux
 import React, {useEffect, useState} from 'react';
-import mainStyle from '../../scss/main.scss';
 import {useDispatch, useSelector} from 'react-redux';
+
+// actions
 import {getPostsAction} from '../actions/posts.actions.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import {getGroupsAction} from '../actions/group.actions.js';
 
 // components
 import CBforceGraph3d from '../components/CBForceGraph3d.js';
 import CBModal from '../components/CBModal.js';
 import Post from '../components/Post.js';
 
-export default () => {
+// styles
+import mainStyle from '../../scss/main.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+
+export default ({match}) => {
 
     /*********
      * VARS
@@ -24,10 +30,25 @@ export default () => {
     const dispatch = useDispatch();
     const [modalVisible, setModalVisible] = useState(false);
     const [activePost, setActivePost] = useState(null);
+    const groupsData = useSelector((state) => { return state.groups });
+    
+    useEffect(() => {
+      dispatch(getGroupsAction());
+    }, []);
 
     useEffect(() => {
-      dispatch(getPostsAction());
-    }, []);
+      if (groupsData && groupsData.items && groupsData.items.length) {
+        const filteredGroups = groupsData.items.filter((group) => {
+          return group.name === match.params.group;
+        });
+        const groupToSet = filteredGroups.length ? filteredGroups[0] : null;
+        debugger;
+        dispatch(getPostsAction(
+          {group: (groupToSet && groupToSet.id) || null}
+        ));
+      }
+    }, [groupsData]);
+    
     const posts = useSelector((state) => { 
       return state.posts;
     });
