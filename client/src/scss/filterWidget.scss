@@ -1,0 +1,62 @@
+@import './dims';
+@import './themes';
+@import './icons';
+@import './colors';
+
+@include themeProvider() using ($themeMap) {
+  .filterWidget {
+    text-align: left;
+    
+    .activeFilters {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      padding-bottom: .5rem;
+
+      li {
+        font-weight: bold;
+        display: inline-block;
+        color: $blue;
+        vertical-align: middle;
+        @include cb-icons($themeMap);
+
+        .closeIcon {
+          font-size: .5em;
+          vertical-align: middle;
+        }
+        & + li {
+          padding-left: .5rem;
+        }
+      }
+    }
+
+    .dualButton {
+      display: flex;
+
+      .left {
+        border-radius: 1rem 0 0 1rem;
+        border-right: 2px solid lighten(map-get($themeMap, 'buttonSecondaryBGColor'), 5);
+      }
+
+      .right {
+        border-radius: 0 1rem 1rem 0;
+      }
+
+      > * {
+        cursor: pointer;
+        transition: background .25s ease-in-out;
+        background: map-get($themeMap, 'buttonSecondaryBGColor');
+        color: map-get($themeMap, 'buttonTextColor');
+        padding: .5rem 1rem;
+
+        &.active {
+          background: map-get($themeMap, 'buttonBGHoverColor');
+        }
+
+        &:hover {
+          background: lighten(map-get($themeMap, 'buttonSecondaryBGColor'), 5);
+        }
+      }
+    }
+  }
+}

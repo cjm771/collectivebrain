@@ -14,7 +14,8 @@
     display: flex;
     justify-content: space-between;
     padding: 1rem;
-    min-height: $header-height;
+    height: $header-height;
+    // overflow: hidden;
     position: relative;
     z-index: 10;
   

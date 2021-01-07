@@ -110,6 +110,19 @@ export default {
 
  
   },
+  getAllTags: function (posts, allowDups=false) {
+    let tags = [];
+    posts.forEach((post) => {
+      if (post.tags && post.tags.length) {
+        if (allowDups) {
+          tags = [...tags, ...post.tags];
+        } else {
+          tags = [ ...new Set([...tags.map(t => t.trim()), ...post.tags.map(t => t.trim())])];
+        }
+      }
+    });
+    return tags;
+  },
   getCategoryName: function (val) {
     val = parseInt(val);
     const keys = Object.keys(this.CATEGORIES);
@@ -121,11 +134,25 @@ export default {
       })[0];
     }
   },
+  getImageFiles: function(files) {
+    return files.map((file) => {
+      let imageSrc = file.src;
+      if (/\.obj$/.test(file.src)) {
+        imageSrc = `/obj-thumbnailer?url=${file.src}`;
+      }
+      file = {...file};
+      file.src = imageSrc;
+      return file;
+    })
+  },
   getSubCategoryIndexByName: function (name) {
     return this.SUB_CATEGORIES[name.toUpperCase()];
   },
   getCategoryIndexByName: function (name) {
     return this.CATEGORIES[name.toUpperCase()];
+  },
+  getSubCategoryColorByName: function (name) {
+    return this.SUB_CATEGORY_COLORS[this.getSubCategoryIndexByName(name)]
   },
   getCategoryColorByName: function (name) {
     return this.CATEGORY_COLORS[this.getCategoryIndexByName(name)]

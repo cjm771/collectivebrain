@@ -17,11 +17,14 @@ import generalService from '../services/general.services.js';
 import AsyncHandler from '../components/AsyncHandler.js';
 import Input from '../components/Input.js';
 import FileGallery from '../components/FileGallery.js';
+import CBAutocompleteInput from '../components/CBAutocompleteInput.js';
+
+
 
 //  styles
 import formStyle from '../../scss/_forms.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faCircleNotch, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscardChanges }) => {
 
@@ -32,10 +35,12 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
   const [inputs, setInputs] = useState({title: ''});
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [subCatOptions, setSubCatOptions] = useState(postService.getSubCategoriesFromCategoryName('UNCATEGORIZED'));
+  const [tags, setTags] = useState([]);
+  const [filterAutoCompleteOptions, setFilterAutoCompleteOptions] = useState([]);
 
   const user = useSelector((state) => { return state.user });
   const postData = useSelector((state) => { 
-     
+    // setFilterAutoCompleteOptions(postService.getAllTags(state.posts.items));
     return state.posts;
   });
   const groupsData = useSelector((state) => {
@@ -77,6 +82,9 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
     if (postData.activeItem) {
       updateSubCategoriesByCatname(postData.activeItem.category);
     }
+    if (postData.activeItem && postData.activeItem.tags) {
+      setTags(postData.activeItem.tags);
+    }
   }, [postData.activeItem])
 
   useEffect(() => {
@@ -88,6 +96,11 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
     } 
   }, [postData.saved])
 
+  useEffect(() => {
+    if (postData.activeItem && postData.activeItem.tags && postData.activeItem.tags.join(', ') !== tags.join(', ')) {
+      handleInputChange(tags.join(', '), 'tags', true);
+    }
+  }, [tags])
 
   useBeforeunload((e) => {
     if (!postData.saved && unsavedChanges && !ignoreUnsavedChanges) {
@@ -103,7 +116,6 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
    const allowedToEdit = () => {
     return (postData.activeItem) ? postData.activeItem.canEdit : true;
    }
-
 
    const markUnsavedChanges = (file) => {
     if (onUnsavedChanges) {
@@ -137,6 +149,19 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
     }
     setInputs(inputs => ({ ...inputs, [name]: value}));
   };
+
+
+
+  const removeFilter = (filter) => {
+    setTags(tags.filter((tag) => {
+      return tag.trim() !== filter.trim();
+    }))
+  }
+
+  const addFilter = (toSet) => {
+    setTags([...new Set([...tags, toSet.trim()])]);
+  }
+
 
   /*********
    * RENDER
@@ -256,14 +281,32 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                   onChange={handleFilesChange}
                 />
               </div>
-              <Input 
+              <ul>
+                {
+                  tags.map((tag,key) => {
+                    return (
+                      <li key={key} onClick={() => { removeFilter(tag) }}>#{tag.trim()} 
+                        <span>
+                            <FontAwesomeIcon icon={faTimes}></FontAwesomeIcon>
+                        </span>
+                      </li>
+                    )
+                  })
+                }
+              </ul>
+              <CBAutocompleteInput 
+                placeholder="Tyoe tags + hit Enter to add.."
+                onSelect={addFilter}
+                options={filterAutoCompleteOptions}
+              />
+              {/* <Input 
                 type="text"
                 name="tags"
                 onChange={handleInputChange} 
                 error={hasErrors('tags')}
                 disabled={!allowedToEdit()}
                 initValue={page === 'add' ? '' : postData.activeItem.tags && postData.activeItem.tags.join(', ')}
-              ></Input>
+              ></Input> */}
                <Input 
                 type="textarea"
                 name="sources"

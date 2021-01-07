@@ -7,28 +7,32 @@ import {getPostsAction} from '../actions/posts.actions.js';
 import {getGroupsAction} from '../actions/group.actions.js';
 
 // components
-import CBforceGraph3d from '../components/CBForceGraph3d.js';
-import CBModal from '../components/CBModal.js';
+import CBForceGraph2d from '../components/CBForceGraph2d.js';
+import CBForceGraph3dV2 from '../components/CBForceGraph3dV2.js';
 import Post from '../components/Post.js';
+import FilterWidget from '../components/FilterWidget.js';
 
 // styles
 import mainStyle from '../../scss/main.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 export default ({match}) => {
 
     /*********
      * VARS
      *********/
-    const ANIM_DELAY = 3000;
+    const ANIM_DELAY = 0;
 
     /*********
      * HOOKS
      ********/
 
     const dispatch = useDispatch();
-    const [modalVisible, setModalVisible] = useState(false);
+    const [drawerVisible, setDrawerVisible] = useState(false);
+    const [mode, setMode] = useState('2D');
+    const [tags, setTags] = useState([]);
+    const [filteredPosts, setFilteredPosts] = useState(null);
     const [activePost, setActivePost] = useState(null);
     const groupsData = useSelector((state) => { return state.groups });
     useEffect(() => {
@@ -52,19 +56,57 @@ export default ({match}) => {
     });
     
 
+    useEffect(() => {
+      setFilteredPosts(posts);
+    }, [posts]);
+
     /***********
      * HELPERS
      **********/
 
     const handleZoomPan = () => {
-      setModalVisible(false);
+      // setModalVisible(false);
+    }
+
+    const closeDrawer = () => {
+      setDrawerVisible(false);
     }
 
     const handleClick = (post) => {
-      setActivePost(post.post)
+      setActivePost(post.post);
       setTimeout(() => {
-        setModalVisible(true);
+        // setModalVisible(true);
+        setDrawerVisible(true);
       }, ANIM_DELAY);
+    }
+
+    const handleSetMode = (mode) => {
+      setMode(mode);
+    }
+
+    const handleTagsChange = (newTags) => {
+      if (JSON.stringify(tags) !== JSON.stringify(newTags)) {
+        setTags(newTags);
+        const newFilteredPosts = {...posts};
+        newFilteredPosts.items = [...posts.items];
+        newFilteredPosts.items = posts.items.filter((post) => {
+          let keep = false;
+
+          if (!newTags.length) {
+            return true;
+          }
+          if (!post.tags) {
+            return false;
+          }
+          post.tags.forEach((tag) => {
+            if (newTags.indexOf(tag) !== -1) {
+              keep = true;
+            }
+          });
+          return keep;
+        });
+        setFilteredPosts(newFilteredPosts);
+      }
     }
 
     /***********
@@ -84,25 +126,55 @@ export default ({match}) => {
               <h1>Error</h1>
               <p>An error ocurred</p>
             </div>
-          ) : posts.items && posts.items.length  ? (
+          ) :  ( <div className={`${mainStyle.mainWpr} ${ drawerVisible ? mainStyle.drawerOpen : ''}`}>
+              <div className={mainStyle.filterArea}>
+                { posts && posts.items ? (
+                  <FilterWidget 
+                  posts={posts.items}
+                  mode={mode}
+                  onModeChange={handleSetMode}
+                  onTagsChange={handleTagsChange}
+                />
+                ) : '' }
 
-            <div>
-              <CBModal
-                modalVisible = {modalVisible}
-                onOverlayInteract={handleZoomPan}
-              >
-                <Post post={activePost} />
-              </CBModal>
+              </div>
+              {filteredPosts && filteredPosts.items && filteredPosts.items.length  ? (
               <div className={mainStyle.forceGraph}>
-                <CBforceGraph3d 
+                {
+                  mode === '2D' ?
+                  <CBForceGraph2d
                   animationDuration={ANIM_DELAY}
-                  posts={posts}
+                  posts={filteredPosts}
+                  onZoomPan={handleZoomPan}
+                  onClick={handleClick}
+                /> :
+                <CBForceGraph3dV2
+                  animationDuration={ANIM_DELAY}
+                  posts={filteredPosts}
                   onZoomPan={handleZoomPan}
                   onClick={handleClick}
                 />
+                }
+              
+              </div>) : ''
+              }
+              <div className={mainStyle.drawer}>
+                <div className={mainStyle.drawerInner}>
+                  <div className={`${mainStyle.closeWpr}`}>
+                    <div 
+                      className={`${mainStyle.closeIcon} ${mainStyle.actionIcon}  ${mainStyle.persistent}`}
+                      onClick={closeDrawer}
+                    >
+                      <FontAwesomeIcon icon={faTimes} />
+                    </div>
+                  </div>
+                  {
+                    drawerVisible ? <Post post={activePost} /> : ''
+                  }
+                </div>
               </div>
             </div>
-          ) : ''
+          ) 
         }
     
       </div>

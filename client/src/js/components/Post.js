@@ -9,29 +9,28 @@ export default ({post}) => {
   <div className={postStyle.post}>
     <div className={postStyle.title}>{ post.title }</div>
     {!dateStr ? '' : (
-      <div className={dateStr}>{ dateStr }</div>
+      <div className={postStyle.date}>{ dateStr }</div>
     )}
     <div className={postStyle.creator}>{ post.creator }</div>
     <div className={postStyle.category}>{ post.category }</div>
-    { }
+    {!post.tags || !post.tags.length ? '' : (
+      <ul className={postStyle.tags}>
+        {post.tags.map((tag) => (
+          <li>{ tag.trim() }</li>
+        ))}
+      </ul>
+    )}
     {!post.files ? '' : (
-      <Carousel images={post.files} _id={post.id} />
+      <Carousel images={[...postsService.getImageFiles(post.files)]} _id={post.id} />
     )}
     
     <div className={postStyle.description}>
       { post.description }
     </div>
-    {!post.sources || post.sources.length ? '' : (
+    {!post.sources || !post.sources.length ? '' : (
       <ul className={postStyle.sources}>
         {post.sources.map((source) => (
           <li>{ source }</li>
-        ))}
-      </ul>
-    )}
-    {!post.tags || post.tags.length ? '' : (
-      <ul className={postStyle.tags}>
-        {post.tags.map((tag) => (
-          <li>{ tag }</li>
         ))}
       </ul>
     )}

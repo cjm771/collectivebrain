@@ -1,5 +1,74 @@
+@import '../scss/colors';
+
+
 .post {
-  .description {
-    font-size: .75rem;
+  text-align: left;
+
+  .title {
+    font-weight: bold;;
+  }
+
+  .date {
+    font-size: .8em;
+    font-style: italic;
+  }
+
+  :global {
+    .carousel {
+      padding-top: 1rem;
+      margin-bottom: 1.5rem;
+      .carousel-inner {
+        img {
+          border-radius: 1rem;
+        }
+      }
+
+      .carousel-indicators {
+        margin: 0;
+        bottom: auto;
+        top: 100%;
+      }
+    }
+  }
+
+  .description,
+  .sources,
+  .tags {
+    font-size: 0.7rem;
+  }
+
+  .tags,
+  .sources {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    padding-top: .5rem;
+  }
+
+  .sources {
+    opacity: 0.8;
+    font-style: italic;
+  }
+
+  .tags {
+    li {
+      display: inline-block;
+      color: $blue;
+      font-weight: 800;
+
+      &:before {
+        content: '#';
+      }
+    }
+
+    li + li {
+      &:before {
+        content: ', #';
+      }
+    }
+  }
+
+  .description { 
+    padding-top: .4rem;
   }
 }

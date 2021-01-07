@@ -119,7 +119,16 @@
     vertical-align: top;
     
   }
-  
+
+  .autocomplete {
+    &.inputWpr {
+      input {
+        width: 20rem;
+      }
+    }
+  }
+
+  .autocomplete,
   .inputWpr {
     position: relative;
     margin-bottom: 1rem;

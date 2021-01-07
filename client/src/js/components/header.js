@@ -1,8 +1,12 @@
+// react / redux
 import React from 'react';
 import { useSelector } from 'react-redux';
 import {Link} from 'react-router-dom';
+
+// resources
 import Gravatar from 'react-gravatar';
 
+// styles
 import classNames from 'classnames';
 import headerStyle from '../../scss/header.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,7 +17,7 @@ export default () => {
   return (
     <div className = {headerStyle.header}>
       <div className = {headerStyle.left}>
-        <h2><a href='/'>collectivebrain</a></h2>
+        <h2><a href='/'>collective<b>BRAIN</b></a></h2>
       </div>
       <div className = {headerStyle.right}>
         { (user && user.loggedIn)  ? (
