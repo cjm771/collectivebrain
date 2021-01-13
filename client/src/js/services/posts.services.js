@@ -106,21 +106,22 @@ export default {
     }
 
     return cleanedInputs;
-
-
- 
   },
-  getAllTags: function (posts, allowDups=false) {
+  getAllTagsFromPosts: function (posts, allowDups=false) {
     let tags = [];
     posts.forEach((post) => {
       if (post.tags && post.tags.length) {
-        if (allowDups) {
-          tags = [...tags, ...post.tags];
-        } else {
-          tags = [ ...new Set([...tags.map(t => t.trim()), ...post.tags.map(t => t.trim())])];
-        }
+        tags = [...tags, ...this.getAllTags(post.tags, allowDups)];
       }
     });
+    return tags;
+  },
+  getAllTags: function (tags, allowDups=false) { 
+    if (!allowDups) {
+      tags = [ ...new Set([...tags.filter(t => !!t).map(t => {
+       return t.trim()
+      })])];
+    }
     return tags;
   },
   getCategoryName: function (val) {

@@ -6,9 +6,8 @@ import Autocomplete from 'react-autocomplete';
 import formStyle from '../../scss/_forms.scss';
 
 export default (props) => {
-
   const [input, setInput] = useState('');
-
+  let timer = null;
   const onSubmit = (event, forceVal=null) => {
     if (event) {
       event.stopPropagation();
@@ -20,22 +19,45 @@ export default (props) => {
       toSet = input;
     }
     if (toSet && toSet.trim() !== '') {
-      props.onSelect(toSet);
+      props.onSelect(toSet.replace(/^#/, ''));
     }
     setInput('');
   }
 
-  const onKeyDown = (e) => {
+  const getInput = () => {
+    return input;
+  }
 
+  const onKeyDown = (e) => {
     const code = (e.keyCode ? e.keyCode : e.which);
-    if(code == 13) { 
-      onSubmit(e);
+    if (code === 13) {
+      e.preventDefault();
+      timer = setTimeout((e) => {
+        if (getInput().trim() !== '') {
+          onSubmit(e);
+        }
+      }, 100)
+     
     }
   }
 
   return (
-    <div className={`${formStyle.autocomplete} ${formStyle.inputWpr}`}>
+    <div className={`${formStyle.autocomplete} ${formStyle.inputWpr}  ${formStyle.maxWidth}`}>
       <Autocomplete
+          wrapperStyle={{ display: 'block' }}
+          menuStyle={{ 
+            zIndex: 1, 
+            textAlign: 'left',
+            borderRadius: '3px',
+            boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+            background: props.themeMap.bgColor,
+            color: props.themeMap.color,
+            padding: '2px 0',
+            fontSize: '90%',
+            position: 'fixed',
+            overflow: 'auto',
+            maxHeight: '50%'
+          }}
           inputProps={{
             className: `${formStyle.input}`,
             placeholder: props.placeholder || null,
@@ -43,17 +65,21 @@ export default (props) => {
           }}
           getItemValue={(item) => item}
           items={props.options}
-          renderItem={(item, isHighlighted) =>
-            <div style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
-              {item}
-            </div>
-          }
+          renderItem={(item, isHighlighted) => {
+            return (
+              <div style={{ background: isHighlighted ?  props.themeMap.paneColor : 'transparent' }}>
+                {item}
+              </div>
+            )
+          }}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-
-          onSelect={(val) => {onSubmit(null, val)}}
+          onSelect={(val) => {
+            clearTimeout(timer);
+            onSubmit(null, val);
+          }}
           shouldItemRender={(item) => {
-            return item.toLowerCase().trim().indexOf(input.toLowerCase().trim()) !== -1
+            return item.toLowerCase().trim().indexOf(input.toLowerCase().trim().replace(/^#/, '')) !== -1
           }}
         />
     </div>

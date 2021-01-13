@@ -6,6 +6,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getPostsAction} from '../actions/posts.actions.js';
 import {getGroupsAction} from '../actions/group.actions.js';
 
+// services
+import UserService from '../services/users.services.js';
+
 // components
 import CBForceGraph2d from '../components/CBForceGraph2d.js';
 import CBForceGraph3dV2 from '../components/CBForceGraph3dV2.js';
@@ -34,6 +37,7 @@ export default ({match}) => {
     const [tags, setTags] = useState([]);
     const [filteredPosts, setFilteredPosts] = useState(null);
     const [activePost, setActivePost] = useState(null);
+    const [userThemeMap, setUserThemeMap] = useState(UserService.THEME_DICT.dark);
     const groupsData = useSelector((state) => { return state.groups });
     useEffect(() => {
       dispatch(getGroupsAction());
@@ -54,7 +58,15 @@ export default ({match}) => {
     const posts = useSelector((state) => { 
       return state.posts;
     });
+
+    const user = useSelector(state => state.user);
     
+    useEffect(() => {
+      if (user && user.theme) {
+        const theme = UserService.getThemeMap(user);
+        setUserThemeMap(theme);
+      }
+    }, [user]);
 
     useEffect(() => {
       setFilteredPosts(posts);
@@ -128,12 +140,13 @@ export default ({match}) => {
             </div>
           ) :  ( <div className={`${mainStyle.mainWpr} ${ drawerVisible ? mainStyle.drawerOpen : ''}`}>
               <div className={mainStyle.filterArea}>
-                { posts && posts.items ? (
+                { filteredPosts && filteredPosts.items && filteredPosts.items.length  ? (
                   <FilterWidget 
                   posts={posts.items}
                   mode={mode}
                   onModeChange={handleSetMode}
                   onTagsChange={handleTagsChange}
+                  themeMap={userThemeMap}
                 />
                 ) : '' }
 
@@ -147,16 +160,22 @@ export default ({match}) => {
                   posts={filteredPosts}
                   onZoomPan={handleZoomPan}
                   onClick={handleClick}
+                  themeMap={userThemeMap}
                 /> :
                 <CBForceGraph3dV2
                   animationDuration={ANIM_DELAY}
                   posts={filteredPosts}
                   onZoomPan={handleZoomPan}
                   onClick={handleClick}
+                  themeMap={userThemeMap}
                 />
                 }
               
-              </div>) : ''
+              </div>) : (
+                <div className={mainStyle.noPosts}>
+                  { !posts || posts.processing === null ? '' : 'No Posts yet!' }
+                </div> 
+              )
               }
               <div className={mainStyle.drawer}>
                 <div className={mainStyle.drawerInner}>

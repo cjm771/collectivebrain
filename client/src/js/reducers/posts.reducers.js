@@ -1,9 +1,11 @@
 export default (state = {
-  processing: false,
+  processing: null,
+  moreProcessing: null,
   saving: false,
   savingError: false,
   savingErrofFields: false,
   items: [],
+  groupTags: [],
   activeItem: null,
   error: null
 }, action) => {
@@ -134,6 +136,21 @@ export default (state = {
         savingError: action.error,
         savingErrorFields: action.errorFields,
         saving: false
+      }
+    case 'GET_TAGS_FAILURE':
+      return {
+        ...state,
+        groupTags: []
+      }
+    case 'GET_TAGS_REQUEST':
+      return {
+        ...state,
+        groupTags: []
+      }
+    case 'GET_TAGS_SUCCESS':
+      return {
+        ...state,
+        groupTags: action.groupTags
       }
     default:
       return state;

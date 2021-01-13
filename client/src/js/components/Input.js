@@ -48,14 +48,14 @@ export default ({type, name, placeholder, options, cast, disabled, error,  initV
   switch(type) {
     default:
     case 'text':
-      return  (
+      return (
         <div>
           <div className={`${formStyle.inputWpr} ${value ? formStyle.filled : ''}`}>
             <input 
               type="text" 
               className={classNames(formStyle.input, error ? formStyle.hasErrors : null)} 
               onChange={handleInputChange} 
-              value={value} 
+              value={value || ''} 
               placeholder={placeholder || name} 
               disabled={disabled}
               name={name}
@@ -72,7 +72,7 @@ export default ({type, name, placeholder, options, cast, disabled, error,  initV
               type="password" 
               className={classNames(formStyle.input, error ? formStyle.hasErrors : null)} 
               onChange={handleInputChange} 
-              value={value} 
+              value={value || ''} 
               placeholder={placeholder || name} 
               disabled={disabled}
               name={name}

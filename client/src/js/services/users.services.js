@@ -9,6 +9,24 @@ export default {
     ACCEPTED: 1,
     REMOVED: 2,
   },
+  THEME_DICT: {
+    dark: {
+      color: 'rgba(255,255,255, .5)',
+      linkColor: 'rgba(255,255,255, .5)',
+      bgColor: 'rgba(0, 0, 0, 1)',
+      paneColor: 'rgba(100, 100, 100, 1)'
+    },
+    light: {
+      color: 'rgba(0, 0, 0, .5)',
+      linkColor: 'rgba(0, 0, 0, .25)',
+      bgColor: 'rgba(255,255,255, 1)',
+      paneColor: 'rgba(220, 220, 220, 1)'
+    }
+  },
+  getThemeMap: function (user) {
+    const theme = this.THEME_DICT[user.theme] || this.THEME_DICT['dark'];
+    return theme;
+  },
   getRoleName: function (val) {
     val = parseInt(val);
     const keys = Object.keys(this.USER_ROLES);

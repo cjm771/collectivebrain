@@ -15,7 +15,6 @@ module.exports = {
     }, data);    
     return sendgrid.send(data).then((data) => {
     }).catch((error) => {
-      debugger;
       throw error;
     })
   },

@@ -108,7 +108,8 @@ module.exports = `
     id: ID,
     role: Int,
     profileUrl: String,
-    activeGroup: Group
+    activeGroup: Group,
+    theme: String
   }
 
   type MetaData {

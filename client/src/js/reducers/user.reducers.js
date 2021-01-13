@@ -129,6 +129,11 @@ export default (state = {
         settingsError: action.error,
         settingsErrorFields: action.errorFields
       }
+    case 'CHANGE_THEME':
+      return {
+        ...state,
+        theme: action.theme
+      }
     case 'LOGOUT':
       return state;
     case 'UPDATE':

@@ -6,20 +6,20 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useBeforeunload } from 'react-beforeunload';
 
 // actions
-import { getPostAction, updateOrCreatePostAction, clearActivePostAction } from '../actions/posts.actions.js';
+import { getPostAction, getTagsAction, updateOrCreatePostAction, clearActivePostAction } from '../actions/posts.actions.js';
 import { getGroupsAction } from '../actions/group.actions.js';
 
 // services 
 import postService from '../services/posts.services.js';
 import generalService from '../services/general.services.js';
+import userService from '../services/users.services.js';
 
 // components
 import AsyncHandler from '../components/AsyncHandler.js';
 import Input from '../components/Input.js';
 import FileGallery from '../components/FileGallery.js';
 import CBAutocompleteInput from '../components/CBAutocompleteInput.js';
-
-
+import TagCloud from '../components/TagCloud.js';
 
 //  styles
 import formStyle from '../../scss/_forms.scss';
@@ -34,13 +34,14 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
 
   const [inputs, setInputs] = useState({title: ''});
   const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [userThemeMap, setUserThemeMap] = useState(userService.THEME_DICT.dark);
   const [subCatOptions, setSubCatOptions] = useState(postService.getSubCategoriesFromCategoryName('UNCATEGORIZED'));
   const [tags, setTags] = useState([]);
   const [filterAutoCompleteOptions, setFilterAutoCompleteOptions] = useState([]);
+  const [groupTagsForCloud, setGroupTagsForCloud] = useState([]);
 
   const user = useSelector((state) => { return state.user });
   const postData = useSelector((state) => { 
-    // setFilterAutoCompleteOptions(postService.getAllTags(state.posts.items));
     return state.posts;
   });
   const groupsData = useSelector((state) => {
@@ -57,10 +58,22 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
     return postData.savingErrorFields && postData.savingErrorFields.indexOf(field) !== -1 
   };
 
+  useEffect(() => {
+    if (postData.groupTags) {
+      setFilterAutoCompleteOptions(postService.getAllTags(postData.groupTags));
+      setGroupTagsForCloud(postService.getAllTags(postData.groupTags, true));
+    }
+  }, [postData.groupTags]);
+
+  useEffect(() => {
+    const theme = userService.getThemeMap(user);
+    setUserThemeMap(theme);
+  }, [user]);
 
   useEffect(() => {
     dispatch(getGroupsAction());
   }, []);
+
   if (page === 'edit') {
     useEffect(() => {
       dispatch(getPostAction({
@@ -79,12 +92,21 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
   }, [postData.savingError])
 
   useEffect(() => {
+    if (inputs.group) {
+      dispatch(getTagsAction(
+        {group: inputs.group}
+      ));
+    }
+  }, [inputs.group]);
+
+  useEffect(() => {
     if (postData.activeItem) {
       updateSubCategoriesByCatname(postData.activeItem.category);
     }
     if (postData.activeItem && postData.activeItem.tags) {
       setTags(postData.activeItem.tags);
     }
+
   }, [postData.activeItem])
 
   useEffect(() => {
@@ -97,9 +119,11 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
   }, [postData.saved])
 
   useEffect(() => {
-    if (postData.activeItem && postData.activeItem.tags && postData.activeItem.tags.join(', ') !== tags.join(', ')) {
-      handleInputChange(tags.join(', '), 'tags', true);
+    // if (postData.activeItem && (postData.activeItem.tags === null || postData.activeItem.tags.join(', ') !== tags.join(', '))) {
+    if (tags) {
+      handleInputChange(tags.join(', '), 'tags', postData.activeItem && (postData.activeItem.tags === null || postData.activeItem.tags.join(', ') !== tags.join(', ')));
     }
+    // }
   }, [tags])
 
   useBeforeunload((e) => {
@@ -281,12 +305,13 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                   onChange={handleFilesChange}
                 />
               </div>
-              <ul>
+              <ul className={formStyle.tagsList}>
                 {
                   tags.map((tag,key) => {
                     return (
-                      <li key={key} onClick={() => { removeFilter(tag) }}>#{tag.trim()} 
-                        <span>
+                      <li className={formStyle.tagsListItem} key={key} onClick={() => { removeFilter(tag) }}>
+                        <span className={formStyle.tagName}>#{tag.trim()} </span>
+                        <span className={`${formStyle.close}`}>
                             <FontAwesomeIcon icon={faTimes}></FontAwesomeIcon>
                         </span>
                       </li>
@@ -295,10 +320,12 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                 }
               </ul>
               <CBAutocompleteInput 
-                placeholder="Tyoe tags + hit Enter to add.."
+                placeholder="Type tags + hit Enter to add.."
                 onSelect={addFilter}
                 options={filterAutoCompleteOptions}
+                themeMap={userThemeMap}
               />
+              <TagCloud tags={groupTagsForCloud} maxCount={10} toIgnore={tags} onTagClick={addFilter} />
               {/* <Input 
                 type="text"
                 name="tags"

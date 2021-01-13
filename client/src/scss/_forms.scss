@@ -1,7 +1,7 @@
 @import './sizes';
-// @import './colors';
 @import './mixins';
 @import './themes';
+@import './icons';
 
 
 @mixin buttonSharedStylings() {
@@ -38,7 +38,7 @@
     .warningBox {
       color: map-get($themeMap, 'warningColor');
       font-weight: bold;
-      margin: 2rem 0;
+      margin: .5rem 0;
       
       a {
         text-decoration: underline;
@@ -117,14 +117,11 @@
   textarea.input {
     min-height: 10rem;
     vertical-align: top;
-    
   }
 
   .autocomplete {
     &.inputWpr {
-      input {
-        width: 20rem;
-      }
+  
     }
   }
 
@@ -156,11 +153,11 @@
       position: relative;
       margin: 0.25rem 0;
       text-align: left;
+
       &.disabled {
         cursor: not-allowed;
         pointer-events: none;
       }
-      
       
       input[type=checkbox],
       .fakeCheckBox {
@@ -168,14 +165,17 @@
         height: 0;
         width: 0;
         visibility: hidden;
+
         &.checked + label,
         &:checked + label {
           background: map-get($themeMap, 'successColor');
         }
+        
         &.checked + label.blue, 
         &:checked + label.blue {
-          background: ≈
+          background: ≈;
         }
+
         &.checked + label:after,
         &:checked + label:after {
           left: 93%;
@@ -305,10 +305,51 @@
     }
   }
 
+  .tagsList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: $input-padding / 2;
+    
+    li.tagsListItem {
+      display: flex;
+      padding: .5rem;
+      color: map-get($themeMap, 'buttonSecondaryBGColor');
+      background: map-get($themeMap, 'buttonSecondaryTextColor');
+      margin-bottom: $input-padding / 2;
+      border-radius: .5rem;
+      align-items: center;
+      
+      &:not(:last-child) {
+        margin-right: $input-padding / 1.5;
+      }
+
+      .tagName {
+        font-weight: bold;
+        padding-top: .2rem;
+      }
+      
+      .close {
+        padding-top: .4rem;
+        padding-left: .5rem;
+        font-size: 0.8em;
+        opacity: .6;
+        cursor: pointer;
+
+        &:hover {
+          opacity: .8;
+        }
+      }
+    }
+  }
+
   .buttonLink {
     @include buttonSharedStylings();
     background: none;
     border: none;
+    cursor: pointer;
     color: map-get($themeMap, 'linkColor');
     padding: 0;
     transition: color .25s ease-in-out;

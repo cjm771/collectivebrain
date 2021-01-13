@@ -3,11 +3,9 @@ import React, {useEffect, useState} from 'react';
 
 // services
 import PostsService from '../services/posts.services.js';
-import TagCloud from '../services/TagCloud.js';
 
 // components
 import CBAutocompleteInput from './CBAutocompleteInput.js';
-
 
 // styles
 import style from '../../scss/filterWidget.scss';
@@ -20,14 +18,7 @@ export default (props) => {
   const [filterInput, setFilterInput] = useState('');
   const [tags, setTags] = useState([]);
   
-  const filterAutoCompleteOptions = PostsService.getAllTags(props.posts);
-  // if (props.posts.length) {
-  // const tagCloud = new TagCloud(PostsService.getAllTags(props.posts, true));
-  //   console.log(tagCloud);
-  //   console.log(PostsService.getAllTags(props.posts, true));
-  //   debugger;
-  // }
-
+  const filterAutoCompleteOptions = PostsService.getAllTagsFromPosts(props.posts);
 
   useEffect(() => {
     props.onTagsChange(tags);
@@ -66,6 +57,7 @@ export default (props) => {
           placeholder="Tyoe tags + hit Enter to filter.."
           onSelect={addFilter}
           options={filterAutoCompleteOptions}
+          themeMap={props.themeMap}
         />
       <div className={style.dualButton}>
         <div className={`${style.left} ${props.mode === '2D' ? style.active : ''}`} onClick={() => props.onModeChange('2D')}>

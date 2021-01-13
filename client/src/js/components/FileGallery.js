@@ -17,9 +17,6 @@ import generalService from '../services/general.services.js';
 import fileGalleryStyle from '../../scss/fileGallery.scss';
 
 const SortableList = SortableContainer(({files, onApproveCaption, onDeleteItem, onFileDropOnDropZone, onFileUploadError, disabled}) => {
-
-  console.log(disabled);
-
   return (
     <div className={`row ${fileGalleryStyle.fileGallery}`}>
       {files.map((file, index) => (
@@ -110,7 +107,6 @@ export default ({files, onChange, onFileUploaded, disabled}) => {
   const updateFileParams = (file, params, allFiles=inputFiles) => {
     const newInputFiles = [...allFiles].map((currItem) => {
       if (currItem.key === file.key) {
-        console.log('before: ', currItem);
           for (let [key, val] of Object.entries(params)) {
             if (val === undefined) {
               delete  currItem[key];
@@ -118,7 +114,6 @@ export default ({files, onChange, onFileUploaded, disabled}) => {
               currItem[key] = val;
             }
           }
-          console.log('after: ', currItem);
       } 
       return currItem;
     });

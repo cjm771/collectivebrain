@@ -1,7 +1,14 @@
 // react / redux
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addInviteAction, getUserSettingsAction, resendInviteAction, clearResendInviteAction, updateActiveGroupAction } from '../actions/user.actions.js';
+import { 
+  addInviteAction, 
+  changeUserThemeAction, 
+  getUserSettingsAction, 
+  resendInviteAction, 
+  clearResendInviteAction, 
+  updateActiveGroupAction 
+} from '../actions/user.actions.js';
 import { getGroupsAction } from '../actions/group.actions.js';
 import { clearPostsAction } from '../actions/posts.actions.js';
 
@@ -9,7 +16,6 @@ import { clearPostsAction } from '../actions/posts.actions.js';
 import axios from 'axios';
 import uuidv4 from 'uuid/v4';
 import copy from 'copy-to-clipboard';
-import classNames from 'classnames';
 
 // services
 import UserService from '../services/users.services.js';
@@ -24,7 +30,7 @@ import Input from '../components/Input.js';
 import settingsStyle from '../../scss/settings.scss';
 import formStyle from '../../scss/_forms.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faBan, faCopy, faRedo, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faBan, faCopy, faRedo, faSpinner, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 export default () => {
   /*************
@@ -83,6 +89,7 @@ export default () => {
 
   const changeTheme = (theme) => {
     axios.get( `/?theme=${theme}&cb=${uuidv4()}`);
+    dispatch(changeUserThemeAction(theme));
     // hacky for now
     let $body = document.querySelector('body');
     $body.className = '';
@@ -128,6 +135,15 @@ export default () => {
         <span className={`badge ${badgeType}`}>
           { role  === 0 ? 'user' : (role  === 1 ? 'moderator' : 'admin') }
         </span>
+      )
+    }
+
+    const GroupBadge = ({group}) => {
+      return (!group ? '' : 
+        <span className={`badge badge-light`}>&nbsp;
+          <FontAwesomeIcon icon={faUsers} />&nbsp;
+          { group }
+        </span> 
       )
     }
 
@@ -245,8 +261,8 @@ export default () => {
                         </span>
                         )}
                       </span>
+                      <GroupBadge group={(invite.metaData.group && invite.metaData.group.name) || null} />&nbsp;
                       <RoleBadge role={invite.metaData.role} />
-                      <span>{(invite.metaData.group && invite.metaData.group.name) || '' }</span>
                       {
                         invite.status === UserService.INVITE_STATUS.INVITED ? 
                         <span>

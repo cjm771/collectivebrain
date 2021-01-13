@@ -191,12 +191,12 @@ export default (props) => {
   objs ? 
   <ForceGraph3D 
     graphData={generateGraph(props.posts.items)}
-    backgroundColor='rgba(255,255,255,0)'
+    backgroundColor={props.themeMap.bgColor}
     nodeColor='rgb(0,0,0)'
     linkCurvature={0.2}
-    linkWidth={.15}
-    linkOpacity={.5}
-    linkColor='rgb(0,0,0)'
+    linkWidth={.25}
+    linkOpacity={1}
+    linkColor={() => props.themeMap.linkColor}
     ref={fgRef}
     controlType="orbit"
     d3VelocityDecay={.85}

@@ -108,7 +108,8 @@ export default ({ match }) => {
         {postsData.moreProcessing || postsData.items ? (
           <ul className={`${postsStyle.postList}`} ref={postListRef}>
             {/* preview items */}
-            {postsData.items.map((post) => {
+            { !postsData.items.length && postsData.moreProcessing !== null ? <ul>No Posts yet!</ul> :
+              postsData.items.map((post) => {
               return (
                 <li key={post.id} className={`row ${postsStyle.postItem}`}>
                   <Link to={`/dashboard/edit/${post.id}`} className={postsData.deleteProcessing ? postsStyle.disabled : ''}>

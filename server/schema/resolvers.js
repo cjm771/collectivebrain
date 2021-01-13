@@ -333,6 +333,11 @@ module.exports  = {
     }
   },
   User: {
-    profileUrl: ({email}) => `http://gravatar.com/${email}`
+    theme: (_, args, ctx) => {
+      return ctx.req.session.theme;
+    },
+    profileUrl: ({email}, args, ctx) => {
+      return `http://gravatar.com/${email}`;
+    }
   }
 }

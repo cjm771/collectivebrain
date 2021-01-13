@@ -9,6 +9,7 @@ const sharedUserParams = `
 name,
 id,
 email,
+theme,
 role,
 `;
 
@@ -17,6 +18,7 @@ user {
   name, 
   email,
   profileUrl,
+  theme,
   activeGroup {
     id,
     name
@@ -258,6 +260,15 @@ export const addInviteAction = (inputs) => {
       })
   }
 };
+
+export const changeUserThemeAction = (theme) => {
+  return (dispatch) => {
+    dispatch({
+      type: 'CHANGE_THEME',
+      theme
+    });
+  }
+}
 
 export const getUserSettingsAction = (inputs) => {
   return (dispatch) => {

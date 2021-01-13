@@ -139,9 +139,10 @@ export default (props) => {
   images ? 
     <ForceGraph2D 
       graphData={generateGraph(props.posts.items)}
-      linkOpacity={.5}
       nodeRelSize={8}
-      linkColor='rgb(0,0,0)'
+      linkOpacity={100}
+      linkColor={() => props.themeMap.linkColor}
+      linkWidth={.5}
       linkCurvature={.2}
       d3VelocityDecay={.85}
       ref={fgRef}

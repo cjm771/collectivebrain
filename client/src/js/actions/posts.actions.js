@@ -50,6 +50,15 @@ const QUERIES = {
     }
   }
   `,
+  GET_TAGS: gql`
+    query($limit: Int, $offset: Int, $group: ID) {
+      posts(limit: $limit, offset: $offset, group: $group) {
+        posts {
+          tags
+        }
+      }
+    }
+  `,
   GET_POSTS_PREVIEW: gql`
   query($limit: Int, $offset: Int, $group: ID) {
     posts(limit: $limit, offset: $offset, group: $group) {
@@ -141,6 +150,33 @@ export const getPostsAction = (inputs, query=QUERIES.GET_POSTS) => {
           errorFields: fields
         })
       })
+  }
+};
+
+export const getTagsAction = (inputs) => {
+  return (dispatch) => {
+    dispatch({
+      type:  'GET_TAGS_REQUEST',
+      payload: inputs
+    });
+    return ApolloClient.query({query: QUERIES.GET_TAGS, variables: {
+      group: inputs.group,
+      limit: inputs.limit,
+      offset: inputs.offset
+    }}).then((result) => {
+      dispatch({
+        type: 'GET_TAGS_SUCCESS',
+        groupTags: result.data.posts.posts.map((post) => post.tags).flat().filter((tag) => tag !== null).map((tag) => tag.trim()),
+      })
+    }).catch((error) => {
+      const {message, fields} = GeneralService.getErrorFromGraphQL(error);
+      console.log('Error:', message, '\nFields:', fields);
+      dispatch({
+        type: 'GET_TAGS_FAILURE',
+        error: message,
+        errorFields: fields
+      })
+    });
   }
 };
 
