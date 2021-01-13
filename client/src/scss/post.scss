@@ -59,11 +59,10 @@
       &:before {
         content: '#';
       }
-    }
-
-    li + li {
-      &:before {
-        content: ', #';
+      
+      &:not(:last-child):after {
+        content: ',';
+        padding: .25rem;
       }
     }
   }

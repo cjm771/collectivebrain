@@ -555,8 +555,9 @@ body.theme-dark .carousel__carousel___1GJ7B .carousel__img___3U5Xh {
 .post__post___2do4k .post__tags___2EWe9 li:before {
   content: "#";
 }
-.post__post___2do4k .post__tags___2EWe9 li + li:before {
-  content: ", #";
+.post__post___2do4k .post__tags___2EWe9 li:not(:last-child):after {
+  content: ",";
+  padding: 0.25rem;
 }
 .post__post___2do4k .post__description___3MvhZ {
   padding-top: 0.4rem;

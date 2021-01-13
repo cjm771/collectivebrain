@@ -1,13 +1,20 @@
+// react / redux
 import React, {useEffect, useRef, useState} from 'react';
 import { ForceGraph2D } from 'react-force-graph';
+
+// services
 import PostsService from '../services/posts.services.js';
-    
+
+// hooks
+import useWindowSize from '../hooks/useWindowResize.js';
+
 export default (props) => {
   /*********
    * HOOKS
    ********/
 
   const [images, setImages] = useState(null);
+  const [width, height] = useWindowSize();
   useEffect(() => {
     loadImages(props.posts.items).then((_images) => {
       setImages(_images);
@@ -139,6 +146,8 @@ export default (props) => {
   images ? 
     <ForceGraph2D 
       graphData={generateGraph(props.posts.items)}
+      width={width}
+      height={height}
       nodeRelSize={8}
       linkOpacity={100}
       linkColor={() => props.themeMap.linkColor}

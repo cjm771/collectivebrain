@@ -1,17 +1,27 @@
+// react / reduz
 import React, {useEffect, useRef, useState} from 'react';
-import { ForceGraph3D } from 'react-force-graph';
-// import * as THREE from 'three';
-import { SpriteMaterial, Sprite, TextureLoader, MeshLambertMaterial, Object3D, Mesh, Geometry, Box3, Vector3 } from 'three';
+
+// resources
+import { SpriteMaterial, Sprite, TextureLoader, MeshLambertMaterial, Mesh, Box3 } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import SpriteText from 'three-spritetext';
+
+// services
 import PostsService from '../services/posts.services.js';
-    
+
+// hooks
+import useWindowSize from '../hooks/useWindowResize.js';
+
+// components
+import { ForceGraph3D } from 'react-force-graph';
+
 export default (props) => {
   /*********
    * HOOKS
    ********/
 
    const [objs, setObjs] = useState(null);
+   const [width, height] = useWindowSize();
 
   useEffect(() => {
     let timeout;
@@ -40,6 +50,7 @@ export default (props) => {
     }).catch((e) => {
     })
   }, []);
+  
   const fgRef = useRef();
 
   /*********
@@ -193,6 +204,8 @@ export default (props) => {
     graphData={generateGraph(props.posts.items)}
     backgroundColor={props.themeMap.bgColor}
     nodeColor='rgb(0,0,0)'
+    width={width}
+    height={height}
     linkCurvature={0.2}
     linkWidth={.25}
     linkOpacity={1}
