@@ -4,14 +4,15 @@
 @import './icons';
 
 
-@mixin buttonSharedStylings() {
+@mixin buttonSharedStylings($border-radius:$input-border-radius) {
   padding: $input-padding;
-  border-radius: $input-border-radius;
+  border-radius: $border-radius;
   margin: .5rem 0;
   border: none;
   transition: background .25s ease-in-out;
 
   &.fullWidth {
+    display: block;
     width: 100%;
   }
 
@@ -21,9 +22,7 @@
 }
 
 @include themeProvider using ($themeMap) {
-
   .form {
-
     &.fullWidth {
       width: 100%;
     }
@@ -66,6 +65,20 @@
        }
        > :last-child {
          padding-left: $padding-gutter / 2;
+       }
+
+       @if map-get($themeMap, 'name') == 'karry' {
+        > :first-child {
+          padding-right: 0;
+        }
+        
+        > :last-child {
+          padding-left: 0;
+          
+          .inputWpr {
+            border-left: 0;
+          }
+        }
        }
       }
     }
@@ -128,12 +141,13 @@
   .autocomplete,
   .inputWpr {
     position: relative;
-    margin-bottom: 1rem;
+    margin-top: map-get($themeMap, 'inputMarginTop');
+    margin-bottom: map-get($themeMap, 'inputMarginBottom');
 
     input, button, textarea {
       &.disabled,
       &[disabled] { 
-        opacity: 0.5;
+        opacity: map-get($themeMap, 'deemphasizeOpacity');
         cursor: not-allowed;
       }
     }
@@ -191,6 +205,7 @@
         width: 50px;
         height: 25px;
         background: map-get($themeMap, 'inputBGColor');
+        border: map-get($themeMap, 'inputBorder');
         transition: background .5s ease-in-out;
         display: block;
         border-radius: 100px;
@@ -205,7 +220,6 @@
         color: map-get($themeMap, 'linkColor');
       }
     
-    
       label:after {
         content: '';
         position: absolute;
@@ -218,8 +232,6 @@
         transition: 0.3s;
       }
     
-    
-  
       label:active:after {
         width: 20px;
       }
@@ -238,7 +250,7 @@
 
     &.dropdown {
       &.disabled {
-        opacity: 0.5;
+        opacity: map-get($themeMap, 'lightDeemphasizeOpacity');
         cursor: not-allowed;
         
         select {
@@ -256,11 +268,11 @@
       }
 
       background: map-get($themeMap, 'inputBGColor');
+      border: map-get($themeMap, 'inputBorder');
       color: map-get($themeMap, 'inputTextColor');
-      border: 0;
       padding: $input-padding;
       transition: padding .25s ease-in-out;
-      border-radius: $input-border-radius;
+      border-radius: map-get($themeMap, 'inputBorderRadius');
       width: 100%;
       position: relative;
   
@@ -311,13 +323,13 @@
     list-style: none;
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: $input-padding / 2;
+    padding: $input-padding / 2 0;
     
     li.tagsListItem {
       display: flex;
       padding: .5rem;
-      color: map-get($themeMap, 'buttonSecondaryBGColor');
-      background: map-get($themeMap, 'buttonSecondaryTextColor');
+      color:  map-get($themeMap, 'textColor');
+      background: map-get($themeMap, 'listItemBGColor');
       margin-bottom: $input-padding / 2;
       border-radius: .5rem;
       align-items: center;
@@ -346,7 +358,7 @@
   }
 
   .buttonLink {
-    @include buttonSharedStylings();
+    @include buttonSharedStylings($border-radius: map-get($themeMap, 'inputBorderRadius'));
     background: none;
     border: none;
     cursor: pointer;
@@ -364,7 +376,7 @@
   }
   
   .button {
-    @include buttonSharedStylings();
+    @include buttonSharedStylings($border-radius: map-get($themeMap, 'inputBorderRadius'));
     background: map-get($themeMap, 'buttonBGColor');
     color: map-get($themeMap, 'buttonTextColor');
 
@@ -378,7 +390,7 @@
   }
 
   .buttonSecondary {
-    @include buttonSharedStylings();
+    @include buttonSharedStylings($border-radius: map-get($themeMap, 'inputBorderRadius'));
     background: map-get($themeMap, 'buttonSecondaryBGColor');
     color: map-get($themeMap, 'buttonSecondaryTextColor');
 

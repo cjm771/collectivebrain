@@ -1,4 +1,6 @@
 @import './colors';
+@import './dims';
+@import './sizes';
 
 // in html, add the theme-{{ theme name }}  to body ex. 'theme-dark'
 // ------------------------------------------------
@@ -17,10 +19,47 @@ $DEFAULT_THEME: dark;
 $modifierIntensity: 10;
 
 $themes: (
+  karry: (
+    name: 'karry',
+    // basics
+    backupBackgroundColor: $karryTransparency,
+    backgroundColor: linear-gradient(180deg, $karry 0%, $karryTransparency 100%),
+    textColor: $dark,
+    titleTextColor: darken($karry, $modifierIntensity),
+    // linkColor: darken($red, $modifierIntensity),
+    linkColor: lighten($blue, $modifierIntensity * 2),
+    errorColor: $red,
+    successColor: $green,
+    warningColor: $amber,
+    // list items
+    listItemBGColor: $karry,
+    inputErrorBGColor: #facfcf,
+    listItemHoverBGColor: darken($karry, $modifierIntensity / 4),
+    lightDeemphasizeOpacity: 0.7,
+    deemphasizeOpacity: 0.4,
+    // input
+    inputBGColor: #fff,
+    inputTextColor: $dark,
+    inputBorder: 4px solid darken($karry, $modifierIntensity / 2),
+    inputMarginTop: -4px,
+    inputMarginBottom: 0px,
+    inputBorderRadius: 0,
+    switchColor: darken($karry, $modifierIntensity),
+    inputPlaceholderTextColor: darken($karry, $modifierIntensity),
+    inputSkeletonGradient: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%),
+    // button
+    buttonTextColor: #fff,
+    buttonBGColor: darken($karry, $modifierIntensity * 6),
+    buttonSecondaryTextColor: $dark,
+    buttonSecondaryBGColor: darken($karry, $modifierIntensity / 2),
+    buttonBGHoverColor: darken($red, $modifierIntensity), 
+  ),
   light: (
+    name: 'light',
     // basics
     backgroundColor: transparent,
     textColor: #333,
+    titleTextColor: #333,
     linkColor: $blue,
     errorColor: $red,
     successColor: $green,
@@ -34,6 +73,10 @@ $themes: (
     // input
     inputBGColor: $light,
     inputTextColor: $dark,
+    inputBorder: none,
+    inputMarginTop: 0px,
+    inputMarginBottom: 1rem,
+    inputBorderRadius: $input-border-radius,
     switchColor: lighten($light, $modifierIntensity),
     inputPlaceholderTextColor: lighten($dark, $modifierIntensity * 2),
     inputSkeletonGradient: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%),
@@ -45,9 +88,11 @@ $themes: (
     buttonBGHoverColor: $blue, 
   ),
   dark: (
+    name: 'dark',
     // basics
     backgroundColor: #000,
     textColor: $light,
+    titleTextColor: $light,
     linkColor: lighten($blue, $modifierIntensity),
     errorColor: lighten($red, $modifierIntensity),
     successColor: lighten($green, $modifierIntensity),
@@ -61,6 +106,10 @@ $themes: (
     inputBGColor: $dark,
     inputErrorBGColor: darken(#facfcf, $modifierIntensity),
     inputTextColor: $light,
+    inputBorder: none,
+    inputMarginTop: 0px,
+    inputMarginBottom: 1rem,
+    inputBorderRadius: $input-border-radius,
     switchColor: $light,
     inputPlaceholderTextColor: lighten($dark, $modifierIntensity * 2),
     inputSkeletonGradient: linear-gradient(to right,lighten($dark, $modifierIntensity) 8%, $dark, lighten($dark, $modifierIntensity) 33%),

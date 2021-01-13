@@ -127,7 +127,7 @@ export default SortableElement(({file, onApproveCaption, onDelete, _disabled}) =
         }
         
         <div className={`${fileGalleryStyle.editModeShow} ${fileGalleryStyle.captionInput}`}>
-          <input type='text' value={caption} onChange={updateCaption} />
+          <input type='text' value={caption} onChange={updateCaption} placeholder='Enter Caption here...' />
         </div>
   
       </div>

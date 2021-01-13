@@ -10,16 +10,25 @@ export default {
     REMOVED: 2,
   },
   THEME_DICT: {
+    karry: {
+      color: 'rgba(0, 0, 0, .5)',
+      linkColor: '#cb887573',
+      bgColor: 'rgba(254, 236, 226, 0)',
+      autocompletBgColor: '#fff',
+      paneColor: '#fee5d6'
+    },
     dark: {
       color: 'rgba(255,255,255, .5)',
       linkColor: 'rgba(255,255,255, .5)',
       bgColor: 'rgba(0, 0, 0, 1)',
+      autocompletBgColor: 'rgba(0, 0, 0, 1)',
       paneColor: 'rgba(100, 100, 100, 1)'
     },
     light: {
       color: 'rgba(0, 0, 0, .5)',
       linkColor: 'rgba(0, 0, 0, .25)',
       bgColor: 'rgba(255,255,255, 1)',
+      autocompletBgColor: 'rgba(255,255,255, 1)',
       paneColor: 'rgba(220, 220, 220, 1)'
     }
   },

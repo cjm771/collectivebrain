@@ -18,8 +18,8 @@ import uuidv4 from 'uuid/v4';
 import copy from 'copy-to-clipboard';
 
 // services
-import UserService from '../services/users.services.js';
-import GeneralService from '../services/general.services.js';
+import UserService from './services/users.services.js';
+import GeneralService from './services/general.services.js';
 
 // components
 import SimpleForm from '../components/SimpleForm.js';
@@ -52,6 +52,11 @@ export default () => {
     return state.groups;
   });
 
+  const themeOptions = {
+    'dark': 'dark',
+    'light': 'light',
+    'karry': 'karry',
+  };
   const [inviteMode, setInviteMode] = useState(false);
   const [invitableRoles, setInvitableRoles] = useState({});
   const dispatch = useDispatch();
@@ -87,15 +92,6 @@ export default () => {
    *  HELPERS  *
    *************/
 
-  const changeTheme = (theme) => {
-    axios.get( `/?theme=${theme}&cb=${uuidv4()}`);
-    dispatch(changeUserThemeAction(theme));
-    // hacky for now
-    let $body = document.querySelector('body');
-    $body.className = '';
-    $body.classList.add(`theme-${theme}`);
-  };
-
   const toggleInviteMode = () => {
     setInviteMode(!inviteMode);
   };
@@ -117,9 +113,19 @@ export default () => {
     }, 2000);
   };
 
+  const handleThemeChange = (theme) => {
+    if (theme) {
+      axios.get( `/?theme=${theme}&cb=${uuidv4()}`);
+      dispatch(changeUserThemeAction(theme));
+      // hacky for now
+      let $body = document.querySelector('body');
+      $body.className = '';
+      $body.classList.add(`theme-${theme}`);
+    }
+  }
+
   const handleGroupsChange = (groupId) => {
     if (!userData.activeGroup || (userData.activeGroup.id !== groupId)) {
-      console.log(userData.activeGroup.id, groupId);
       dispatch(updateActiveGroupAction({activeGroup: groupId}));
       dispatch(clearPostsAction());
     }
@@ -299,12 +305,13 @@ export default () => {
         <div className={settingsStyle.themeSection}>
           <h5> Change Theme </h5>
           <div className={formStyle.form}>
-            <div>
-              <button onClick={(e) => {changeTheme('light')}} className={`${formStyle.buttonSecondary} ${formStyle.fullWidth}`}>Light Mode</button>
-            </div>
-            <div>
-              <button onClick={(e) => {changeTheme('dark')}} className={`${formStyle.buttonSecondary} ${formStyle.fullWidth}`} >Dark mode</button>                
-            </div>
+            <Input 
+              type="dropdown"
+              name="theme"
+              onChange={handleThemeChange}
+              options={themeOptions}
+              initValue={(userData && userData.theme) || themeOptions[0]}
+            ></Input>
           </div>
         </div>
       </div>

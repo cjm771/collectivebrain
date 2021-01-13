@@ -81,7 +81,7 @@ module.exports = async (setupRoutes) => {
   };
 
   const renderRoot = (req, res) => {
-    const availableThemes = ['light', 'dark'];
+    const availableThemes = ['light', 'dark', 'karry'];
     if (req.query.theme) {
       if (availableThemes.indexOf(req.query.theme) !== -1) {
         req.session.theme = req.query.theme;

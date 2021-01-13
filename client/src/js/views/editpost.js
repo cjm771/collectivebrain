@@ -305,8 +305,9 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                   onChange={handleFilesChange}
                 />
               </div>
-              <ul className={formStyle.tagsList}>
-                {
+              {
+                !tags.length ? '' : (
+                <ul className={formStyle.tagsList}>{
                   tags.map((tag,key) => {
                     return (
                       <li className={formStyle.tagsListItem} key={key} onClick={() => { removeFilter(tag) }}>
@@ -317,8 +318,9 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                       </li>
                     )
                   })
-                }
-              </ul>
+                }</ul>
+                )
+              }
               <CBAutocompleteInput 
                 placeholder="Type tags + hit Enter to add.."
                 onSelect={addFilter}
@@ -357,7 +359,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                 </div>
               </div>
             
-              <button onClick={handleSubmit} className={formStyle.button} disabled={postData.saving || !allowedToEdit()}>
+              <button onClick={handleSubmit} className={`${formStyle.button} ${formStyle.fullWidth}`} disabled={postData.saving || !allowedToEdit()}>
               {postData.saving ? 
                 <span><FontAwesomeIcon icon={faCircleNotch}></FontAwesomeIcon> saving..</span> :
               (!allowedToEdit() ? 'Read Only' : 'save')

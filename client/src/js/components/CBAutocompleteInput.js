@@ -50,7 +50,7 @@ export default (props) => {
             textAlign: 'left',
             borderRadius: '3px',
             boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-            background: props.themeMap.bgColor,
+            background: props.themeMap.autocompletBgColor,
             color: props.themeMap.color,
             padding: '2px 0',
             fontSize: '90%',
