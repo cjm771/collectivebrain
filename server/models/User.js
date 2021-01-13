@@ -145,9 +145,6 @@ userSchema.statics.getRoleName =UserService.getRoleName;
 
 userSchema.methods.validatePassword = async function(pw) {
   const valid = await bcrypt.compare(pw, this.password);
-  const hash = await bcrypt.hash(pw, 10);
-  console.log(hash);
-  debugger;
   return valid;
 };
 

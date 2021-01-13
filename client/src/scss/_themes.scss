@@ -34,7 +34,7 @@ $themes: (
     // list items
     listItemBGColor: $karry,
     inputErrorBGColor: #facfcf,
-    listItemHoverBGColor: darken($karry, $modifierIntensity / 4),
+    listItemHoverBGColor: #fff8f4,
     lightDeemphasizeOpacity: 0.7,
     deemphasizeOpacity: 0.4,
     // input
@@ -49,10 +49,10 @@ $themes: (
     inputSkeletonGradient: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%),
     // button
     buttonTextColor: #fff,
-    buttonBGColor: darken($karry, $modifierIntensity * 6),
+    buttonBGColor: darken($karry, $modifierIntensity * 2),
     buttonSecondaryTextColor: $dark,
     buttonSecondaryBGColor: darken($karry, $modifierIntensity / 2),
-    buttonBGHoverColor: darken($red, $modifierIntensity), 
+    buttonBGHoverColor: darken($karry, $modifierIntensity * 2), 
   ),
   light: (
     name: 'light',
