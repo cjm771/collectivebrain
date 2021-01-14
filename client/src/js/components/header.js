@@ -17,7 +17,7 @@ export default () => {
   return (
     <div className = {headerStyle.header}>
       <div className = {headerStyle.left}>
-        <h2><a href='/'>collective<b>BRAIN</b></a></h2>
+        <h2><a href={user.activeGroup ? `/g/${user.activeGroup.name}` : ''}>collective<b>BRAIN</b></a></h2>
       </div>
       <div className = {headerStyle.right}>
         { (user && user.loggedIn)  ? (

@@ -54,7 +54,7 @@ export default (props) => {
          }
        </ul>
        <CBAutocompleteInput 
-          placeholder="Tyoe tags + hit Enter to filter.."
+          placeholder="Type tags + hit Enter to filter.."
           onSelect={addFilter}
           options={filterAutoCompleteOptions}
           themeMap={props.themeMap}

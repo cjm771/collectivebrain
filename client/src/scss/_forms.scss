@@ -113,6 +113,10 @@
     }
   
     .halfLeftRightAligned {
+      @if map-get($themeMap, 'name') == 'karry' {
+        padding: 2rem 0;
+      }
+
       > *:first-child {
         text-align: left;
         float: left;
@@ -322,7 +326,11 @@
   }
 
   .tagsList {
-    margin: 0;
+    margin: 0rem 0 .5rem 0;
+    @if map-get($themeMap, 'name') == 'karry' {
+      margin: 1.5rem 0 1rem 0;
+    }
+    
     padding: 0;
     list-style: none;
     display: flex;
@@ -333,7 +341,7 @@
       display: flex;
       padding: .5rem;
       color:  map-get($themeMap, 'textColor');
-      background: map-get($themeMap, 'listItemBGColor');
+      background: map-get($themeMap, 'listItemHoverBGColor');
       margin-bottom: $input-padding / 2;
       border-radius: .5rem;
       align-items: center;
@@ -369,6 +377,9 @@
     color: map-get($themeMap, 'linkColor');
     padding: 0;
     transition: color .25s ease-in-out;
+    @if map-get($themeMap, 'name') == 'karry' {
+      text-decoration: underline;
+    }
 
     &:not([disabled]):hover {
       color: lighten(map-get($themeMap, 'linkColor'), 15);

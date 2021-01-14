@@ -16,7 +16,7 @@
       li {
         font-weight: bold;
         display: inline-block;
-        color: $blue;
+        color: map-get($themeMap, 'linkColor');
         vertical-align: middle;
         @include cb-icons($themeMap);
 

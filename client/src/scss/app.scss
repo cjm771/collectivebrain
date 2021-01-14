@@ -15,6 +15,12 @@
   transition: all .1s ease-in-out;
   background-size: 100vw 30rem;
   background-repeat: no-repeat;
+
+  a {
+    @if map-get($themeMap, 'name') == 'karry' {
+      text-decoration: underline;
+    }
+  }
 }
 
 .app {

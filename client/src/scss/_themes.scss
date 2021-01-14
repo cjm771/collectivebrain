@@ -27,7 +27,7 @@ $themes: (
     textColor: $dark,
     titleTextColor: darken($karry, $modifierIntensity),
     // linkColor: darken($red, $modifierIntensity),
-    linkColor: lighten($blue, $modifierIntensity * 2),
+    linkColor: lighten(#000, $modifierIntensity / 2),
     errorColor: $red,
     successColor: $green,
     warningColor: $amber,

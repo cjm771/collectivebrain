@@ -76,7 +76,7 @@ $drawer-width: 20rem;
             @include cb-icons($themeMap);
       
             .closeIcon {
-              color: $blue;
+              color: map-get($themeMap, 'linkColor' );
               cursor: pointer;
             }
           }

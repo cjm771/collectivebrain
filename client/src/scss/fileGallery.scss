@@ -40,11 +40,18 @@
 @include themeProvider() using ($themeMap) {
   .fileGallery {
     padding:  0 $input-padding;
+    padding-bottom: $input-padding;
+    // @if map-get($themeMap, 'name') == 'karry' {
+    padding-bottom: 0;
+    // }
   
     .imgWpr {
       // padding-right: $input-padding / 4;
       // padding-left: $input-padding / 4;
-      // padding-bottom: $input-padding;
+      padding-bottom: $input-padding;
+      @if map-get($themeMap, 'name') == 'karry' {
+        padding-bottom: 0;
+      }
       
       &:not(:nth-child(1)):not(:nth-child(3n + 4)) {
         border-left: 0;
@@ -73,6 +80,9 @@
       }
   
       &.fileDropZone {
+        @if map-get($themeMap, 'name' ) == 'karry' {
+          padding: 0;
+        }
   
         &, *, &:focus, *:focus {
           outline: none;
@@ -90,7 +100,7 @@
         .addMore {
           min-height: 3.5rem;
           @if map-get($themeMap, 'name' ) == 'karry' {
-            margin-top: map-get($themeMap, 'inputMarginTop');
+            // margin-top: map-get($themeMap, 'inputMarginTop');
           }
 
           background: map-get($themeMap, 'buttonSecondaryBGColor');

@@ -1,32 +1,42 @@
 @import './sizes';
+@import './themes';
 
-.tagCloudList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  text-align: left;
-  padding-bottom: $input-padding;
-  opacity: .75;
-
-  li {
-    display: inline-block;
-    padding-right: 1rem;
+@include themeProvider() using ($themeMap) {
+  .tagCloudList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    padding-bottom: $input-padding;
+    opacity: .75;
     
-    .buttonLink {
-      margin: 0;
-
-      .word {
-        font-weight: bold;
-  
-        &::before {
-          content: '#';
+    @if map-get($themeMap, 'name') == 'karry' {
+      padding-top: $input-padding;
+    }
+    
+    li {
+      display: inline-block;
+      padding-right: 1rem;
+      
+      .buttonLink {
+        margin: 0;
+        @if map-get($themeMap, 'name') == 'karry' {
+          text-decoration: underline;
         }
-      }
   
-      .count {
-        padding-left: .5rem;
-        font-size: .8em;
-        font-style: italic;
+        .word {
+          font-weight: bold;
+    
+          &::before {
+            content: '#';
+          }
+        }
+    
+        .count {
+          padding-left: .5rem;
+          font-size: .8em;
+          font-style: italic;
+        }
       }
     }
   }

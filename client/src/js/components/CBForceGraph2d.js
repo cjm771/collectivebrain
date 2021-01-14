@@ -123,7 +123,7 @@ export default (props) => {
     const textWidth = ctx.measureText(label).width;
     const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.2); // some padding
 
-    ctx.fillStyle = PostsService.getSubCategoryColorByName(node.post.subCategory);
+    ctx.fillStyle = PostsService.getCategoryColorByName(node.post.category);
     ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
 
     ctx.textAlign = 'center';

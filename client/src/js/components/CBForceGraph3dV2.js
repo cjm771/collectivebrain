@@ -174,10 +174,10 @@ export default (props) => {
     if (!sprite) {
       let wordwrappedTitle = (node.post.title + ' ').replace(/(\S(.{0,20}\S)?)\s+/g, '$1\n').trim();
       sprite = new SpriteText(wordwrappedTitle);
-      sprite.color = '#000000';
-      sprite.fontWeight = 800;
+      sprite.color = PostsService.getCategoryColorByName(node.post.category);
+      sprite.fontWeight = 900;
       sprite.padding = 2;
-      sprite.backgroundColor = PostsService.getSubCategoryColorByName(node.post.subCategory);
+      // sprite.backgroundColor = 'white';
       sprite.textHeight = 1;
     }
     return sprite;

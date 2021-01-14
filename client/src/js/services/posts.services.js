@@ -9,7 +9,7 @@ export default {
   CATEGORY_COLORS: [
     '#cccccc',
     '#ff00fd',
-    '#ff0000',
+    '#0000ff',
     '#ffff00',
     '#00ff00'
   ],

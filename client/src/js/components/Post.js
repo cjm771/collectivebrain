@@ -25,7 +25,12 @@ export default ({post}) => {
     )}
     
     <div className={postStyle.description}>
-      { post.description }
+      {!post.description ? '' : post.description.split(/\n/g).map((item, idx) => (
+         <span key={idx}>
+         {item}
+         <br/>
+     </span>
+      )) }
     </div>
     {!post.sources || !post.sources.length ? '' : (
       <ul className={postStyle.sources}>
