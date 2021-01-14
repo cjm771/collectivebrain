@@ -111,7 +111,7 @@ export default {
     let tags = [];
     posts.forEach((post) => {
       if (post.tags && post.tags.length) {
-        tags = [...tags, ...this.getAllTags(post.tags, allowDups)];
+        tags = this.getAllTags([...tags, ...post.tags], allowDups);
       }
     });
     return tags;

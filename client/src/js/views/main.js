@@ -151,7 +151,7 @@ export default ({match}) => {
             </div>
           ) :  ( <div className={`${mainStyle.mainWpr} ${ drawerVisible ? mainStyle.drawerOpen : ''}`}>
               <div className={mainStyle.filterArea}>
-                { filteredPosts && filteredPosts.items && filteredPosts.items.length  ? (
+                { posts && posts.items &&  posts.items.length  ? (
                   <FilterWidget 
                   posts={posts.items}
                   mode={mode}
