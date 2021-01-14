@@ -4,6 +4,7 @@ const Token = require('./Token.js');
 const Group = require('./Group.js');
 
 const UserService = require('../utils/UserService.js');
+const { USER_ROLES } = require('../utils/UserService.js');
 const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
 
@@ -119,7 +120,7 @@ userSchema.pre('save', async function (next) {
       } 
       if (user.isModified('role') && editor.role < user.role) {
         return next(new Error('You cannot promote beyond your role'));
-      } else if (!user.isModified('role') && editor.role <= user.role) {
+      } else if (!user.isModified('role') && (editor.role !== USER_ROLES.ADMIN && editor.role <= user.role)) {
         console.log(`editor ${editor.email} is less or equal to user ${user.email} role!`);
         return next(permissionsError);
       }
