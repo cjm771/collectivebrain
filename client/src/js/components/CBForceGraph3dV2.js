@@ -111,10 +111,10 @@ export default (props) => {
     for (let post of posts) {
       if (post.files && post.files.length) {
         // for testing
-        if (!hitFirstFile) {
-          post.files[0].src = 'https://res.cloudinary.com/hpbzpednu/raw/upload/v1609954206/tests/teapot_cfbaif.obj';
-          hitFirstFile = true;
-        }
+        // if (!hitFirstFile) {
+        //   post.files[0].src = 'https://res.cloudinary.com/hpbzpednu/raw/upload/v1609954206/tests/teapot_cfbaif.obj';
+        //   hitFirstFile = true;
+        // }
         if (/\.obj$/.test(post.files[0].src)) {
           postIds.push(post.id);
           toLoad.push(new Promise((res, rej) => {
