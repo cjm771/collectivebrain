@@ -62,10 +62,21 @@ export default ({match}) => {
     const user = useSelector(state => state.user);
     
     useEffect(() => {
+      // TODO seperate getting session data vs user data? hacky way to set anon's by querying class
       if (user && user.theme) {
-        const theme = UserService.getThemeMap(user);
+        const theme = UserService.getThemeMap(user.theme);
+        setUserThemeMap(theme);
+      } else if (!user.loggingIn) {
+        let theme = UserService.getThemeMap(null);
+        document.querySelector('body').classList.forEach((_class) => {
+          const matches = /^theme-(.+)$/.exec(_class);
+          if (matches) {
+            theme = UserService.getThemeMap(matches[1]);
+          }
+        });
         setUserThemeMap(theme);
       }
+      
     }, [user]);
 
     useEffect(() => {

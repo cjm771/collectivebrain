@@ -91,7 +91,7 @@ module.exports = async (setupRoutes) => {
     } 
     res.render('index', {
       layout: false,
-      theme: req.session.theme || 'dark'
+      theme: req.session.theme || 'karry'
     });
   }
   

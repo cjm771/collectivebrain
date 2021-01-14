@@ -18,8 +18,8 @@ import uuidv4 from 'uuid/v4';
 import copy from 'copy-to-clipboard';
 
 // services
-import UserService from './services/users.services.js';
-import GeneralService from './services/general.services.js';
+import UserService from '../services/users.services.js';
+import GeneralService from '../services/general.services.js';
 
 // components
 import SimpleForm from '../components/SimpleForm.js';
@@ -53,9 +53,9 @@ export default () => {
   });
 
   const themeOptions = {
+    'karry': 'karry',
     'dark': 'dark',
     'light': 'light',
-    'karry': 'karry',
   };
   const [inviteMode, setInviteMode] = useState(false);
   const [invitableRoles, setInvitableRoles] = useState({});

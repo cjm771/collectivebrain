@@ -295,11 +295,7 @@ module.exports  = {
       // }
     },
     groups: async (_, args, ctx) => {
-      if (ctx.req.session.user) {
-        return Group.find({})
-      } else {
-        throw new AuthenticationError('You are not permitted to access this page!. Are you logged in?')
-      }
+      return Group.find({});
     },
     users: (_, args, ctx) => {
       if (ctx.req.session.user) {

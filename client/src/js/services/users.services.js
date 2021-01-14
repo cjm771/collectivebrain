@@ -32,9 +32,9 @@ export default {
       paneColor: 'rgba(220, 220, 220, 1)'
     }
   },
-  getThemeMap: function (user) {
-    const theme = this.THEME_DICT[user.theme] || this.THEME_DICT['dark'];
-    return theme;
+  getThemeMap: function (theme) {
+    const _theme = this.THEME_DICT[theme] || this.THEME_DICT['karry'];
+    return _theme;
   },
   getRoleName: function (val) {
     val = parseInt(val);
