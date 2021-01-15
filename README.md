@@ -15,6 +15,13 @@ Collectivebrain
 - [2. Services](#2-services)
   - [2.1. Sendgrid setup](#21-sendgrid-setup)
   - [2.2. Cloudinary](#22-cloudinary)
+  - [2.3. Mongo Atlas](#23-mongo-atlas)
+- [3. Deployment](#3-deployment)
+  - [3.1. Add env variables](#31-add-env-variables)
+  - [3.2. Headless buildpack](#32-headless-buildpack)
+  - [3.3. Running 'migrations' on heroku / shelling in](#33-running-migrations-on-heroku--shelling-in)
+  - [3.4. checking server logs](#34-checking-server-logs)
+  - [3.5. Deploying changes](#35-deploying-changes)
 
 <!-- /TOC -->
 
@@ -88,9 +95,56 @@ Various 3rd party services are used. Refer to shared accounts doc for credential
   - ImprovMX (email forwarding)
   - godaddy (domains)
   - cloudinary (file uploads)
+  - Mongo Atlas (DB)
 
 ## 2.1. Sendgrid setup
   - make sure .env `SENDGRID_API_KEY` is set and authorized sender is set to `admin@collectivehomeoffice.com` in sendgrid dashboard
 
 ## 2.2. Cloudinary
   - make sure .env `CLOUDINARY_URL` is set. Access web portal via heroku
+
+## 2.3. Mongo Atlas
+  - make sure .env `MONGODB_URI` is set on heroku to mongo atlas uri (local should be used for developement).
+
+# 3. Deployment
+  Currently `heroku` is being used for deployment. Make sure you have access to project like any other heroku project.
+
+  ```
+  $ heroku create # etc see heroku docs
+  ```
+
+## 3.1. Add env variables
+Mimic `.env` file on heroku's config variables. Use `.env.config` as a template, although you should already have `.env` on your local machine.
+``` sh
+# to list heroku config vars
+$ heroku config
+# setting
+$ heroku config:set FOO=BARR
+```
+
+## 3.2. Headless buildpack
+WebGL is used for rendering some images #TODO
+``` sh
+# TDO
+```
+
+## 3.3. Running 'migrations' on heroku / shelling in
+Similar to local shell into the machine and run any outstanding migration scripts to update mongo. Only run each one as they are needed.
+
+
+``` sh
+# shell in 
+$ heroku run sh
+$> node sample_data/001_convertToSubCategories.js
+$> node sample_data/002_convertImagesToFiles.js 
+$> #etc
+```
+
+## 3.4. checking server logs
+``` sh
+$> heroku logs --tail
+```
+## 3.5. Deploying changes
+``` sh
+$> git push heroku master
+```
