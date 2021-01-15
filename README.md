@@ -134,7 +134,7 @@ Similar to local shell into the machine and run any outstanding migration script
 
 ``` sh
 # shell in 
-$ heroku run sh
+$ heroku ps:exec
 $> node sample_data/001_convertToSubCategories.js
 $> node sample_data/002_convertImagesToFiles.js 
 $> #etc
