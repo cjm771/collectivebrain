@@ -39,7 +39,7 @@
 
       .left {
         border-radius: map-get($themeMap, 'inputBorderRadius') 0 0 map-get($themeMap, 'inputBorderRadius');
-        border-right: 2px solid lighten(map-get($themeMap, 'buttonSecondaryBGColor'), 5);
+        margin-right: .2rem;
       }
 
       .right {

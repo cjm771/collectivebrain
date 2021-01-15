@@ -119,7 +119,7 @@ export default (props) => {
     }
     const label = node.post.title;
     const fontSize = 2;
-    ctx.font = `${fontSize}px Sans-Serif`;
+    ctx.font = `900 ${fontSize}px Sans-Serif`;
     const textWidth = ctx.measureText(label).width;
     const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.2); // some padding
 
@@ -132,7 +132,8 @@ export default (props) => {
     ctx.fillText(label, node.x, node.y)
   };
 
-  const handleClick = (node) => {
+  const handleClick = (node, event) => {
+    console.log(event);
     // Aim at node from outside it
     props.onClick(node);
     fgRef.current.zoom(20, 3000);

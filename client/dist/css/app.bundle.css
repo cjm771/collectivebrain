@@ -2376,7 +2376,7 @@ body .filterWidget__filterWidget___2RhHC .filterWidget__dualButton___2njsG {
 }
 body .filterWidget__filterWidget___2RhHC .filterWidget__dualButton___2njsG .filterWidget__left___2dg0D {
   border-radius: 0.5rem 0 0 0.5rem;
-  border-right: 2px solid #777777;
+  margin-right: 0.2rem;
 }
 body .filterWidget__filterWidget___2RhHC .filterWidget__dualButton___2njsG .filterWidget__right___2ctlA {
   border-radius: 0 0.5rem 0.5rem 0;
@@ -2452,7 +2452,7 @@ body.theme-karry .filterWidget__filterWidget___2RhHC .filterWidget__dualButton__
 }
 body.theme-karry .filterWidget__filterWidget___2RhHC .filterWidget__dualButton___2njsG .filterWidget__left___2dg0D {
   border-radius: 0 0 0 0;
-  border-right: 2px solid #feede2;
+  margin-right: 0.2rem;
 }
 body.theme-karry .filterWidget__filterWidget___2RhHC .filterWidget__dualButton___2njsG .filterWidget__right___2ctlA {
   border-radius: 0 0 0 0;
@@ -2527,7 +2527,7 @@ body.theme-light .filterWidget__filterWidget___2RhHC .filterWidget__dualButton__
 }
 body.theme-light .filterWidget__filterWidget___2RhHC .filterWidget__dualButton___2njsG .filterWidget__left___2dg0D {
   border-radius: 0.5rem 0 0 0.5rem;
-  border-right: 2px solid #eeeeee;
+  margin-right: 0.2rem;
 }
 body.theme-light .filterWidget__filterWidget___2RhHC .filterWidget__dualButton___2njsG .filterWidget__right___2ctlA {
   border-radius: 0 0.5rem 0.5rem 0;
@@ -2602,7 +2602,7 @@ body.theme-dark .filterWidget__filterWidget___2RhHC .filterWidget__dualButton___
 }
 body.theme-dark .filterWidget__filterWidget___2RhHC .filterWidget__dualButton___2njsG .filterWidget__left___2dg0D {
   border-radius: 0.5rem 0 0 0.5rem;
-  border-right: 2px solid #777777;
+  margin-right: 0.2rem;
 }
 body.theme-dark .filterWidget__filterWidget___2RhHC .filterWidget__dualButton___2njsG .filterWidget__right___2ctlA {
   border-radius: 0 0.5rem 0.5rem 0;
