@@ -1,5 +1,9 @@
 @import './_dims';
 @import './themes';
+@import './_mediaQueries.scss';
+
+
+$mobile-shrink: .8em;
 
 // ones that should be stylized for the header
 @mixin specialLinks {
@@ -14,6 +18,7 @@
   .header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 1rem;
     height: $header-height;
     // overflow: hidden;
@@ -23,6 +28,11 @@
     .left {
       font-weight: bold;
       a {
+        
+        @include mobile {
+          font-size: $mobile-shrink;
+        }
+
         @include specialLinks();
         color: map-get($themeMap, 'titleTextColor');
       }
@@ -35,6 +45,11 @@
           display: inline-block;
           padding-left: 1rem;
           a {
+        
+            @include mobile {
+              font-size: $mobile-shrink;
+            }
+        
             @include specialLinks();
           }
         }

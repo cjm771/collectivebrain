@@ -7,20 +7,36 @@ import PostsService from '../services/posts.services.js';
 
 // hooks
 import useWindowSize from '../hooks/useWindowResize.js';
+import useMaxDragDistance from '../hooks/useMaxDragDistance.js';
+
+const ForceGraph2DMemo =  React.memo(ForceGraph2D, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps.graphData.nodes.map((item) => item.id)) === JSON.stringify(nextProps.graphData.nodes.map((item) => item.id))
+  && prevProps.width === nextProps.width
+  && prevProps.height === nextProps.height;
+});
+
+
+let originPt = {value: [0, 0]};
+let maxDragDistance = {value: 0};
 
 export default (props) => {
+  
   /*********
    * HOOKS
    ********/
 
   const [images, setImages] = useState(null);
   const [width, height] = useWindowSize();
+  const fgRef = useRef();
+  const fgWprRef = useRef();
+  useMaxDragDistance(fgWprRef, originPt, maxDragDistance);
+  
   useEffect(() => {
     loadImages(props.posts.items).then((_images) => {
       setImages(_images);
     });
   }, []);
-  const fgRef = useRef();
+
 
   /*********
    * HELPERS
@@ -133,32 +149,41 @@ export default (props) => {
   };
 
   const handleClick = (node, event) => {
-    console.log(event);
-    // Aim at node from outside it
-    props.onClick(node);
-    fgRef.current.zoom(20, 3000);
-    fgRef.current.centerAt(node.x, node.y, 3000);  // ms transition duration
+    console.log('distance', maxDragDistance.value);
+    if (maxDragDistance.value < 20) {
+      // Aim at node from outside it
+      fgRef.current.zoom(5, 1000);
+      fgRef.current.centerAt(node.x, node.y, 1000);  // ms transition duration
+      setTimeout(() => {
+        props.onClick(node);
+      }, 1000);
+    }
   };
+
+
 
   /*********
    * RENDER
    ********/
   return (
-  images ? 
-    <ForceGraph2D 
-      graphData={generateGraph(props.posts.items)}
-      width={width}
-      height={height}
-      nodeRelSize={8}
-      linkOpacity={100}
-      linkColor={() => props.themeMap.linkColor}
-      linkWidth={.5}
-      linkCurvature={.2}
-      d3VelocityDecay={.85}
-      ref={fgRef}
-      enableNodeDrag={false}
-      showNavInfo={false}
-      onNodeClick={handleClick}
-      nodeCanvasObject={handleCanvasObject}
-    /> : ''
+    <div ref={fgWprRef}>{
+      images ? <ForceGraph2DMemo
+        graphData={generateGraph(props.posts.items)}
+        width={width}
+        height={height}
+        nodeRelSize={8}
+        linkOpacity={100}
+        linkColor={() => props.themeMap.linkColor}
+        linkWidth={.5}
+        linkCurvature={.2}
+        d3VelocityDecay={.85}
+        ref={fgRef}
+        enableNodeDrag={false}
+        showNavInfo={false}
+        onNodeClick={handleClick}
+        nodeCanvasObject={handleCanvasObject}
+      />
+      : ''
+    }
+    </div>
 )};

@@ -85,7 +85,10 @@ export default ({ match }) => {
    const deletePost = (e, id) => {
     e.preventDefault();
     e.stopPropagation();
-    dispatch(deletePostAction(id));
+    const shouldDelete = confirm('Are you sure you want to delete this post?');
+    if (shouldDelete) {
+      dispatch(deletePostAction(id));
+    }
    }
 
   /***********

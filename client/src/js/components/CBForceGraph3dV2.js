@@ -11,9 +11,19 @@ import PostsService from '../services/posts.services.js';
 
 // hooks
 import useWindowSize from '../hooks/useWindowResize.js';
+import useMaxDragDistance from '../hooks/useMaxDragDistance.js';
 
 // components
 import { ForceGraph3D } from 'react-force-graph';
+
+const ForceGraph3DMemo =  React.memo(ForceGraph3D, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps.graphData.nodes.map((item) => item.id)) === JSON.stringify(nextProps.graphData.nodes.map((item) => item.id))
+  && prevProps.width === nextProps.width
+  && prevProps.height === nextProps.height;
+});
+
+let originPt = {value: [0, 0]};
+let maxDragDistance = {value: 0};
 
 export default (props) => {
   /*********
@@ -52,6 +62,8 @@ export default (props) => {
   }, []);
   
   const fgRef = useRef();
+  const fgWprRef = useRef();
+  useMaxDragDistance(fgWprRef, originPt, maxDragDistance);
 
   /*********
    * HELPERS
@@ -185,38 +197,48 @@ export default (props) => {
 
   const handleClick = (node) => {
     // Aim at node from outside it
-    const distance = 40;
-    props.onClick(node);
-    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
-    fgRef.current.cameraPosition(
-      { x: node.x * distRatio, y: node.y,  z: node.z }, // new position
-      node, // lookAt ({ x, y, z })
-      3000  // ms transition duration
-    );
+    console.log(maxDragDistance.value);
+    if (maxDragDistance.value < 20) {
+      const distance =140;
+      const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+      fgRef.current.cameraPosition(
+        { x: node.x * distRatio, y: node.y,  z: node.z }, // new position
+        node, // lookAt ({ x, y, z })
+        1000  // ms transition duration
+        );
+      setTimeout(() => {
+        props.onClick(node);
+
+      }, 1000);
+    }
   };
 
   /*********
    * RENDER
    ********/
   return (
+  <div ref={fgWprRef}>
+  {
   objs ? 
-  <ForceGraph3D 
-    graphData={generateGraph(props.posts.items)}
-    backgroundColor={props.themeMap.bgColor}
-    nodeColor='rgb(0,0,0)'
-    width={width}
-    height={height}
-    linkCurvature={0.2}
-    linkWidth={.25}
-    linkOpacity={1}
-    linkColor={() => props.themeMap.linkColor}
-    ref={fgRef}
-    controlType="orbit"
-    d3VelocityDecay={.85}
-    enableNodeDrag={false}
-    showNavInfo={false}
-    onNodeClick={handleClick}
-    nodeAutoColorBy="category"
-    nodeThreeObject={handleThreeObject}
-  /> : ''
+    <ForceGraph3DMemo 
+      graphData={generateGraph(props.posts.items)}
+      backgroundColor={props.themeMap.bgColor}
+      nodeColor='rgb(0,0,0)'
+      width={width}
+      height={height}
+      linkCurvature={0.2}
+      linkWidth={.25}
+      linkOpacity={1}
+      linkColor={() => props.themeMap.linkColor}
+      ref={fgRef}
+      controlType="orbit"
+      d3VelocityDecay={.85}
+      enableNodeDrag={false}
+      showNavInfo={false}
+      onNodeClick={handleClick}
+      nodeAutoColorBy="category"
+      nodeThreeObject={handleThreeObject}
+    /> : ''
+  }
+  </div>
 )};

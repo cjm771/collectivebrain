@@ -1,0 +1,79 @@
+$rr-lg-desktop-min-width: 1115px;
+$rr-desktop-min-width: 768px;
+$rr-mobile-max-width: $rr-desktop-min-width - 1px;
+
+// IE SPECIFIC
+// ------------
+// ie only
+@mixin ie-only {
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    @content;
+  }
+}
+
+@mixin non-ie-only {
+  @supports (top:0){
+    @content;
+  }
+}
+
+@mixin firefox-only {
+  @-moz-document url-prefix() {
+    @content;
+  }
+}
+
+
+// desktop, ie only
+@mixin desktop-ie-only {
+  @media screen and (min-width: $rr-desktop-min-width) and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    @content;
+  }
+}
+
+// desktop large, ie only
+@mixin desktop-large-ie-only {
+  @media screen and (min-width: $rr-lg-desktop-min-width) and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    @content;
+  }
+}
+
+// MEDIA QUERIES
+// ------------
+// desktop md only
+@mixin desktop-large-only {
+  @media screen and (min-width: $rr-lg-desktop-min-width) {
+    @content;
+  }
+}
+
+// desktop md only
+@mixin desktop-only {
+  @media screen and (min-width: $rr-desktop-min-width)  and (max-width: $rr-lg-desktop-min-width - 1px) {
+    @content;
+  }
+}
+
+
+// large desktop
+@mixin desktop-large {
+  @media screen and (min-width: $rr-lg-desktop-min-width) {
+    @content;
+  }
+}
+
+// tablets to medium sized desktops
+@mixin desktop {
+  @media screen and (min-width: $rr-desktop-min-width) {
+    @content;
+  }
+}
+
+// mobile
+@mixin mobile {
+  @media screen and (max-width: $rr-mobile-max-width) {
+    @content;
+  }
+}
+
+

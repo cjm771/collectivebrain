@@ -1,12 +1,31 @@
+// react / redux
 import React, {useEffect, useRef} from 'react';
-import { ForceGraph3D } from 'react-force-graph';
 import * as THREE from 'three';
+import { ForceGraph3D } from 'react-force-graph';
+
+// services
 import PostsService from '../services/posts.services.js';
-    
-const CBForceGraphComponent = (props) => {
+
+// hooks
+import useMaxDragDistance from '../hooks/useMaxDragDistance.js';
+
+const ForceGraph3DMemo =  React.memo(ForceGraph3D, (prevProps, nextProps) => {
+  debugger;
+  return JSON.stringify(prevProps.graphData.nodes.map((item) => item.id)) === JSON.stringify(nextProps.graphData.nodes.map((item) => item.id));
+});
+
+
+let originPt = {value: [0, 0]};
+let maxDragDistance = {value: 0};
+
+export default (props) => {
   /*********
    * HOOKS
    ********/
+
+  const fgRef = useRef();
+  const fgWprRef = useRef();
+  useMaxDragDistance(fgWprRef, originPt, maxDragDistance);
 
   useEffect(() => {
     let timeout;
@@ -31,7 +50,7 @@ const CBForceGraphComponent = (props) => {
     };
     timeout = setTimeout(initAfterThreeLoad, 10);
   }, []);
-  const fgRef = useRef();
+
 
   /*********
    * HELPERS
@@ -120,6 +139,8 @@ const CBForceGraphComponent = (props) => {
   };
 
   const handleClick = (node) => {
+    console.log(maxDragDistance) 
+    if (maxDragDistance.value < 20) {
     // Aim at node from outside it
     const distance = 25;
     props.onClick(node);
@@ -127,15 +148,17 @@ const CBForceGraphComponent = (props) => {
     fgRef.current.cameraPosition(
       { x: node.x * distRatio, y: node.y,  z: node.z }, // new position
       node, // lookAt ({ x, y, z })
-      3000  // ms transition duration
+      1000  // ms transition duration
     );
+    }
+
   };
 
   /*********
    * RENDER
    ********/
   return (
-  <ForceGraph3D 
+  <ForceGraph3DMemo 
   graphData={generateGraph(props.posts.items)}
   backgroundColor='rgba(255,255,255,0)'
   nodeColor='rgb(0,0,0)'
@@ -153,10 +176,3 @@ const CBForceGraphComponent = (props) => {
   nodeThreeObject={handleThreeObject}
 />
 )};
-
-const propsIsEqual = function (prevProps, nextProps) {
-  // adjust this if rerendering is an  issue
-  return true;
-}
-
-export default React.memo(CBForceGraphComponent, propsIsEqual);

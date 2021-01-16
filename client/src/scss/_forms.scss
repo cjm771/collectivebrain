@@ -2,7 +2,10 @@
 @import './mixins';
 @import './themes';
 @import './icons';
+@import './mediaQueries';
 
+$mobile-shrink: .8em;
+$mobile-padding-ratio: .8;
 
 @mixin buttonSharedStylings($border-radius:$input-border-radius) {
   padding: $input-padding;
@@ -30,6 +33,10 @@
     &.maxWidth {
       max-width: 30rem;
       width: 100%;
+
+      @include mobile {
+        max-width: 80%;
+      }
     }
 
     text-align: center;
@@ -279,6 +286,11 @@
       border-radius: map-get($themeMap, 'inputBorderRadius');
       width: 100%;
       position: relative;
+
+      @include mobile {
+        padding: $input-padding * $mobile-padding-ratio;
+        font-size: $mobile-shrink;
+      }
   
       .arrow {
         color: map-get($themeMap, 'textColor');

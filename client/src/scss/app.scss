@@ -6,6 +6,14 @@
   * {
     box-sizing: border-box;
   }
+
+  textarea,
+  input,
+  input[type="text"], 
+  input[type="password"], 
+  input[type="submit"] {
+    -webkit-appearance: none;
+  }
 }
 
 @include themeProvider() using ($themeMap) {

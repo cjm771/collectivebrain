@@ -20,6 +20,10 @@ import mainStyle from '../../scss/main.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 
+const CBForceGraph2dMemo = React.memo(CBForceGraph2d, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps.posts.items.map((item) => item.id)) === JSON.stringify(nextProps.posts.items.map((item) => item.id));
+});
+
 export default ({match}) => {
 
     /*********
@@ -166,7 +170,7 @@ export default ({match}) => {
               <div className={mainStyle.forceGraph}>
                 {
                   mode === '2D' ?
-                  <CBForceGraph2d
+                <CBForceGraph2dMemo
                   animationDuration={ANIM_DELAY}
                   posts={filteredPosts}
                   onZoomPan={handleZoomPan}
