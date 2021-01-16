@@ -179,7 +179,7 @@ module.exports  = {
             invalidArgs: ['password'],
         });
       }
-      const user = await User.findOne({ email: args.email })
+      const user = await User.findOne({ email: new RegExp(args.email, 'i') })
       if (!user) {
         throw new Error('No such user found');
       }
