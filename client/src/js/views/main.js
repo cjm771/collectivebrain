@@ -194,10 +194,9 @@ export default ({match}) => {
               }
               <div className={mainStyle.drawer}>
                 <div className={mainStyle.drawerInner}>
-                  <div className={`${mainStyle.closeWpr}`}>
+                  <div className={`${mainStyle.closeWpr}`} onClick={closeDrawer}>
                     <div 
                       className={`${mainStyle.closeIcon} ${mainStyle.actionIcon}  ${mainStyle.persistent}`}
-                      onClick={closeDrawer}
                     >
                       <FontAwesomeIcon icon={faTimes} />
                     </div>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 import {isLoggedInAction} from '../actions/user.actions.js';
 import { useDispatch } from 'react-redux';
@@ -22,12 +22,11 @@ import '!style-loader!css-loader!react-toastify/dist/ReactToastify.css';
 export default () => {
 
   toast.configure();
-
   const dispatch = useDispatch();
   dispatch(isLoggedInAction());
 
   return (
-    <div id="app" className={appStyle.app}>
+    <div id="app" className={`${appStyle.app}`}>
       <Router>
         <Header/>
         <div className={appStyle.container}>

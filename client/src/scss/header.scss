@@ -21,9 +21,15 @@ $mobile-shrink: .8em;
     align-items: center;
     padding: 1rem;
     height: $header-height;
-    // overflow: hidden;
     position: relative;
     z-index: 10;
+
+    &.fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
   
     .left {
       font-weight: bold;
@@ -54,9 +60,6 @@ $mobile-shrink: .8em;
           }
         }
       }
-  
-  
-  
   
       .authDropdown {
         padding-left: .5rem;
