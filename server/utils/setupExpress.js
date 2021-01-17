@@ -81,6 +81,7 @@ module.exports = async (setupRoutes) => {
   };
 
   const renderRoot = (req, res) => {
+    const DEFAULT_THEME = 'light';
     const availableThemes = ['light', 'dark', 'karry'];
     if (req.query.theme) {
       if (availableThemes.indexOf(req.query.theme) !== -1) {
@@ -91,7 +92,7 @@ module.exports = async (setupRoutes) => {
     } 
     res.render('index', {
       layout: false,
-      theme: req.session.theme || 'karry'
+      theme: req.session.theme || DEFAULT_THEME
     });
   }
   

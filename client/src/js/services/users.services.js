@@ -9,6 +9,7 @@ export default {
     ACCEPTED: 1,
     REMOVED: 2,
   },
+  DEFAULT_THEME: 'light',
   THEME_DICT: {
     karry: {
       color: 'rgba(0, 0, 0, .5)',
@@ -33,7 +34,7 @@ export default {
     }
   },
   getThemeMap: function (theme) {
-    const _theme = this.THEME_DICT[theme] || this.THEME_DICT['karry'];
+    const _theme = this.THEME_DICT[theme] || this.THEME_DICT[this.DEFAULT_THEME];
     return _theme;
   },
   getRoleName: function (val) {
