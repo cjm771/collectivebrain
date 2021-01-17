@@ -5,5 +5,4 @@ libglew-dev
 pkg-config
 xserver-xorg-input-mouse
 xserver-xorg-input-kbd
-xorg-xkb-utils
 xvfb
