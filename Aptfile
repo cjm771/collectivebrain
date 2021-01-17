@@ -3,4 +3,6 @@ libxi-dev
 libglu1-mesa-dev
 libglew-dev
 pkg-config
+xserver-xorg-input-mouse
+xserver-xorg-input-kbd
 xvfb
