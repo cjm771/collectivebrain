@@ -310,7 +310,7 @@ export default () => {
               name="theme"
               onChange={handleThemeChange}
               options={themeOptions}
-              initValue={(userData && userData.theme) || themeOptions[0]}
+              initValue={(userData && userData.theme) || UserService.DEFAULT_THEME}
             ></Input>
           </div>
         </div>
