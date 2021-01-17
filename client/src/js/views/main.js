@@ -60,6 +60,11 @@ export default ({match}) => {
     }, [groupsData]);
     
     const posts = useSelector((state) => { 
+      if (state.posts.items.length) {
+        state.posts.items = state.posts.items.filter((post) => {
+          return post.published;
+        });
+      }
       return state.posts;
     });
 
