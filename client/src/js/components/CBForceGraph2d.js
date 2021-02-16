@@ -3,7 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import { ForceGraph2D } from 'react-force-graph';
 
 // services
-import PostsService from '../services/posts.services.js';
+import PostsService from '../services/posts.services.js'; 
 
 // hooks
 import useWindowSize from '../hooks/useWindowResize.js';
@@ -111,6 +111,7 @@ export default (props) => {
               res(image);
             }
             image.onerror = () => {
+              console.log('post id error', post.id);
               res(null);
             }
             image.src = imageSrc;
@@ -130,8 +131,15 @@ export default (props) => {
 
   const handleCanvasObject = (node, ctx, globalScale) => {
     if (node.post.files && node.post.files.length) {
-     ctx.drawImage(images[node.post.id], node.x - 5, node.y - 5, 10, 10);
-     return;
+      try {
+        ctx.drawImage(images[node.post.id], node.x - 5, node.y - 5, 10, 10);
+        return;
+      } catch (e) {
+        // pass
+        // console.log(e);
+        // ctx.drawImage(FilesService.generatePlaceholderTextThumbnail(node.post.title), node.x - 5, node.y - 5, 10, 10);
+      }
+
     }
     const label = node.post.title;
     const fontSize = 2;

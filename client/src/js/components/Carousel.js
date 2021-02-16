@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Carousel from 'react-bootstrap/Carousel';
 import carouselStyle from '../../scss/carousel.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import FilesService from '../services/files.services.js';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 export default React.memo(({_id, images}) => {
@@ -9,7 +10,7 @@ export default React.memo(({_id, images}) => {
    * VARS
    ********/
 
-  const _images = images;  
+  const [_images, _setImages] = useState(null);  
 
   /*********
    * HOOKS
@@ -20,12 +21,13 @@ export default React.memo(({_id, images}) => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     // pre load images
-    Promise.all(_images.map((img) => {
+    Promise.all(images.map((img) => {
       return imageWillLoad(img);
-    })).then(() => {
+    })).then((imgs) => {
+      _setImages(imgs)
       setLoading(false);
     })
-  }, []); 
+  }, [images]); 
 
   /*********
    * HELPERS
@@ -35,15 +37,21 @@ export default React.memo(({_id, images}) => {
     return new Promise((resolve, reject) => {
       const image = new Image('image');
       image.src = img.src;
-      image.onload = image.onerror =  () => {
-        resolve();
+      image.onload =  () => {
+        resolve(img);
+      }
+      image.onerror = () => {
+        img.src = null;
+        resolve(null);
       }
     });
   };
 
   const handleSelect = (selectedIndex, e) => {
     setIndex(selectedIndex);
-    setDirection(e.direction);
+    if (e) {
+      setDirection(e.direction);
+    }
   };
 
   /*********
@@ -59,6 +67,7 @@ export default React.memo(({_id, images}) => {
             </div>
           </div>
         ) : (
+        _images ? 
           <Carousel 
             activeIndex={index} 
             direction={direction} 
@@ -67,6 +76,7 @@ export default React.memo(({_id, images}) => {
             indicators={_images.length > 1}
           >
             {_images.map((image, index) => (
+              image ? 
               <Carousel.Item key={index}>
                 <img
                   className={`d-block ${carouselStyle.img}`}
@@ -81,10 +91,10 @@ export default React.memo(({_id, images}) => {
                   )
                 }
          
-              </Carousel.Item>
+              </Carousel.Item> : ''
             ))}
           </Carousel>
-        )
+        : '')
       }
     </div>
   )

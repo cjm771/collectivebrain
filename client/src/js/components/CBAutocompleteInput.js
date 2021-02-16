@@ -1,6 +1,6 @@
 // react / redux
 import React, {useEffect, useState} from 'react';
-
+import uuidv4 from 'uuid/v4';
 // resources
 import Autocomplete from 'react-autocomplete';
 import formStyle from '../../scss/_forms.scss';
@@ -67,7 +67,7 @@ export default (props) => {
           items={props.options}
           renderItem={(item, isHighlighted) => {
             return (
-              <div style={{ background: isHighlighted ?  props.themeMap.paneColor : 'transparent' }}>
+              <div style={{ background: isHighlighted ?  props.themeMap.paneColor : 'transparent' }} key={uuidv4()}>
                 {item}
               </div>
             )

@@ -175,25 +175,34 @@ export default (props) => {
         }));
       }
       try {
-        const imgTexture = new TextureLoader().load(node.post.files[0].src);
-        const material = new SpriteMaterial({ map: imgTexture });
-        sprite = new Sprite(material);
-        sprite.scale.set(20, 20);
+        const imgTexture = new TextureLoader().load(node.post.files[0].src, () => {
+          const material = new SpriteMaterial({ map: imgTexture });
+          sprite = new Sprite(material);
+          sprite.scale.set(20, 20);
+        }, undefined, (err) => {
+          sprite = drawNodeText(node);
+        });
       } catch (e) {
         console.log('could not make sprite:', e);
+        sprite = drawNodeText(node);
       }
     } 
     if (!sprite) {
-      let wordwrappedTitle = (node.post.title + ' ').replace(/(\S(.{0,20}\S)?)\s+/g, '$1\n').trim();
-      sprite = new SpriteText(wordwrappedTitle);
-      sprite.color = PostsService.getCategoryColorByName(node.post.category);
-      sprite.fontWeight = 900;
-      sprite.padding = 2;
-      // sprite.backgroundColor = 'white';
-      sprite.textHeight = 1;
+      sprite = drawNodeText(node);
     }
     return sprite;
   };
+
+  const drawNodeText = (node) => {
+    const wordwrappedTitle = (node.post.title + ' ').replace(/(\S(.{0,20}\S)?)\s+/g, '$1\n').trim();
+    let sprite = new SpriteText(wordwrappedTitle);
+    sprite.color = PostsService.getCategoryColorByName(node.post.category);
+    sprite.fontWeight = 900;
+    sprite.padding = 2;
+    // sprite.backgroundColor = 'white';
+    sprite.textHeight = 1;
+    return sprite;
+  }
 
   const handleClick = (node) => {
     // Aim at node from outside it
