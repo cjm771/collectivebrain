@@ -10,7 +10,6 @@ import PostsService from '../services/posts.services.js';
 import useMaxDragDistance from '../hooks/useMaxDragDistance.js';
 
 const ForceGraph3DMemo =  React.memo(ForceGraph3D, (prevProps, nextProps) => {
-  debugger;
   return JSON.stringify(prevProps.graphData.nodes.map((item) => item.id)) === JSON.stringify(nextProps.graphData.nodes.map((item) => item.id));
 });
 

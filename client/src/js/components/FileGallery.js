@@ -12,6 +12,7 @@ import FileDropZone from './FileDropZone.js';
 
 // services
 import generalService from '../services/general.services.js';
+import filesService from '../services/files.services.js';
 
 // styles
 import fileGalleryStyle from '../../scss/fileGallery.scss';
@@ -40,9 +41,7 @@ const SortableList = SortableContainer(({files, onApproveCaption, onDeleteItem, 
   );
 });
 
-export default ({files, onChange, onFileUploaded, disabled}) => {
-
-
+export default ({files, onChange, onFileUploaded, disabled, post}) => {
   /*********
    *  VARS *
   **********/
@@ -69,6 +68,7 @@ export default ({files, onChange, onFileUploaded, disabled}) => {
       onChange(readyFiles, false);
     }
   }, [files]);
+
   /***********
    * HELPERS *
    ***********/
@@ -89,19 +89,6 @@ export default ({files, onChange, onFileUploaded, disabled}) => {
       });
       return valid;
     });
-  };
-
-  const getPreviewDataUrl = (file) => {
-    return new Promise((res, rej) => {
-      const reader = new FileReader();
-      reader.addEventListener("load", function () {
-        // convert image file to base64 string
-        res(reader.result);
-      }, false);
-      if (file) {
-        reader.readAsDataURL(file);
-      }
-    })
   };
 
   const updateFileParams = (file, params, allFiles=inputFiles) => {
@@ -125,6 +112,10 @@ export default ({files, onChange, onFileUploaded, disabled}) => {
   const uploadFile = (file, allFiles) => {
       let formData = new FormData();
       formData.append('file', file.fileData);
+      if (file.previewUrlThumb) {
+        formData.append('fileThumb', filesService.dataURItoBlob(file.previewUrlThumb));
+      }
+
       axios.post( '/fileUpload',
         formData,
         {
@@ -141,8 +132,10 @@ export default ({files, onChange, onFileUploaded, disabled}) => {
         updateFileParams(file, {
           progress: undefined,
           previewUrl: undefined,
+          previewUrlThumb: undefined,
           new: true,
-          src: resp.data.data.src
+          src: resp.data.data.src,
+          srcThumb: resp.data.data.srcThumb,
         }, allFiles);
         onFileUploaded(resp.data.data.src);
       })
@@ -174,8 +167,13 @@ export default ({files, onChange, onFileUploaded, disabled}) => {
       generalService.notifyError(`${filesRemovedCount} files were too large (exceeded ${MAX_FILE_SIZE_MB}MB) and filtered out.`);
     }
    Promise.all(filteredFiles.map((file) => {
-      return getPreviewDataUrl(file).then((dataUrl) => {
-        return {fileData: file, key: uuidv4(), previewUrl: dataUrl, progress: -1};
+      return Promise.all([filesService.getPreviewDataUrl(file), filesService.generateThumbnailFromImageFile(file)]).then(([dataUrl, dataUrlThumb]) => {
+        return {
+          fileData: file, 
+          key: uuidv4(), 
+          previewUrl: dataUrl, 
+          previewUrlThumb: dataUrlThumb,
+          progress: -1};
       }).catch((err) => {
         return {error: err};
       });
@@ -187,8 +185,6 @@ export default ({files, onChange, onFileUploaded, disabled}) => {
       setInputFiles(allFiles);
       onChange(allFiles, true);
     });
-
-  
   };
 
    const handleApproveCaption = (file, newCaption) => {
@@ -196,20 +192,25 @@ export default ({files, onChange, onFileUploaded, disabled}) => {
    };
    
    const handleDeleteItem = (targetItem) => {
-    axios.delete('/fileUpload?f=' + targetItem.src)
+    let deleteUrl = `/fileUpload?src=${targetItem.src}&srcThumb=${targetItem.srcThumb}`;
+    if (post && post.id) {
+      deleteUrl += `&postId=${post.id}`;
+    }
+    axios.delete(deleteUrl)
       .then(() => {
+        generalService.notifySuccess('File deleted!');
       })
       .catch((err) => {
         const error = (err.response && err.response.data && err.response.data.error) || err;
-        generalService.notifyError('Could not delete file from server: ' + error);
+        generalService.notifyError('Could not delete file from server, but we did the best we could to remove from post: ' + error);
       }).finally(() => {
-        onChange(newFiles, true);
+        onChange(newFiles, false);
       });
     const newFiles = inputFiles.filter((item) => {
       return targetItem !== item;
     });
     setInputFiles(newFiles);
-    onChange(newFiles, true);
+    onChange(newFiles, false);
    };
 
    const handleSortEnd = ({oldIndex, newIndex}) => {

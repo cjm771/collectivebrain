@@ -303,6 +303,7 @@ export default ({ match, page, onUnsavedChanges, ignoreUnsavedChanges, onDiscard
                   files={page === 'add' ? null : postData.activeItem.files} 
                   onFileUploaded={markUnsavedChanges} 
                   onChange={handleFilesChange}
+                  post={page === 'add' ? null : (postData.activeItem)}
                 />
               </div>
               {

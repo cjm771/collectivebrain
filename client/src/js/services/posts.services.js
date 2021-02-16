@@ -73,7 +73,8 @@ export default {
         cleanedFiles = inputs.files.map((file) => {
         return {
           caption: file.caption,
-          src: file.src
+          src: file.src,
+          srcThumb: file.srcThumb
         }
       });
     }

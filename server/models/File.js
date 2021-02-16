@@ -28,43 +28,62 @@ const CloudinaryService = require('../utils/CloudinaryService.js');
  * PROPERTY
  */
 
-fileSchema.virtual('uploadProvider').get(function () {
-  if (/^\/uploads\/(.+)/.test(this.src)) {
-    return fileSchema.statics.UPLOAD_PROVIDER.SELF;
-  } else if (/^(.+)cloudinary.com\/(.+)$/.test(this.src)) {
-    return fileSchema.statics.UPLOAD_PROVIDER.CLOUDINARY;
-  } else {
-    return fileSchema.statics.UPLOAD_PROVIDER.UNKNOWN;
-  }
-});
+// fileSchema.virtual('uploadProvider').get(function () {
+//   if (/^\/uploads\/(.+)/.test(this.src)) {
+//     return fileSchema.statics.UPLOAD_PROVIDER.SELF;
+//   } else if (/^(.+)cloudinary.com\/(.+)$/.test(this.src)) {
+//     return fileSchema.statics.UPLOAD_PROVIDER.CLOUDINARY;
+//   } else {
+//     return fileSchema.statics.UPLOAD_PROVIDER.UNKNOWN;
+//   }
+// });
 
 /**
  * METHODS
  */
 
-fileSchema.methods.getPublicId = function() {
+fileSchema.methods.getThumbPublicId = function() {
+  return this.getPublicId(this.srcThumb);
+};
+
+fileSchema.methods.getUploadProvider = function(srcPath=this.src) {
+  if (/^\/uploads\/(.+)/.test(srcPath)) {
+    return fileSchema.statics.UPLOAD_PROVIDER.SELF;
+  } else if (/^(.+)cloudinary.com\/(.+)$/.test(srcPath)) {
+    return fileSchema.statics.UPLOAD_PROVIDER.CLOUDINARY;
+  } else {
+    return fileSchema.statics.UPLOAD_PROVIDER.UNKNOWN;
+  }
+};
+
+fileSchema.methods.getPublicId = function(srcPath=this.src) {
   if (!this.isCloudinaryHosted()) {
     return null;
-  } else if (this.providerId) {
-      return this.providerId;
   } else {
-    // attempt to parse..kind of hacky for now
+    // attempt to parse..kind of hacky for now. edit: actually this is probably the best way for now
     const pubIdPattern = /^.+?\/((?:d|p)\/.+)\.(.+)$/
-    const matches = pubIdPattern.exec(this.src);
+    const matches = pubIdPattern.exec(srcPath);
     return (!matches) ? null : matches[1];
   }
-}
+};
 
-fileSchema.methods.isTmpFile = function() {
-  return fileSchema.statics.PATH_PATTERNS.TMP_UPLOAD.test(this.src);
-}
+fileSchema.methods.isTmpFile = function(srcPath=this.src) {
+  return fileSchema.statics.PATH_PATTERNS.TMP_UPLOAD.test(srcPath);
+};
 
 fileSchema.methods.uploadFile = async function() {
   if (this.isTmpFile()) {
     if (CloudinaryService.useCloudinary) { // cloudinary
-      const cloudinaryResult = await CloudinaryService.upload(this.getFilePath());
+      const filePath = this.getFilePath();
+      const thumbFilePath = this.getFileThumbPath();
+      const cloudinaryResult = await CloudinaryService.upload(filePath);
       this.src = cloudinaryResult.url;
       this.providerId = cloudinaryResult.public_id;
+      if (thumbFilePath) {
+        const cloundinaryResultThumb = await CloudinaryService.upload(thumbFilePath);
+        this.srcThumb = cloundinaryResultThumb.url;
+      }
+      // this.providerId = cloudinaryResult.public_id;
       // @TODO remove from tmp directory immediately
       return this;
     } else { // local file storage
@@ -78,7 +97,7 @@ fileSchema.methods.uploadFile = async function() {
       return this;
     }
   }
-}
+};
 
 fileSchema.methods.getUniqueFileName = async function (fullPath) {
   const targetDir =  path.dirname(fullPath) + '/';
@@ -102,68 +121,89 @@ fileSchema.methods.getUniqueFileName = async function (fullPath) {
     }
   }
   return pathToSave;
-}
+};
 
 fileSchema.methods.deleteFile = async function() {
   if (this.isSelfHosted()) {
     let filePath;
     try {
-      filePath = await fs.promises.access(this.getFilePath());
+      await fs.promises.access(this.getFilePath());
     } catch (e) {
       throw 'File does not exist';
     }
     try {
-      await fs.promises.unlink(filePath);
+      await fs.promises.unlink(this.getFilePath());
+      try {
+        if (this.getFileThumbPath()) {
+          await fs.promises.unlink(this.getFileThumbPath());
+        }
+      } catch (e) {
+        console.log('could not delete local thumb', e);
+      }
       return this.src;
     } catch (e) {
-      throw `Could not delete file ${file}`;
+      throw `Could not delete file: ${e}`;
     }  
   } else if (this.isCloudinaryHosted()) {
     const cloudinaryResult = await CloudinaryService.destroy(this.getPublicId());
+    try {
+      if (this.getFileThumbPath()) {
+        await CloudinaryService.destroy(this.getThumbPublicId());
+      }
+    } catch (e) {
+      console.log('could not delete thumb from cloudinary', e);
+    }
     return cloudinaryResult;
   } else {
     throw 'Cannot delete file, unknown/not safe host provider';
   }
-}
+};
 
-fileSchema.methods.getFilePath =function() {
-  if (!this.isSelfHosted()) {
-    return this.src;
+fileSchema.methods.getFileThumbPath =function() {
+  if (!this.srcThumb) {
+    return null;
+  }
+  return this.getFilePath(this.srcThumb);
+};
+
+fileSchema.methods.getFilePath =function(filePath=this.src) {
+  if (!this.isSelfHosted(filePath)) {
+    return filePath;
   } else {
-    if (this.isTmpFile()) {
-      return this.src.replace(fileSchema.statics.PATH_PATTERNS.TMP_UPLOAD, (m, m1) => {
+    if (this.isTmpFile(filePath)) {
+      return filePath.replace(fileSchema.statics.PATH_PATTERNS.TMP_UPLOAD, (m, m1) => {
         return path.join(__dirname, '../uploads/tmp', m1);
       });
     } else {
-      return this.src.replace(fileSchema.statics.PATH_PATTERNS.UPLOAD, (m, m1) => {
+      return filePath.replace(fileSchema.statics.PATH_PATTERNS.UPLOAD, (m, m1) => {
         return path.join(__dirname, '../uploads', m1);
       });
     }
   }
 };
 
-fileSchema.methods.isCloudinaryHosted = function() {
-  return this.uploadProvider === fileSchema.statics.UPLOAD_PROVIDER.CLOUDINARY;
+fileSchema.methods.isCloudinaryHosted = function(srcPath=this.src) {
+  return this.getUploadProvider(srcPath) === fileSchema.statics.UPLOAD_PROVIDER.CLOUDINARY;
 };
 
-fileSchema.methods.isSelfHosted = function() {
-  return this.uploadProvider === fileSchema.statics.UPLOAD_PROVIDER.SELF;
+fileSchema.methods.isSelfHosted = function(srcPath=this.src) {
+  return this.getUploadProvider(srcPath) === fileSchema.statics.UPLOAD_PROVIDER.SELF;
 };
 
-fileSchema.methods.isUnknownHost = function() {
-  return this.uploadProvider === fileSchema.statics.UPLOAD_PROVIDER.UNKNOWN;
+fileSchema.methods.isUnknownHost = function(srcPath=this.src) {
+  return this.getUploadProvider(srcPath) === fileSchema.statics.UPLOAD_PROVIDER.UNKNOWN;
 };
 
 fileSchema.statics.PATH_PATTERNS = {
   UPLOAD:  /^\/uploads\/(.+)/,
   TMP_UPLOAD: /^\/uploads\/tmp\/(.+)/,
-}
+};
 
 fileSchema.statics.UPLOAD_PROVIDER = {
   UNKNOWN: -1, 
   SELF: 0,
   CLOUDINARY: 1
-}
+};
 
 
 /**

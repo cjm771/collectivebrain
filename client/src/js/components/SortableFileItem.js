@@ -75,11 +75,11 @@ export default SortableElement(({file, onApproveCaption, onDelete, _disabled}) =
   
   return (
     <div className={`col-4 ${fileGalleryStyle.imgWpr} ${editMode ? fileGalleryStyle.editMode : ''}  ${file.error ? fileGalleryStyle.error : ''}  ${shouldDisappear ? `${animated} ${bounceOut}` : ''}`}>
-      <div className={`${fileGalleryStyle.aspectControl} ${file.previewUrl ? fileGalleryStyle.preview : ''}`} data-handle="true" style={{
-        background: `url(${file.src || file.previewUrl})`,
+      <div className={`${fileGalleryStyle.aspectControl} ${file.previewUrlThumb ? fileGalleryStyle.preview : ''}`} data-handle="true" style={{
+        background: `url(${file.srcThumb || file.previewUrlThumb || file.src})`,
         backgroundSize: 'cover'
       }}>
-        <img src={file.src || file.previewUrl} data-handle="true" />
+        <img src={file.srcThumb || file.previewUrlThumb || file.src} data-handle="true" />
         <div className={`${fileGalleryStyle.actionsPanel}`}>
           { file.error ? (
               <Tooltipify  tooltipId='error' tooltipText={file.error}>

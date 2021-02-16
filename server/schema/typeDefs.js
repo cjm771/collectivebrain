@@ -61,6 +61,7 @@ module.exports = `
 
   input FileInput {
     src: String!,
+    srcThumb: String,
     caption: String
   }
 

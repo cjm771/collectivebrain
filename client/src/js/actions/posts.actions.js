@@ -29,6 +29,7 @@ const postFull = `
   },
   files {
     src,
+    srcThumb,
     caption
   }
 `;
