@@ -2,7 +2,6 @@ const mongoose = require('../db.js');
 
 const User = require('./User.js');
 const File = require('./File.js');
-const { debug } = require('webpack');
 
 /**
  * SCHEMA
