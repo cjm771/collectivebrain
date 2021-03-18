@@ -140,7 +140,7 @@ export default {
     return files.map((file) => {
       let imageSrc = file.src;
       if (/\.obj$/.test(file.src)) {
-        imageSrc = `/obj-thumbnailer?url=${file.src}`;
+        imageSrc = file.srcThumb;
       }
       file = {...file};
       file.src = imageSrc;

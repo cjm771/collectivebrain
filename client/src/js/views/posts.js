@@ -117,7 +117,7 @@ export default ({ match }) => {
                 <li key={post.id} className={`row ${postsStyle.postItem}`}>
                   <Link to={`/dashboard/edit/${post.id}`} className={postsData.deleteProcessing ? postsStyle.disabled : ''}>
                     <div className={`col-sm-7 ${postsStyle.titleSection} ${!post.published ? postsStyle.draft : ''}  ${!post.canEdit ? postsStyle.notEditable  : ''} `}>
-                      <div className={postsStyle.keyImage}>{!post.keyFile ? '' : <img src={post.keyFile.src} />}</div>
+                      <div className={postsStyle.keyImage}>{!post.keyFile ? '' : <img src={post.keyFile.srcThumb || post.keyFile.src} />}</div>
                       <div className={postsStyle.text}>
                         <span className={postsStyle.title}>
                           {post.title}

@@ -75,7 +75,8 @@ const QUERIES = {
         title,
         canEdit,
         keyFile {
-          src
+          src,
+          srcThumb
         },
         category,
         user {

@@ -102,7 +102,7 @@ export default (props) => {
         // }
         let imageSrc = post.files[0].src;
         if (/\.obj$/.test(post.files[0].src)) {
-          imageSrc = `/obj-thumbnailer?url=${post.files[0].src}`;
+          imageSrc = `${post.files[0].srcThumb}`;
         }
           postIds.push(post.id);
           toLoad.push(new Promise((res, rej) => {

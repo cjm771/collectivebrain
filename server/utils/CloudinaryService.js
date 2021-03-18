@@ -3,12 +3,13 @@ const cloudinary = require('cloudinary').v2
 
 module.exports = {
   useCloudinary: process.env.USE_CLOUDINARY === 'true',
-  upload: (filePath) => {
+  upload: (filePath, params) => {
     return new Promise((res, rej) => {
       cloudinary.uploader.upload(filePath, 
         {
           folder: process.env.NODE_ENV === 'production' ? 'p' : 'd',
-          // use_filename: true
+          ...params,
+
         },
         function(error, result) { 
           if (error) return rej(error);

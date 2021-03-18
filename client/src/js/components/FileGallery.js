@@ -47,8 +47,6 @@ export default ({files, onChange, onFileUploaded, disabled, post}) => {
   **********/
 
   // limits
- const ALLOWED_FILETYPES = [/^image\/.+$/];
- const MAX_FILE_SIZE_MB = 5;
 
   /*********
    * HOOKS *
@@ -75,19 +73,13 @@ export default ({files, onChange, onFileUploaded, disabled, post}) => {
 
   const filteredTooLargeFiles = (files) => {
     return files.filter((file) => {
-      return file.size < MAX_FILE_SIZE_MB * 1000000;
+      return file.size < filesService.MAX_FILE_SIZE_MB * 1000000;
     });
   };
 
   const filterInvalidFileTypes = (files) => {
-    return files.filter((file) => {
-      let valid = false;
-      ALLOWED_FILETYPES.forEach((typePattern) => {
-        if (typePattern.test(file.type)) {
-          valid = true;
-        }
-      });
-      return valid;
+    return files.filter((file) => { 
+      return filesService.getType(file) !== 'unknown';
     });
   };
 
@@ -164,10 +156,11 @@ export default ({files, onChange, onFileUploaded, disabled, post}) => {
     filteredFiles = filteredTooLargeFiles(filteredFiles);
     filesRemovedCount = filesLeft - filteredFiles.length;
     if (filesRemovedCount) {
-      generalService.notifyError(`${filesRemovedCount} files were too large (exceeded ${MAX_FILE_SIZE_MB}MB) and filtered out.`);
+      generalService.notifyError(`${filesRemovedCount} files were too large (exceeded ${filesService.MAX_FILE_SIZE_MB}MB) and filtered out.`);
     }
+    debugger;
    Promise.all(filteredFiles.map((file) => {
-      return Promise.all([filesService.getPreviewDataUrl(file), filesService.generateThumbnailFromImageFile(file)]).then(([dataUrl, dataUrlThumb]) => {
+      return Promise.all([filesService.getPreviewDataUrl(file), filesService.generateThumbnail(file)]).then(([dataUrl, dataUrlThumb]) => {
         return {
           fileData: file, 
           key: uuidv4(), 

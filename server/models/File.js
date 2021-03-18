@@ -76,11 +76,12 @@ fileSchema.methods.uploadFile = async function() {
     if (CloudinaryService.useCloudinary) { // cloudinary
       const filePath = this.getFilePath();
       const thumbFilePath = this.getFileThumbPath();
-      const cloudinaryResult = await CloudinaryService.upload(filePath);
+      const cloudinaryParams = { resource_type: 'raw' };
+      const cloudinaryResult = await CloudinaryService.upload(filePath, cloudinaryParams);
       this.src = cloudinaryResult.url;
       this.providerId = cloudinaryResult.public_id;
       if (thumbFilePath) {
-        const cloundinaryResultThumb = await CloudinaryService.upload(thumbFilePath);
+        const cloundinaryResultThumb = await CloudinaryService.upload(thumbFilePath, cloudinaryParams);
         this.srcThumb = cloundinaryResultThumb.url;
       }
       // this.providerId = cloudinaryResult.public_id;

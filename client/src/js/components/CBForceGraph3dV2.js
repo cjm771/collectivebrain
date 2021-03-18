@@ -170,18 +170,15 @@ export default (props) => {
       if (objs[node.post.id]) {
         return new Mesh(objs[node.post.id],
         new MeshLambertMaterial({
-          color: 'white',
+          color: '#c0c0c0',
           opacity: 1
         }));
       }
       try {
-        const imgTexture = new TextureLoader().load(node.post.files[0].src, () => {
-          const material = new SpriteMaterial({ map: imgTexture });
-          sprite = new Sprite(material);
-          sprite.scale.set(20, 20);
-        }, undefined, (err) => {
-          sprite = drawNodeText(node);
-        });
+        const imgTexture = new TextureLoader().load(node.post.files[0].src);
+        const material = new SpriteMaterial({ map: imgTexture });
+        sprite = new Sprite(material);
+        sprite.scale.set(20, 20);
       } catch (e) {
         console.log('could not make sprite:', e);
         sprite = drawNodeText(node);

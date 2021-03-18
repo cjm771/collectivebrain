@@ -24,7 +24,7 @@ export default React.memo(({_id, images}) => {
     Promise.all(images.map((img) => {
       return imageWillLoad(img);
     })).then((imgs) => {
-      _setImages(imgs)
+      _setImages(imgs);
       setLoading(false);
     })
   }, [images]); 
@@ -36,7 +36,7 @@ export default React.memo(({_id, images}) => {
   const imageWillLoad = (img) => {
     return new Promise((resolve, reject) => {
       const image = new Image('image');
-      image.src = img.src;
+      image.src = img.srcThumb || img.src;
       image.onload =  () => {
         resolve(img);
       }

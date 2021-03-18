@@ -30,7 +30,7 @@ export default ({inputFiles, onDrop, disabled}) => {
       // onMouseDown={event => { event.stopPropagation(); event.preventDefault(); return false }}
       // onClick={event => { event.stopPropagation(); event.preventDefault(); return false }}
     >
-    <input {...getInputProps()} disabled={disabled} accept="image/*" />{
+    <input {...getInputProps()} disabled={disabled} accept="image/*, .obj" />{
       <div className={`${disabled ? fileGalleryStyle.disabled : ''} ${fileGalleryStyle.addMore}`}>
         <div><FontAwesomeIcon icon={faPlus}/> Add {inputFiles.length ? 'More' : 'Files'}</div>
       </div>}

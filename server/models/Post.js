@@ -2,6 +2,7 @@ const mongoose = require('../db.js');
 
 const User = require('./User.js');
 const File = require('./File.js');
+const { debug } = require('webpack');
 
 /**
  * SCHEMA
@@ -157,6 +158,7 @@ postSchema.methods.moveTmpFiles = async function(user) {
             await this.save();     
           } catch (e) {
             throw new Error(`Could not move file from tmp: ${e}`);
+            throw new Error(`Could not move file from tmp: ${e.message || e.toString()}`);
           }  
       }
     }
