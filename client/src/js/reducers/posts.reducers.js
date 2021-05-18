@@ -5,6 +5,8 @@ export default (state = {
   savingError: false,
   savingErrofFields: false,
   items: [],
+  sort: {by: 'createdAt', dir: 'desc'},
+  filter: null,
   groupTags: [],
   activeItem: null,
   error: null
@@ -151,6 +153,11 @@ export default (state = {
       return {
         ...state,
         groupTags: action.groupTags
+      }
+    case 'UPDATE_POSTS_SETTINGS':
+      return {
+        ...state,
+        ...action.updates
       }
     default:
       return state;

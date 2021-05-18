@@ -1,8 +1,15 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // redux
-import { getMorePostsPreviewAction, clearActivePostAction, deletePostAction } from '../actions/posts.actions.js';
+import { 
+  getMorePostsPreviewAction, 
+  clearActivePostAction, 
+  deletePostAction, 
+  clearPostsAction,
+  updatePostsSettingsAction,
+  getPostsPreviewAction
+} from '../actions/posts.actions.js';
 import { useSelector, useDispatch} from 'react-redux';
 
 // custom hooks / utils
@@ -15,6 +22,7 @@ import GeneralService from '../services/general.services.js';
 // components
 import Gravatar from 'react-gravatar';
 import Tooltipify from '../components/Tooltipify.js';
+import Input from '../components/Input.js';
 
 import moment from 'moment';
 import AsyncHandler from '../components/AsyncHandler.js';
@@ -24,6 +32,7 @@ import { faPlus, faTimes, faLock, faSpinner } from '@fortawesome/free-solid-svg-
 // styles
 import postsStyle from '../../scss/posts.scss';
 import skeletonStyle from '../../scss/_skeleton.scss';
+
 
 export default ({ match }) => {
   /*********
@@ -46,7 +55,7 @@ export default ({ match }) => {
     postListRef, // ref
     'li:last-child', // child selector of ref
     postsData, // data .. looks for data.next to see what
-    user,
+    user, 
     10
   );
 
@@ -76,11 +85,49 @@ export default ({ match }) => {
     if (postsData.deleteError) {
       GeneralService.notifyError(postsData.deleteError.error);
     }
-  }, [postsData.deleteError])
+  }, [postsData.deleteError]);
 
   /*********
    * HELPERS
    ********/
+
+  const handleInputChange = (value, name) => {
+    // if (!postsData.posts || !postsData.posts.length) {
+    //   return;
+    // }
+
+    if (name === 'filterKeyword') {
+      // no op
+      handleSortChange({
+        filter: (value && value.trim()) || null
+      });
+    } else if (name === 'sortBy') {
+      if (value) {
+        handleSortChange({
+          sort: {
+            dir: postsData.sort.dir,
+            by: value
+          }
+        });
+      }
+    } else if (name === 'ascDesc') {
+      if (value) {
+        handleSortChange({
+          sort: {
+            dir: value,
+            by:  postsData.sort.by
+          }
+        });
+      }
+    }
+  };
+
+  const handleSortChange = (updates) => {
+    // dispatch(clearPostsAction());
+    // console.log('clearing');
+    // dispatch(clearPostsAction());
+    dispatch(updatePostsSettingsAction(updates));
+  };
 
    const deletePost = (e, id) => {
     e.preventDefault();
@@ -96,17 +143,46 @@ export default ({ match }) => {
    **********/
   return (
     <div className={postsStyle.posts}>
-      {!postsData.processing && postsData.items ? (
-        <div className={postsStyle.actions}>
-          <Link to="/dashboard/add">
-            <FontAwesomeIcon icon={faPlus} />
-            Add Post
-          </Link>
+      <div className={postsStyle.actions}>
+        <div className={postsStyle.listSettings}>
+          <div className={postsStyle.searchInput}>
+            <Input 
+              type="text"
+              name="filterKeyword"
+              label="Search"
+              placeholder="Search"
+              initValue={postsData.filter}
+              onChange={handleInputChange}
+            ></Input>
+          </div>
+          <div className={postsStyle.sortBy}>
+            <div className={postsStyle.sortByAttr}>
+              <Input 
+                type="dropdown"
+                name="sortBy"
+                label="Sort by"
+                options={{Date: 'createdAt', Title: 'title'}}
+                initValue={postsData.sort.by}
+                onChange={handleInputChange} 
+              ></Input>
+            </div>
+            <div className={postsStyle.sortByDir}>
+              <Input 
+                type="dropdown"
+                name="ascDesc"
+                label="Direction"
+                options={{Asc: 'asc', Desc: 'desc'}}
+                initValue={postsData.sort.dir}
+                onChange={handleInputChange} 
+              ></Input>
+            </div>
+          </div>
         </div>
-      ) : (
-        ''
-      )}
-
+        <Link to="/dashboard/add">
+          <FontAwesomeIcon icon={faPlus} />
+          Add Post
+        </Link>
+      </div>
       <AsyncHandler processing={postsData.processing} error={postsData.error}>
         {postsData.moreProcessing || postsData.items ? (
           <ul className={`${postsStyle.postList}`} ref={postListRef}>

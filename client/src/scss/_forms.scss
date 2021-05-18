@@ -334,7 +334,11 @@ $mobile-padding-ratio: .8;
   }
 
   .input {
-    min-height: 4.5rem;
+    min-height: 4rem;
+
+    @if map-get($themeMap, 'name') == 'karry' {
+      min-height: 4.5rem;
+    } 
   }
 
   .tagsList {

@@ -86,7 +86,6 @@ export default {
   getType: function (file) {
     let type = 'unknown';
     this.ALLOWED_FILETYPES.forEach((typePattern) => {
-      debugger;
       if (typePattern.test(file.type)) {
         type = 'image';
       }
@@ -104,7 +103,6 @@ export default {
         return this.generateThumbnailFromImageFile(file);
       case 'obj':
         return this.getPreviewDataUrl(file).then((dataUrl) => {
-          debugger;
           return this.generateObjThumbnail(dataUrl);
         })
       default:

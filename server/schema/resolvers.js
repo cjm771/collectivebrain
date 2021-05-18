@@ -265,14 +265,34 @@ module.exports  = {
       // if (ctx.req.session.user) {
         args.limit = args.limit || 0;
         args.offset = args.offset || 0;
-        const count = await Post.estimatedDocumentCount({});
+        let sortBy = null;
+        let sortDir = -1;
+        if (args.sort) {
+          sortDir = args.sort.dir === 'asc' ? 1 : -1;
+          sortBy = args.sort.by || null;
+        }
+
+
+        const sortArr = [
+          ['_id', -1]
+        ];
+        if (sortBy) {
+          sortArr.unshift([
+            sortBy, sortDir
+          ]);
+        }
         let filter = {};
         if (args.group) {
-          filter = {group: args.group};
+          filter.group = args.group;
+        } 
+
+        if (args.filter) {
+          filter.title = new RegExp(args.filter.replace(/[^a-zA-Z0-9]/g, ' '), 'i');
         }
+        const count = await Post.countDocuments(filter);
         let posts = await Post
         .find(filter)
-        .sort([['_id', -1]])
+        .sort(sortArr)
         .limit(args.limit)
         .skip(args.offset)
         .populate('user')

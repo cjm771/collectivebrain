@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 
-export default ({type, name, placeholder, options, cast, disabled, error,  initValue, onChange}) => {
+export default ({type, name, placeholder, label, options, cast, disabled, error,  initValue, onChange}) => {
 
   /********
    * VARS
@@ -60,7 +60,7 @@ export default ({type, name, placeholder, options, cast, disabled, error,  initV
               disabled={disabled}
               name={name}
             />
-            <label>{name}</label>
+            <label>{label || name}</label>
           </div>
         </div>
       );
@@ -77,7 +77,7 @@ export default ({type, name, placeholder, options, cast, disabled, error,  initV
               disabled={disabled}
               name={name}
             />
-            <label>{name}</label>
+            <label>{label || name}</label>
           </div>
         </div>
       );
@@ -86,7 +86,7 @@ export default ({type, name, placeholder, options, cast, disabled, error,  initV
         <div>
           <div className={`${disabled ? formStyle.disabled : ''} ${formStyle.inputWpr} ${ formStyle.switch} ${value ? formStyle.filled : ''}`}  onClick={(e) => {handleInputChange(e, name, !value)}} >
             <div className={`${formStyle.fakeCheckBox} ${value ? formStyle.checked : '' }`}></div>
-            <label>{name}</label>
+            <label>{label || name}</label>
           </div>
         </div>
       );
@@ -113,7 +113,7 @@ export default ({type, name, placeholder, options, cast, disabled, error,  initV
               }
             </select>
             <div className={formStyle.arrow}><FontAwesomeIcon icon={faCaretDown} /></div>
-            <label>{name}</label>
+            <label>{label || name}</label>
           </div>
         </div>
       );
@@ -129,7 +129,7 @@ export default ({type, name, placeholder, options, cast, disabled, error,  initV
               disabled={disabled}
               name={name}
             ></textarea>
-            <label>{name}</label>
+            <label>{label || name}</label>
           </div>
         </div>
       );

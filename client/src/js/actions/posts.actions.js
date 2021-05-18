@@ -43,8 +43,8 @@ const QUERIES = {
   }
   `,
   GET_POSTS: gql`
-  query($limit: Int, $offset: Int, $group: ID) {
-    posts(limit: $limit, offset: $offset, group: $group) {
+  query($limit: Int, $offset: Int, $group: ID, $sort: SortInput, $filter: String) {
+    posts(limit: $limit, offset: $offset, group: $group, sort: $sort, filter: $filter) {
       posts {
         ${postFull}
       }
@@ -52,8 +52,8 @@ const QUERIES = {
   }
   `,
   GET_TAGS: gql`
-    query($limit: Int, $offset: Int, $group: ID) {
-      posts(limit: $limit, offset: $offset, group: $group) {
+    query($limit: Int, $offset: Int, $group: ID, $sort: SortInput, $filter: String) {
+      posts(limit: $limit, offset: $offset, group: $group, sort: $sort, filter: $filter) {
         posts {
           tags
         }
@@ -61,8 +61,8 @@ const QUERIES = {
     }
   `,
   GET_POSTS_PREVIEW: gql`
-  query($limit: Int, $offset: Int, $group: ID) {
-    posts(limit: $limit, offset: $offset, group: $group) {
+  query($limit: Int, $offset: Int, $group: ID, $sort: SortInput, $filter: String) {
+    posts(limit: $limit, offset: $offset, group: $group, sort: $sort, filter: $filter) {
       total,
     	start,
     	end, 
@@ -135,7 +135,9 @@ export const getPostsAction = (inputs, query=QUERIES.GET_POSTS) => {
     return ApolloClient.query({query: query, variables: {
       group: inputs.group,
       limit: inputs.limit,
-      offset: inputs.offset
+      offset: inputs.offset,
+      sort: inputs.sort,
+      filter: inputs.filter
     }})
       .then((result) => {
         dispatch({
@@ -188,7 +190,11 @@ export const getPostsPreviewAction = (inputs) => {
 
 
 export const getMorePostsPreviewAction = (inputs) => {
-  return getPostsAction({morePosts: true, ...inputs}, QUERIES.GET_POSTS_PREVIEW);
+  return getPostsAction({
+    morePosts: !inputs.reset, 
+    ...inputs,
+    offset: inputs.reset ? 0 : inputs.offset
+  }, QUERIES.GET_POSTS_PREVIEW);
 };
 
 
@@ -224,7 +230,16 @@ export const clearPostsAction = () => {
       type: 'CLEAR_POSTS'
     });
   }
-}
+};
+
+export const updatePostsSettingsAction = (updates={}) => {
+  return (dispatch) => {
+    dispatch({
+      type: 'UPDATE_POSTS_SETTINGS',
+      updates
+    });
+  }
+};
 
 export const deletePostAction = (id) => {
   return (dispatch) => {

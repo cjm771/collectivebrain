@@ -158,7 +158,7 @@ export default ({files, onChange, onFileUploaded, disabled, post}) => {
     if (filesRemovedCount) {
       generalService.notifyError(`${filesRemovedCount} files were too large (exceeded ${filesService.MAX_FILE_SIZE_MB}MB) and filtered out.`);
     }
-    debugger;
+
    Promise.all(filteredFiles.map((file) => {
       return Promise.all([filesService.getPreviewDataUrl(file), filesService.generateThumbnail(file)]).then(([dataUrl, dataUrlThumb]) => {
         return {

@@ -1,7 +1,7 @@
 @import './colors';
 @import './themes';
 @import './icons';
-
+@import './mediaQueries';
 
 
 @include themeProvider() using ($themeMap) {
@@ -13,6 +13,52 @@
         color: map-get($themeMap, 'linkColor');
         svg {
           margin-right: 0.5rem;
+        }
+      }
+
+      .listSettings {
+        @if map-get($themeMap, 'name') == 'karry' {
+          padding-bottom: 1rem;
+        }
+
+        @include desktop {
+          display: flex;
+
+          .searchInput {
+            width: 70%;
+            padding-right: 1rem;
+            
+            @if map-get($themeMap, 'name') == 'karry' {
+              padding-right: 0;
+              margin-right: map-get($themeMap, 'inputMarginTop');
+            }
+          }
+
+          .sortBy {
+            width: 30%;
+          }
+        }
+
+        .sortBy {
+          display: flex;
+
+          .sortByAttr {
+            width: calc(100% - 6rem);
+            padding-right: 1rem;
+
+            @include mobile {
+              width: calc(100% - 5rem);
+            }
+
+            @if map-get($themeMap, 'name') == 'karry' {
+              padding-right: 0;
+              margin-right: map-get($themeMap, 'inputMarginTop');
+            }
+          }
+
+          .sortByDir {
+            width: 6rem;
+          }
         }
       }
     }
