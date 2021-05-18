@@ -6,9 +6,7 @@ import {
   getMorePostsPreviewAction, 
   clearActivePostAction, 
   deletePostAction, 
-  clearPostsAction,
-  updatePostsSettingsAction,
-  getPostsPreviewAction
+  updatePostsSettingsAction
 } from '../actions/posts.actions.js';
 import { useSelector, useDispatch} from 'react-redux';
 
@@ -27,10 +25,11 @@ import Input from '../components/Input.js';
 import moment from 'moment';
 import AsyncHandler from '../components/AsyncHandler.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTimes, faLock, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTimes, faLock, faSpinner, faFilter, faLevelDownAlt, faLevelUpAlt, faCog, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
 // styles
 import postsStyle from '../../scss/posts.scss';
+import formStyle from '../../scss/_forms.scss';
 import skeletonStyle from '../../scss/_skeleton.scss';
 
 
@@ -39,10 +38,15 @@ export default ({ match }) => {
    * VARS
    *********/
 
+  const SORT_OPTIONS = {
+    Date: 'createdAt', 
+    Title: 'title'
+  }
+
   /*********
    * HOOKS
    ********/
-  // const dispatch = useDispatch();
+  const [settingsExpanded, setSettingsExpanded] = useState(false);
   const user = useSelector((state) => state.user);
 
   const postListRef = useRef();
@@ -91,6 +95,15 @@ export default ({ match }) => {
    * HELPERS
    ********/
 
+  const getSortKeyByValue = (value) => {
+    for (let [key, val] of Object.entries(SORT_OPTIONS)) {
+      if (val === value) {
+        return key;
+      }
+    }
+    return null;
+  }
+
   const handleInputChange = (value, name) => {
     // if (!postsData.posts || !postsData.posts.length) {
     //   return;
@@ -123,9 +136,6 @@ export default ({ match }) => {
   };
 
   const handleSortChange = (updates) => {
-    // dispatch(clearPostsAction());
-    // console.log('clearing');
-    // dispatch(clearPostsAction());
     dispatch(updatePostsSettingsAction(updates));
   };
 
@@ -144,44 +154,69 @@ export default ({ match }) => {
   return (
     <div className={postsStyle.posts}>
       <div className={postsStyle.actions}>
-        <div className={postsStyle.listSettings}>
-          <div className={postsStyle.searchInput}>
-            <Input 
-              type="text"
-              name="filterKeyword"
-              label="Search"
-              placeholder="Search"
-              initValue={postsData.filter}
-              onChange={handleInputChange}
-            ></Input>
-          </div>
-          <div className={postsStyle.sortBy}>
-            <div className={postsStyle.sortByAttr}>
-              <Input 
-                type="dropdown"
-                name="sortBy"
-                label="Sort by"
-                options={{Date: 'createdAt', Title: 'title'}}
-                initValue={postsData.sort.by}
-                onChange={handleInputChange} 
-              ></Input>
+        {
+          !settingsExpanded ? '' :
+          <dvi>
+            <div className={postsStyle.listSettings}>
+              <div className={postsStyle.searchInput}>
+                <Input 
+                  type="text"
+                  name="filterKeyword"
+                  label="Search"
+                  placeholder="Search"
+                  initValue={postsData.filter}
+                  onChange={handleInputChange}
+                ></Input>
+              </div>
+              <div className={postsStyle.sortBy}>
+                <div className={postsStyle.sortByAttr}>
+                  <Input 
+                    type="dropdown"
+                    name="sortBy"
+                    label="Sort by"
+                    options={SORT_OPTIONS}
+                    initValue={postsData.sort.by}
+                    onChange={handleInputChange} 
+                  ></Input>
+                </div>
+                <div className={postsStyle.sortByDir}>
+                  <Input 
+                    type="dropdown"
+                    name="ascDesc"
+                    label="Direction"
+                    options={{Asc: 'asc', Desc: 'desc'}}
+                    initValue={postsData.sort.dir}
+                    onChange={handleInputChange} 
+                  ></Input>
+                </div>
+              </div>
             </div>
-            <div className={postsStyle.sortByDir}>
-              <Input 
-                type="dropdown"
-                name="ascDesc"
-                label="Direction"
-                options={{Asc: 'asc', Desc: 'desc'}}
-                initValue={postsData.sort.dir}
-                onChange={handleInputChange} 
-              ></Input>
+            <div className={formStyle.buttonLink} onClick={() => {setSettingsExpanded(false)}}>
+              Close
             </div>
-          </div>
-        </div>
+          </dvi>
+        }
+        <div className={postsStyle.actionsInner}>
         <Link to="/dashboard/add">
           <FontAwesomeIcon icon={faPlus} />
           Add Post
         </Link>
+        {
+          settingsExpanded ? '' :
+          <div className={postsStyle.listSettingsSummary}  onClick={() => {setSettingsExpanded(true)}}>
+            <button className={formStyle.buttonLink}> 
+              <FontAwesomeIcon icon={faPencilAlt}></FontAwesomeIcon>
+            </button>
+            Sorting by: { getSortKeyByValue(postsData.sort.by) } <FontAwesomeIcon icon={postsData.sort.dir === 'asc' ? faLevelUpAlt : faLevelDownAlt} />
+            {
+              !postsData.filter ? '' :
+              <span className="badge badge-secondary">
+                  <FontAwesomeIcon icon={faFilter}></FontAwesomeIcon> { postsData.filter }
+              </span>
+            }
+          </div>
+        }
+        </div>
       </div>
       <AsyncHandler processing={postsData.processing} error={postsData.error}>
         {postsData.moreProcessing || postsData.items ? (

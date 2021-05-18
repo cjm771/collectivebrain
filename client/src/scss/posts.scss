@@ -16,6 +16,46 @@
         }
       }
 
+      .actionsInner {
+        .listSettingsSummary {
+          cursor: pointer;
+          font-size: .8rem;
+
+          button {
+            display: none;
+            padding-right: .5rem;
+            opacity: 0;
+            transition: opacity .25s ease-in-out;
+          }
+
+          &:hover {
+            button {
+              opacity: 1;
+            }
+          }
+
+          :global {
+            .badge {
+              margin-left: .5rem;
+            }
+          }
+        }      
+      }
+
+      @include desktop {
+        .actionsInner {
+          display: flex;
+          justify-content: space-between;
+          
+          .listSettingsSummary {
+            button {
+              display: inline-block;
+            }
+          }
+        }
+        
+      }
+
       .listSettings {
         @if map-get($themeMap, 'name') == 'karry' {
           padding-bottom: 1rem;
