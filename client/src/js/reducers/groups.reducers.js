@@ -25,6 +25,11 @@ export default (state = {
         error: action.error,
         processing: false
       }
+    case 'UPDATE_GROUP_SETTINGS_SUCCESS':
+      return {
+        ...state,
+        items: action.groups
+      }
     default:
       return state;
   }

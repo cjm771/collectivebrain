@@ -127,6 +127,32 @@ module.exports  = {
       }
       return post;
     },
+    editGroup: async (_, args, ctx) => {
+      const user = await confirmLoggedInUser(ctx);
+      let group;
+      try {
+        group = await Group.findOne({_id: args.input.id || -1});
+      } catch (e) {
+        throw new SchemaError(`Could not find group with given id: ${args.input.id}`);
+      }
+      if (await user.canEditGroup(group)) {
+        // graph settings
+        if (args.input.graphSettings) {
+          for (let [key, val] of Object.entries(args.input.graphSettings)) {
+            group.graphSettings[key] = val;
+          }
+          try {
+            group = await group.save();
+          } catch (e) {
+            throw new UserInputError(`Error: ${e.toString()}`);
+          }
+        }
+        const groups =  await Group.find({});
+        return groups;
+      } else {
+        throw new AuthenticationError('You are not permitted to edit this group!');
+      }
+    },
     addPost: async (_, args, ctx) => {
       const user = await confirmLoggedInUser(ctx);
       // args.input = cleanFields(args.input);
@@ -315,7 +341,8 @@ module.exports  = {
       // }
     },
     groups: async (_, args, ctx) => {
-      return Group.find({});
+      const groups =  await Group.find({});
+      return groups;
     },
     users: (_, args, ctx) => {
       if (ctx.req.session.user) {

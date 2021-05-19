@@ -194,7 +194,14 @@ userSchema.methods.getEditableRoles = function() {
   } else if (this.isAdmin()) {
     return [this.schema.statics.USER_ROLES.USER, this.schema.statics.USER_ROLES.ADMIN, this.schema.statics.USER_ROLES.MODERATOR];
   }
-}
+};
+
+userSchema.methods.canEditGroup = function (group) {
+  if (!this.isAdmin()) {
+    return false;
+  }
+  return true;
+};
 
 userSchema.set('toObject', {
   transform: (doc, ret, opt) => {

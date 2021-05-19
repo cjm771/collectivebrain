@@ -5,6 +5,17 @@ const User = require('./User.js');
  * SCHEMA
  */ 
 
+const graphSettingsSchema = new mongoose.Schema({
+  velocityDecay2D: {
+    type: Number,
+    default: null
+  },
+  velocityDecay3D: {
+    type: Number,
+    default: null
+  }
+});
+
 const groupSchema = mongoose.Schema({
   name: {
     type: String,
@@ -27,6 +38,11 @@ const groupSchema = mongoose.Schema({
       }, message: 'Name Already Taken'
     }
   },
+  graphSettings: {
+    
+    type: graphSettingsSchema,
+    default: () => ({})
+  },
   lastEditedBy: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User'
@@ -42,9 +58,6 @@ const groupSchema = mongoose.Schema({
  */
 
 groupSchema.pre('remove', async function (next) {
-  const permissionsError = new Error('You are not permitted to remove this group');
-  const canBeEdited = await group.canBeEdited();
-  next(canBeEdited ? undefined : permissionsError);
 });
 
 
@@ -52,12 +65,7 @@ groupSchema.pre('save', async function (next) {
   const group = this;
   
   if (!group.isNew) {
-    const permissionsError = new Error('You are not permitted to edit this group');
-    if (await group.canBeEdited()) {
-      next()
-    } else {
-      next(permissionsError);
-    }
+    next();
   }
   group.lastEditedBy = group.editor;
   group.editor = null;
@@ -68,17 +76,6 @@ groupSchema.pre('save', async function (next) {
 /**
  * METHODS
  */
-
-groupSchema.methods.canBeEdited = async function(editorId=this.editor) {
-  const editor = await User.findOne({_id: editorId});
-  if (!editor) {
-    return false;
-  }
-  if (!editor.isAdmin()) {
-    return false;
-  }
-  return true;
-};
 
 /**
  * MODEL

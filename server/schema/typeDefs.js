@@ -6,6 +6,7 @@ module.exports = `
     addInvite(input: MetaDataInput): Token,
     addPost(input: PostInput): Post,
     editPost(input: PostInput): Post,
+    editGroup(input: GroupInput): [Group],
     deletePost(id: ID): PostDeletedResult,
     addUser(input: RegisterInput): AuthPayload,
     editUser(input: EditUserInput): UserSettings,
@@ -46,6 +47,16 @@ module.exports = `
   input SortInput {
     by: String,
     dir: String
+  }
+
+  input GroupInput {
+    id: ID,
+    graphSettings: GraphSettingsInput
+  }
+
+  input GraphSettingsInput {
+    velocityDecay2D: Float,
+    velocityDecay3D: Float
   }
 
   input PostInput {
@@ -100,7 +111,13 @@ module.exports = `
 
   type Group {
     id: ID,
-    name: String
+    name: String,
+    graphSettings: GraphSettings
+  }
+
+  type GraphSettings {
+    velocityDecay3D: Float,
+    velocityDecay2D: Float
   }
 
   type AuthPayload {

@@ -4,6 +4,7 @@ import { ForceGraph2D } from 'react-force-graph';
 
 // services
 import PostsService from '../services/posts.services.js'; 
+import GraphService from '../services/graph.services.js';
 
 // hooks
 import useWindowSize from '../hooks/useWindowResize.js';
@@ -100,9 +101,13 @@ export default (props) => {
         //   post.files[0].src = 'https://res.cloudinary.com/hpbzpednu/raw/upload/v1609954206/tests/teapot_cfbaif.obj';
         //   hitFirstFile = true;
         // }
-        let imageSrc = post.files[0].src;
+        let imageSrc = post.files[0].srcThumb || post.files[0].src;
         if (/\.obj$/.test(post.files[0].src)) {
-          imageSrc = `${post.files[0].srcThumb}`;
+          if (/\.obj$/.test(post.files[0].srcThumb)) {
+            imageSrc = null;
+          } else {
+            imageSrc = `${post.files[0].srcThumb}`;
+          }
         }
           postIds.push(post.id);
           toLoad.push(new Promise((res, rej) => {
@@ -168,6 +173,14 @@ export default (props) => {
     }
   };
 
+  const resolveGraphSetting = (graphSettingName) => {
+    let resolvedGraphName = GraphService.DEFAULTS[graphSettingName];
+    if (props.graphSettings && props.graphSettings[graphSettingName]) {
+      resolvedGraphName = props.graphSettings[graphSettingName];
+    }
+    return resolvedGraphName;
+  };
+
 
 
   /*********
@@ -184,7 +197,7 @@ export default (props) => {
         linkColor={() => props.themeMap.linkColor}
         linkWidth={.5}
         linkCurvature={.2}
-        d3VelocityDecay={.85}
+        d3VelocityDecay={resolveGraphSetting('velocityDecay2D')}
         ref={fgRef}
         enableNodeDrag={false}
         showNavInfo={false}

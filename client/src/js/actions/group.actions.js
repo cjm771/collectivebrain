@@ -5,19 +5,28 @@ import { gql } from 'apollo-boost';
 import ApolloClient from '../services/ApolloClient.js';
 import GeneralService from '../services/general.services.js';
 
+const SHARED_GROUP_ATTRS = `
+id,
+name,
+graphSettings {
+  velocityDecay3D,
+  velocityDecay2D
+}
+`;
+
+
 const QUERIES = {
   UPDATE_GROUP: gql`
-  mutation ($input: EditUserInput) {
-    editUser(input: $input) {
-      activeGroup
+  mutation ($input: GroupInput) {
+    editGroup(input: $input) {
+      ${SHARED_GROUP_ATTRS}
     }
   }
 `,
   GET_GROUPS: gql`
   query {
     groups {
-      id,
-      name
+      ${SHARED_GROUP_ATTRS}
     }
   }
   `,
@@ -44,5 +53,22 @@ export const getGroupsAction = () => {
           errorFields: fields
         })
       });
+  }
+};
+
+export const updateGroupSettingsAction = (inputs) => {
+  return (dispatch) => {
+    ApolloClient.mutate({
+      variables: {input: inputs},
+      mutation: QUERIES.UPDATE_GROUP,
+    })
+      .then((result) => {
+        dispatch({
+          type: 'UPDATE_GROUP_SETTINGS_SUCCESS',
+          groups: result.data.editGroup
+        })
+      }).catch((error) => {
+        console.log('could not update:', error);
+      })
   }
 };

@@ -8,6 +8,7 @@ import SpriteText from 'three-spritetext';
 
 // services
 import PostsService from '../services/posts.services.js';
+import GraphService from '../services/graph.services.js';
 
 // hooks
 import useWindowSize from '../hooks/useWindowResize.js';
@@ -219,6 +220,14 @@ export default (props) => {
     }
   };
 
+  const resolveGraphSetting = (graphSettingName) => {
+    let resolvedGraphName = GraphService.DEFAULTS[graphSettingName];
+    if (props.graphSettings && props.graphSettings[graphSettingName]) {
+      resolvedGraphName = props.graphSettings[graphSettingName];
+    }
+    return resolvedGraphName;
+  };
+
   /*********
    * RENDER
    ********/
@@ -238,7 +247,7 @@ export default (props) => {
       linkColor={() => props.themeMap.linkColor}
       ref={fgRef}
       controlType="orbit"
-      d3VelocityDecay={.85}
+      d3VelocityDecay={resolveGraphSetting('velocityDecay3D')}
       enableNodeDrag={false}
       showNavInfo={false}
       onNodeClick={handleClick}

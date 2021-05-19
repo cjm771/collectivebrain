@@ -33,6 +33,9 @@ export default {
       paneColor: 'rgba(220, 220, 220, 1)'
     }
   },
+  isAdmin: function (val) {
+    return this.getRoleName(val.role) === 'ADMIN';
+  },
   getThemeMap: function (theme) {
     const _theme = this.THEME_DICT[theme] || this.THEME_DICT[this.DEFAULT_THEME];
     return _theme;

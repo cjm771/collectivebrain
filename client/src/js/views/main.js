@@ -14,6 +14,7 @@ import CBForceGraph2d from '../components/CBForceGraph2d.js';
 import CBForceGraph3dV2 from '../components/CBForceGraph3dV2.js';
 import Post from '../components/Post.js';
 import FilterWidget from '../components/FilterWidget.js';
+import GraphAdminControls from '../components/GraphAdminControls.js';
 
 // styles
 import mainStyle from '../../scss/main.scss';
@@ -41,8 +42,11 @@ export default ({match}) => {
     const [tags, setTags] = useState([]);
     const [filteredPosts, setFilteredPosts] = useState(null);
     const [activePost, setActivePost] = useState(null);
+    const [activeGroup, setActiveGroup] = useState(null);
     const [userThemeMap, setUserThemeMap] = useState(UserService.THEME_DICT.dark);
-    const groupsData = useSelector((state) => { return state.groups });
+    const groupsData = useSelector((state) => { 
+      return state.groups;
+    });
     useEffect(() => {
       dispatch(getGroupsAction());
     }, []);
@@ -53,11 +57,13 @@ export default ({match}) => {
           return group.name === match.params.group;
         });
         const groupToSet = filteredGroups.length ? filteredGroups[0] : groupsData.items[0];
+        setActiveGroup(groupToSet);
+        console.log('new active group data', groupToSet);
         dispatch(getPostsAction(
           {group: (groupToSet && groupToSet.id) || null}
         ));
       }
-    }, [groupsData]);
+    }, [groupsData, groupsData.items]);
     
     const posts = useSelector((state) => { 
       if (state.posts.items.length) {
@@ -160,6 +166,11 @@ export default ({match}) => {
             </div>
           ) :  ( <div className={`${mainStyle.mainWpr} ${ drawerVisible ? mainStyle.drawerOpen : ''}`}>
               <div className={mainStyle.filterArea}>
+                
+                { activeGroup && posts && posts.items && UserService.isAdmin(user) ?
+                  <GraphAdminControls activeGroup={activeGroup} />
+                  : ''
+                }
                 { posts && posts.items &&  posts.items.length  ? (
                   <FilterWidget 
                   posts={posts.items}
@@ -169,15 +180,15 @@ export default ({match}) => {
                   themeMap={userThemeMap}
                 />
                 ) : '' }
-
               </div>
-              {filteredPosts && filteredPosts.items && filteredPosts.items.length  ? (
+              {activeGroup && filteredPosts && filteredPosts.items && filteredPosts.items.length  ? (
               <div className={mainStyle.forceGraph}>
                 {
                   mode === '2D' ?
                 <CBForceGraph2dMemo
                   animationDuration={ANIM_DELAY}
                   posts={filteredPosts}
+                  graphSettings={activeGroup.graphSettings}
                   onZoomPan={handleZoomPan}
                   onClick={handleClick}
                   themeMap={userThemeMap}
@@ -185,6 +196,7 @@ export default ({match}) => {
                 <CBForceGraph3dV2
                   animationDuration={ANIM_DELAY}
                   posts={filteredPosts}
+                  graphSettings={activeGroup.graphSettings}
                   onZoomPan={handleZoomPan}
                   onClick={handleClick}
                   themeMap={userThemeMap}

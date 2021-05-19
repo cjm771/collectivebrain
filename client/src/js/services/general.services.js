@@ -4,6 +4,8 @@ const toastSettings = {
   position: toast.POSITION.BOTTOM_RIGHT
 };
 
+const debounceTimers = {}; 
+
 export default {
   notifyInfo : (msg) => {
     toast(msg, toastSettings);
@@ -13,6 +15,14 @@ export default {
   },
   notifySuccess : (error) => {
     toast.success(error, toastSettings)
+  },
+  debounce : (key, fn, ts=500) => {
+    if (debounceTimers[key]) {
+      clearTimeout(debounceTimers[key]);
+    }
+    debounceTimers[key] = setTimeout(() => {
+      fn();
+    }, ts);
   },
   getErrorFromGraphQL : (error) => {
     if (typeof error === 'object' && error.graphQLErrors && error.graphQLErrors.length) {
