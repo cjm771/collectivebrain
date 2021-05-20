@@ -14,9 +14,13 @@ import GraphService from '../services/graph.services.js';
 import useWindowSize from '../hooks/useWindowResize.js';
 import useMaxDragDistance from '../hooks/useMaxDragDistance.js';
 
+// styles
+import GraphStyle from '../../scss/graph.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+
 // components
 import { ForceGraph3D } from 'react-force-graph';
-
 const ForceGraph3DMemo =  React.memo(ForceGraph3D, (prevProps, nextProps) => {
   return JSON.stringify(prevProps.graphData.nodes.map((item) => item.id)) === JSON.stringify(nextProps.graphData.nodes.map((item) => item.id))
   && prevProps.width === nextProps.width
@@ -176,7 +180,12 @@ export default (props) => {
         }));
       }
       try {
-        const imgTexture = new TextureLoader().load(node.post.files[0].src);
+        const imgTexture = new TextureLoader().load(node.post.files[0].src, (texture) => {
+          if (sprite) {
+            const {width, height} = GraphService.calculateAspectRatioFit(texture.image.width, texture.image.height, 20, 20);
+            sprite.scale.set(width, height);
+          }
+        });
         const material = new SpriteMaterial({ map: imgTexture });
         sprite = new Sprite(material);
         sprite.scale.set(20, 20);
@@ -253,7 +262,10 @@ export default (props) => {
       onNodeClick={handleClick}
       nodeAutoColorBy="category"
       nodeThreeObject={handleThreeObject}
-    /> : ''
+    /> : 
+    <div className={GraphStyle.loading}> 
+      <FontAwesomeIcon icon={faSpinner} spin />Loading 3D Assets..
+    </div>
   }
   </div>
 )};

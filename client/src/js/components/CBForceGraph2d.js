@@ -10,6 +10,11 @@ import GraphService from '../services/graph.services.js';
 import useWindowSize from '../hooks/useWindowResize.js';
 import useMaxDragDistance from '../hooks/useMaxDragDistance.js';
 
+// styles
+import GraphStyle from '../../scss/graph.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+
 const ForceGraph2DMemo =  React.memo(ForceGraph2D, (prevProps, nextProps) => {
   return JSON.stringify(prevProps.graphData.nodes.map((item) => item.id)) === JSON.stringify(nextProps.graphData.nodes.map((item) => item.id))
   && prevProps.width === nextProps.width
@@ -20,6 +25,7 @@ const ForceGraph2DMemo =  React.memo(ForceGraph2D, (prevProps, nextProps) => {
 let originPt = {value: [0, 0]};
 let maxDragDistance = {value: 0};
 
+
 export default (props) => {
   
   /*********
@@ -27,6 +33,7 @@ export default (props) => {
    ********/
 
   const [images, setImages] = useState(null);
+  const [loadedAssetsCount, setLoadedAssetsCount] = useState(0);
   const [width, height] = useWindowSize();
   const fgRef = useRef();
   const fgWprRef = useRef();
@@ -94,6 +101,7 @@ export default (props) => {
     const toLoad = [];
     const postIds = [];
     let hitFirstFile = false;
+    let _loadedAssetsCount = 0;
     for (let post of posts) {
       if (post.files && post.files.length) {
         // for testing
@@ -109,20 +117,27 @@ export default (props) => {
             imageSrc = `${post.files[0].srcThumb}`;
           }
         }
-          postIds.push(post.id);
-          toLoad.push(new Promise((res, rej) => {
-            const image = new Image();
-            image.onload = () => {
-              res(image);
-            }
-            image.onerror = () => {
-              console.log('post id error', post.id);
-              res(null);
-            }
-            image.src = imageSrc;
-          }));
-        }
+        postIds.push(post.id);
+        toLoad.push(new Promise((res, rej) => {
+          const image = new Image();
+          image.onload = () => {
+            res(image);
+            _loadedAssetsCount++;
+            setLoadedAssetsCount(_loadedAssetsCount);
+          }
+          image.onerror = () => {
+            console.log('post id error', post.id);
+            res(null);
+            _loadedAssetsCount++;
+            setLoadedAssetsCount(_loadedAssetsCount);
+          }
+          image.src = imageSrc;
+        }));
+      } else {
+        _loadedAssetsCount++;
+        setLoadedAssetsCount(_loadedAssetsCount);
       }
+    }
     const returnDict = {};
     return Promise.all(toLoad).then((imgs) => {
       imgs.forEach((img, index) => {
@@ -137,12 +152,11 @@ export default (props) => {
   const handleCanvasObject = (node, ctx, globalScale) => {
     if (node.post.files && node.post.files.length) {
       try {
-        ctx.drawImage(images[node.post.id], node.x - 5, node.y - 5, 10, 10);
+        const {width, height} = GraphService.calculateAspectRatioFit(images[node.post.id].width, images[node.post.id].height, 10, 10);
+        ctx.drawImage(images[node.post.id], node.x - 5, node.y - 5, width, height);
         return;
       } catch (e) {
         // pass
-        // console.log(e);
-        // ctx.drawImage(FilesService.generatePlaceholderTextThumbnail(node.post.title), node.x - 5, node.y - 5, 10, 10);
       }
 
     }
@@ -204,7 +218,10 @@ export default (props) => {
         onNodeClick={handleClick}
         nodeCanvasObject={handleCanvasObject}
       />
-      : ''
+      : 
+      <div className={GraphStyle.loading}> 
+        <FontAwesomeIcon icon={faSpinner} spin /> Loading 2D Assets ({loadedAssetsCount}/{props.posts.items.length})..
+      </div>
     }
     </div>
 )};

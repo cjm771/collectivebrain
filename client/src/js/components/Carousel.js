@@ -3,7 +3,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import carouselStyle from '../../scss/carousel.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import FilesService from '../services/files.services.js';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 export default React.memo(({_id, images}) => {
   /*********
@@ -54,6 +54,10 @@ export default React.memo(({_id, images}) => {
     }
   };
 
+  const getExtension = (file) => {
+    return file.src.match(/\.[0-9a-z]+$/i)[0].slice(1);
+   };
+
   /*********
    * RENDER
    ********/
@@ -84,11 +88,9 @@ export default React.memo(({_id, images}) => {
                   alt={image.caption}
                 />
                 {
-                  !image.caption ? '' : (
-                    <Carousel.Caption>
-                    <p>{image.caption}</p>
+                  <Carousel.Caption>
+                    <a href={image.src} target="_blank"><FontAwesomeIcon icon={faDownload} /></a> <b>[{ getExtension(image) }]</b> <i>{ image.caption || `Image ${index + 1}`}</i>
                   </Carousel.Caption>
-                  )
                 }
          
               </Carousel.Item> : ''

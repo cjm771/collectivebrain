@@ -1,8 +1,11 @@
 @import './themes';
 
 @include themeProvider() using ($themeMap) {
+
+  $caption-height: 1.5rem;
+  $image-height: 15rem;
+
   .carousel {
-    
     :global {
       // .carousel-control-prev-icon {
       //   filter: invert(100);
@@ -37,27 +40,50 @@
       }
       .carousel-caption {
         position: relative;
-        // color: map-get($themeMap, 'textColor');
-        opacity: map-get($themeMap, 'deemphasizeOpacity');
-        font-style: italic;
-        padding: 2rem 1rem;
+        top: auto;
         left: auto;
         right: auto;
+        bottom: auto; 
+        white-space: nowrap;
+        opacity: map-get($themeMap, 'deemphasizeOpacity');
+        color: map-get($themeMap, 'textColor');
+        height: $caption-height;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         text-align: center;
+        font-size: .8rem;
+        padding: 0;
+        margin: 0;
+
+        > * + * {
+          padding-left: .4rem;
+        }
       }
     }
   
     .loading {
-      min-height: 20rem;
+      min-height: $image-height;
       display: flex;
       justify-content: center;
       align-items: center;
     }
   
-    .img {
-      width: 70%;
-      max-width: 24rem;
-      margin: auto;
+    :global {
+      .carousel-inner {
+        height: $image-height;
+  
+        .carousel-item {
+          height: 100%;
+
+          img {
+            width: 100%;
+            height: calc(100% - #{$caption-height});
+            margin: auto;
+            object-fit: contain;
+          }
+        }
+      }
     }
   }
 }
