@@ -70,6 +70,7 @@
     "react-gravatar": "^2.6.3",
     "react-infinite-scroller": "^1.2.4",
     "react-konva": "^17.0.1-3",
+    "react-linkify": "^1.0.0-alpha",
     "react-modal": "^3.12.1",
     "react-redux": "^7.2.2",
     "react-router-dom": "^5.2.0",

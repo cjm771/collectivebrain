@@ -2,6 +2,7 @@ import React from 'react';
 import Carousel from './Carousel.js';
 import postStyle from '../../scss/post.scss';
 import postsService from '../services/posts.services.js';
+import Linkify from 'react-linkify';
 
 export default ({post}) => {
   const dateStr = (post.startDate ? (post.endDate) ? `${postsService.getYear(post.startDate)} - ${postsService.getYear(post.endDate)}` : (postsService.getYear(post.startDate) ? `${postsService.getYear(post.startDate)}` : null) : null);
@@ -35,7 +36,11 @@ export default ({post}) => {
     {!post.sources || !post.sources.length ? '' : (
       <ul className={postStyle.sources}>
         {post.sources.map((source) => (
-          <li>{ source }</li>
+          <li><Linkify  componentDecorator={(decoratedHref, decoratedText, key) => (
+            <a target="blank" href={decoratedHref} key={key}>
+                {decoratedText}
+            </a>
+        )}>{ source }</Linkify></li>
         ))}
       </ul>
     )}
