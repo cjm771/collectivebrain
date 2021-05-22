@@ -15,6 +15,7 @@ import CBForceGraph3dV2 from '../components/CBForceGraph3dV2.js';
 import Post from '../components/Post.js';
 import FilterWidget from '../components/FilterWidget.js';
 import GraphAdminControls from '../components/GraphAdminControls.js';
+import BookStack from '../components/BookStack.js';
 
 // styles
 import mainStyle from '../../scss/main.scss';
@@ -22,7 +23,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const CBForceGraph2dMemo = React.memo(CBForceGraph2d, (prevProps, nextProps) => {
-  return JSON.stringify(prevProps.posts.items.map((item) => item.id)) === JSON.stringify(nextProps.posts.items.map((item) => item.id));
+  const prevfocusNode = prevProps.focusNode && prevProps.focusNode.post.id;
+  const nextfocusNode = nextProps.focusNode && nextProps.focusNode.post.id;
+  return JSON.stringify(prevProps.posts.items.map((item) => item.id)) === JSON.stringify(nextProps.posts.items.map((item) => item.id))
+    && (!nextfocusNode || (prevfocusNode === nextfocusNode));
 });
 
 export default ({match}) => {
@@ -41,7 +45,9 @@ export default ({match}) => {
     const [mode, setMode] = useState('2D');
     const [tags, setTags] = useState([]);
     const [filteredPosts, setFilteredPosts] = useState(null);
-    const [activePost, setActivePost] = useState(null);
+    const [activeNode, setActiveNode] = useState(null);
+    const [focusNode, setFocusNode] = useState(null);
+    const [bookStack, setBookStack] = useState([]);
     const [activeGroup, setActiveGroup] = useState(null);
     const [userThemeMap, setUserThemeMap] = useState(UserService.THEME_DICT.dark);
     const groupsData = useSelector((state) => { 
@@ -58,7 +64,6 @@ export default ({match}) => {
         });
         const groupToSet = filteredGroups.length ? filteredGroups[0] : groupsData.items[0];
         setActiveGroup(groupToSet);
-        console.log('new active group data', groupToSet);
         dispatch(getPostsAction(
           {group: (groupToSet && groupToSet.id) || null}
         ));
@@ -95,6 +100,16 @@ export default ({match}) => {
     }, [user]);
 
     useEffect(() => {
+      if (activeNode) {
+        addToBookStack(activeNode);
+      }
+    }, [activeNode]);
+
+    useEffect(() => {
+      console.log('focust post changed!', focusNode);
+    }, [focusNode]);
+
+    useEffect(() => {
       setFilteredPosts(posts);
     }, [posts]);
 
@@ -104,23 +119,23 @@ export default ({match}) => {
 
     const handleZoomPan = () => {
       // setModalVisible(false);
-    }
+    };
 
     const closeDrawer = () => {
       setDrawerVisible(false);
-    }
+    };
 
-    const handleClick = (post) => {
-      setActivePost(post.post);
+    const handleClick = (node) => {
+      setActiveNode(node);
       setTimeout(() => {
-        // setModalVisible(true);
         setDrawerVisible(true);
       }, ANIM_DELAY);
-    }
+    };
+    
 
     const handleSetMode = (mode) => {
       setMode(mode);
-    }
+    };
 
     const handleTagsChange = (newTags) => {
       if (JSON.stringify(tags) !== JSON.stringify(newTags)) {
@@ -145,7 +160,30 @@ export default ({match}) => {
         });
         setFilteredPosts(newFilteredPosts);
       }
-    }
+    };
+
+    const addToBookStack = (targetNode) => {
+      let found = false;
+      bookStack.forEach((node) => {
+        if (node.post.id === targetNode.post.id) {
+          found = true;
+        }
+      });
+
+      if (!found) {
+        setBookStack([targetNode, ...bookStack]);
+      }
+    };
+
+    const removeFromBookStack = (targetNode) => {
+      const newStack = [];
+      bookStack.forEach((node) => {
+        if (node.post.id !== targetNode.post.id) {
+          newStack.push(node);
+        }
+      });
+      setBookStack(newStack);
+    };
 
     /***********
      * RENDER
@@ -186,6 +224,7 @@ export default ({match}) => {
                 {
                   mode === '2D' ?
                 <CBForceGraph2dMemo
+                  focusNode={focusNode}
                   animationDuration={ANIM_DELAY}
                   posts={filteredPosts}
                   graphSettings={activeGroup.graphSettings}
@@ -194,6 +233,7 @@ export default ({match}) => {
                   themeMap={userThemeMap}
                 /> :
                 <CBForceGraph3dV2
+                  focusNode={focusNode}
                   animationDuration={ANIM_DELAY}
                   posts={filteredPosts}
                   graphSettings={activeGroup.graphSettings}
@@ -219,9 +259,21 @@ export default ({match}) => {
                     </div>
                   </div>
                   {
-                    drawerVisible ? <Post post={activePost} /> : ''
+                    drawerVisible ? 
+                    <Post node={activeNode} />
+                  : ''
                   }
                 </div>
+                {
+                  drawerVisible && bookStack.length > 1 ? 
+                    <BookStack 
+                      nodes={bookStack} 
+                      activeNode={activeNode}
+                      onBookRemove={(node) => { removeFromBookStack(node) }}
+                      onBookClick={(node) => { setActiveNode(node); setFocusNode(node); }}
+                    />
+                  : ''
+                }
               </div>
             </div>
           ) 

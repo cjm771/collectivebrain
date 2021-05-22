@@ -27,7 +27,7 @@ let maxDragDistance = {value: 0};
 
 
 export default (props) => {
-  
+
   /*********
    * HOOKS
    ********/
@@ -44,6 +44,12 @@ export default (props) => {
       setImages(_images);
     });
   }, []);
+
+  useEffect(() => {
+    if (fgRef && fgRef.current && props.focusNode) {
+      zoomAndCenter(props.focusNode.x, props.focusNode.y);
+    } 
+  }, [props.focusNode]);
 
 
   /*********
@@ -157,6 +163,7 @@ export default (props) => {
         return;
       } catch (e) {
         // pass
+
       }
 
     }
@@ -175,12 +182,14 @@ export default (props) => {
     ctx.fillText(label, node.x, node.y)
   };
 
+  const zoomAndCenter = (x, y) => {
+    fgRef.current.zoom(5, 1000);
+    fgRef.current.centerAt(x, y, 1000)
+  };
+
   const handleClick = (node, event) => {
-    console.log('distance', maxDragDistance.value);
     if (maxDragDistance.value < 20) {
-      // Aim at node from outside it
-      fgRef.current.zoom(5, 1000);
-      fgRef.current.centerAt(node.x, node.y, 1000);  // ms transition duration
+      zoomAndCenter(node.x, node.y);
       setTimeout(() => {
         props.onClick(node);
       }, 1000);

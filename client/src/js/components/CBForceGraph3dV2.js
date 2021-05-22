@@ -65,6 +65,12 @@ export default (props) => {
     }).catch((e) => {
     })
   }, []);
+
+  useEffect(() => {
+    if (fgRef && fgRef.current && props.focusNode) {
+      zoomAndCenter(props.focusNode);
+    } 
+  }, [props.focusNode]);
   
   const fgRef = useRef();
   const fgWprRef = useRef();
@@ -211,17 +217,20 @@ export default (props) => {
     return sprite;
   }
 
+  const zoomAndCenter = (node) => {
+    const distance =140;
+    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+    fgRef.current.cameraPosition(
+      { x: node.x * distRatio, y: node.y,  z: node.z }, // new position
+      node, // lookAt ({ x, y, z })
+      1000  // ms transition duration
+      );
+  }
+
   const handleClick = (node) => {
     // Aim at node from outside it
-    console.log(maxDragDistance.value);
     if (maxDragDistance.value < 20) {
-      const distance =140;
-      const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
-      fgRef.current.cameraPosition(
-        { x: node.x * distRatio, y: node.y,  z: node.z }, // new position
-        node, // lookAt ({ x, y, z })
-        1000  // ms transition duration
-        );
+      zoomAndCenter(node);
       setTimeout(() => {
         props.onClick(node);
 

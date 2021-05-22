@@ -4,39 +4,39 @@ import postStyle from '../../scss/post.scss';
 import postsService from '../services/posts.services.js';
 import Linkify from 'react-linkify';
 
-export default ({post}) => {
-  const dateStr = (post.startDate ? (post.endDate) ? `${postsService.getYear(post.startDate)} - ${postsService.getYear(post.endDate)}` : (postsService.getYear(post.startDate) ? `${postsService.getYear(post.startDate)}` : null) : null);
+export default ({node}) => {
+  const dateStr = (node.post.startDate ? (node.post.endDate) ? `${postsService.getYear(node.post.startDate)} - ${postsService.getYear(node.post.endDate)}` : (postsService.getYear(node.post.startDate) ? `${postsService.getYear(node.post.startDate)}` : null) : null);
   return (
   <div className={postStyle.post}>
-    <div className={postStyle.title}>{ post.title }</div>
+    <div className={postStyle.title}>{ node.post.title }</div>
     {!dateStr ? '' : (
       <div className={postStyle.date}>{ dateStr }</div>
     )}
-    <div className={postStyle.creator}>{ post.creator }</div>
-    <div className={postStyle.category}>{ post.category }</div>
-    {!post.tags || !post.tags.length ? '' : (
+    <div className={postStyle.creator}>{ node.post.creator }</div>
+    <div className={postStyle.category}>{ node.post.category }</div>
+    {!node.post.tags || !node.post.tags.length ? '' : (
       <ul className={postStyle.tags}>
-        {post.tags.map((tag) => (
+        {node.post.tags.map((tag) => (
           <li>{ tag.trim() }</li>
         ))}
       </ul>
     )}
-    {!post.files ? '' : (
-      <Carousel images={[...postsService.getImageFiles(post.files)]} _id={post.id} />
+    {!postsService.getImageFiles(node.post.files).length ? '' : (
+      <Carousel images={[...postsService.getImageFiles(node.post.files)]} _id={node.post.id} />
     )}
     
     <div className={postStyle.description}>
-      {!post.description ? '' : post.description.split(/\n/g).map((item, idx) => (
+      {!node.post.description ? '' : node.post.description.split(/\n/g).map((item, idx) => (
          <span key={idx}>
          {item}
          <br/>
      </span>
       )) }
     </div>
-    {!post.sources || !post.sources.length ? '' : (
+    {!node.post.sources || !node.post.sources.length ? '' : (
       <ul className={postStyle.sources}>
-        {post.sources.map((source) => (
-          <li><Linkify  componentDecorator={(decoratedHref, decoratedText, key) => (
+        {node.post.sources.map((source) => (
+          <li><Linkify componentDecorator={(decoratedHref, decoratedText, key) => (
             <a target="blank" href={decoratedHref} key={key}>
                 {decoratedText}
             </a>

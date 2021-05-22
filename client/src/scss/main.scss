@@ -39,6 +39,12 @@ $drawer-width: 20rem;
 
         .drawer {
           width: $drawer-width;
+          
+          .drawerInner {
+            .closeWpr {
+              display: block;
+            }
+          }
         }
       }
 
@@ -71,23 +77,27 @@ $drawer-width: 20rem;
         top: 0;
         right: 0;
         width: 0;
-        overflow: hidden;
-        overflow-y: scroll;
         height: 100vh;
+        display: flex;
+        flex-direction: column;
 
         .drawerInner {
           padding: 1rem;
           padding-bottom: 4rem;
+          overflow: hidden;
+          overflow-y: scroll;
+          height: 100%;
           
           .closeWpr {
             position: absolute;
             top: 0;
             right: 0;
-            text-align: left;
+            text-align: right;
             width: 100%;
             padding: 1rem;
             display: flex;
             justify-content: flex-end;
+            display: none;
       
             @include cb-icons($themeMap);
       

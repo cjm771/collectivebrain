@@ -1,0 +1,70 @@
+@import './dims';
+@import './themes';
+@import './icons';
+
+@include themeProvider() using ($themeMap) {
+  background: map-get($themeMap, 'listItemHoverBGColor');
+
+  .bookStack {
+    $bg-color: map-get($themeMap, 'listItemHoverBGColor');
+
+    ul {
+      margin: 0;
+      padding: 0;
+      background: darken($bg-color, 2);
+      list-style: none;
+
+      li {
+        margin: 0;
+        padding: 0;
+        padding: .25rem;
+        transition: background .25s ease-in-out;
+        cursor: pointer;
+        text-align: left;
+        font-size: .8em;
+        position: relative;
+
+        &.active {
+          .bookStackInner {
+            .title {
+              font-weight: bold;
+            }
+          }
+
+          .remove {
+            display: none;
+          }
+        }
+
+        & + li {
+          border-top: 1px solid  lighten($bg-color, 6);
+        }
+
+        &:hover {
+          background: darken($bg-color, 4);
+        }
+
+        .left {
+          width: .1rem;
+          height: 100%;
+          top: 0;
+          display: block;
+          position: absolute;
+          left: 0;
+        }
+
+        .bookStackInner {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-left: .4rem;
+          height: 100%;
+
+          .remove {
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+}

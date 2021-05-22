@@ -138,7 +138,6 @@ export default (props) => {
   };
 
   const handleClick = (node) => {
-    console.log(maxDragDistance) 
     if (maxDragDistance.value < 20) {
     // Aim at node from outside it
     const distance = 25;

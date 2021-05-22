@@ -116,7 +116,6 @@ export default ({files, onChange, onFileUploaded, disabled, post}) => {
           },
           onUploadProgress: function( progressEvent ) {
            const uploadPercentage = parseInt( Math.round( ( progressEvent.loaded / progressEvent.total ) * 100 ));
-           console.log(uploadPercentage);
            updateFileParams(file, {progress: uploadPercentage}, allFiles);
           }.bind(this)
         }

@@ -137,6 +137,9 @@ export default {
     }
   },
   getImageFiles: function(files) {
+    if (!files) {
+      return [];
+    }
     return files.map((file) => {
       let imageSrc = file.src;
       if (/\.obj$/.test(file.src)) {
