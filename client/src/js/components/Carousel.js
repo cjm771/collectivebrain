@@ -21,6 +21,7 @@ export default React.memo(({_id, images}) => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     // pre load images
+    setLoading(true);
     Promise.all(images.map((img) => {
       return imageWillLoad(img);
     })).then((imgs) => {
@@ -89,7 +90,9 @@ export default React.memo(({_id, images}) => {
                 />
                 {
                   <Carousel.Caption>
-                    <a href={image.src} target="_blank"><FontAwesomeIcon icon={faDownload} /></a> <b>[{ getExtension(image) }]</b> <i>{ image.caption || `Image ${index + 1}`}</i>
+                    <a href={image.src} target="_blank"><FontAwesomeIcon icon={faDownload} /></a>
+                    <b>[{ getExtension(image) }]</b> 
+                    <i title={image.caption || `Image ${index + 1}`}>{ image.caption || `Image ${index + 1}`}</i>
                   </Carousel.Caption>
                 }
          
