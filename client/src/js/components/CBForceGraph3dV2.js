@@ -186,7 +186,7 @@ export default (props) => {
         }));
       }
       try {
-        const imgTexture = new TextureLoader().load(node.post.files[0].src, (texture) => {
+        const imgTexture = new TextureLoader().load(node.post.files[0].srcThumb || node.post.files[0].src, (texture) => {
           if (sprite) {
             const {width, height} = GraphService.calculateAspectRatioFit(texture.image.width, texture.image.height, 20, 20);
             sprite.scale.set(width, height);

@@ -1,9 +1,8 @@
 import * as THREE from 'three';
 import OBJLoader from 'three-obj-loader';
-
 export default {
   ALLOWED_FILETYPES: [/^image\/.+$/],
-  ALLOWED_EXTENSIONS: ['obj'],
+  ALLOWED_EXTENSIONS: ['obj', 'pdf'],
   MAX_FILE_SIZE_MB: 5,
   getPreviewDataUrl : (file) => {
     return new Promise((res, rej) => {
@@ -105,6 +104,8 @@ export default {
         return this.getPreviewDataUrl(file).then((dataUrl) => {
           return this.generateObjThumbnail(dataUrl);
         })
+			case 'pdf':
+				return this.generatePdfThumbnail(file);
       default:
         return new Promise((res, rej) => {res(this.generatePlaceholderTextThumbnail(file.name))});
     }
@@ -138,6 +139,42 @@ export default {
       reader.readAsDataURL(file);
     })
   },
+	generatePdfThumbnail: (file) => {
+		const _makeThumb = (page) => {
+			// draw page to fit into 96x96 canvas
+			var vp = page.getViewport({ scale: 1, });
+			var canvas = document.createElement("canvas");
+			var scalesize = 1;
+			canvas.width = vp.width * scalesize;
+			canvas.height = vp.height * scalesize;
+			var scale = Math.min(canvas.width / vp.width, canvas.height / vp.height);
+			console.log(vp.width, vp.height, scale);
+			return page.render({ canvasContext: canvas.getContext("2d"), viewport: page.getViewport({ scale: scale }) }).promise.then(function () {
+					return canvas.toDataURL('png'); 
+			});
+		}
+
+		return new Promise((res, rej) => {
+			const reader = new FileReader(); 
+			reader.onload = (event) => {
+				const typedArray = new Uint8Array(event.target.result);
+				pdfjsLib.getDocument(typedArray).promise.then(function (doc) {
+					var pages = []; while (pages.length < doc.numPages) pages.push(pages.length + 1);
+					Promise.all(pages.map(function (num) {
+						doc.getPage(num).then(_makeThumb)
+							.then(function (img) {
+								res(img);
+						}).catch((e) => {
+							rej(e);
+						})
+					})).catch((e) => {
+						rej(e);
+					});
+				});
+			}
+			reader.readAsArrayBuffer(file);
+		});
+	},
   generateObjThumbnail : (srcObj, size=300) => {
     var renderer, scene, camera, banana, directionalLight;
     const canvas = document.createElement("canvas");

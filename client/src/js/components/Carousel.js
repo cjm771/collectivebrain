@@ -56,7 +56,7 @@ export default React.memo(({_id, images}) => {
   };
 
   const getExtension = (file) => {
-    return file.src.match(/\.[0-9a-z]+$/i)[0].slice(1);
+    return file.originalSrc.match(/\.[0-9a-z]+$/i)[0].slice(1);
    };
 
   /*********
@@ -90,9 +90,9 @@ export default React.memo(({_id, images}) => {
                 />
                 {
                   <Carousel.Caption>
-                    <a href={image.src} target="_blank"><FontAwesomeIcon icon={faDownload} /></a>
+                    <a href={image.originalSrc} target="_blank"><FontAwesomeIcon icon={faDownload} /></a>
                     <b>[{ getExtension(image) }]</b> 
-                    <i title={image.caption || `Image ${index + 1}`}>{ image.caption || `Image ${index + 1}`}</i>
+                    <i title={image.caption || `File ${index + 1}`}>{ image.caption || `File ${index + 1}`}</i>
                   </Carousel.Caption>
                 }
          

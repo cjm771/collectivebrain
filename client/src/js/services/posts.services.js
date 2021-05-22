@@ -145,7 +145,11 @@ export default {
       if (/\.obj$/.test(file.src)) {
         imageSrc = file.srcThumb;
       }
+      if (/\.pdf$/.test(file.src)) {
+        imageSrc = file.srcThumb;
+      }
       file = {...file};
+      file.originalSrc = file.src;
       file.src = imageSrc;
       return file;
     })

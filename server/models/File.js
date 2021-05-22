@@ -81,7 +81,8 @@ fileSchema.methods.uploadFile = async function() {
       this.src = cloudinaryResult.url;
       this.providerId = cloudinaryResult.public_id;
       if (thumbFilePath) {
-        const cloundinaryResultThumb = await CloudinaryService.upload(thumbFilePath, cloudinaryParams);
+        const cloundinaryResultThumb = await CloudinaryService.upload(thumbFilePath, 
+          {...cloudinaryParams, format: 'jpg'});
         this.srcThumb = cloundinaryResultThumb.url;
       }
       // this.providerId = cloudinaryResult.public_id;
