@@ -101,7 +101,7 @@
     "iltorb": "^2.4.5",
     "jest": "^24.9.0",
     "mini-css-extract-plugin": "^0.8.2",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "nodemon": "^1.19.4",
     "peer-dep": "^1.0.0",
     "postcss-loader": "^3.0.0",
